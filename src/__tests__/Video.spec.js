@@ -1,11 +1,11 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
-import { Video } from "magic-script-components";
 
 describe("Video component", () => {
   test("Matches the snapshot", () => {
-    const video = create(<Video videoPath="test_file.mp4" />);
+    const props = {videoPath: "test_file.mp4"}
+    const video = create(React.createElement("video", props));
     expect(video.toJSON()).toMatchSnapshot();
   });
 });
