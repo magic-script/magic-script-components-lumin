@@ -1,7 +1,7 @@
 {
   "name": "magic-script-components-lumin",
-  "version": "1.0.0",
-  "description": "MagicScript Component Framework",
+  "version": "1.0.1",
+  "description": "MagicScript Components renderer for Lumin Runtime platform",
   "module": "index.js",
   "files": [
     "src/core",
@@ -31,13 +31,13 @@
     "react-reconciler": "^0.21.0"
   },
   "peerDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.6.0",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "rollup-plugin-babel": "^4.3.3"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-env": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
