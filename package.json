@@ -1,6 +1,6 @@
 {
   "name": "magic-script-components-lumin",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "description": "MagicScript Component Framework",
   "module": "index.js",
