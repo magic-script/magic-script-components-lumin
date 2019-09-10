@@ -1,11 +1,11 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
-import { Audio } from "magic-script-components";
 
 describe("Audio component", () => {
   test("Matches the snapshot", () => {
-    const audio = create(<Audio fileName="test_file.avi" />);
+    const props = {fileName: "test_file.avi"};
+    const audio = create(React.createElement("audio", props));
     expect(audio.toJSON()).toMatchSnapshot();
   });
 });

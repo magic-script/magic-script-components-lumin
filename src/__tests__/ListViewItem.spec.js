@@ -1,11 +1,10 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
-import { ListViewItem } from "magic-script-components";
 
 describe("ListViewItem component", () => {
   test("Matches the snapshot", () => {
-    const listviewitem = create(<ListViewItem />);
-    expect(listviewitem.toJSON()).toMatchSnapshot();
+    const listViewItem = create(React.createElement("listViewItem"));
+    expect(listViewItem.toJSON()).toMatchSnapshot();
   });
 });
