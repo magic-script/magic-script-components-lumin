@@ -1,6 +1,6 @@
 # MagicScript Components Lumin
 
-[![npm version](https://badge.fury.io/js/magic-script-components-lumin.svg)](https://badge.fury.io/js/magic-script-components-lumin) [![License](https://img.shields.io/:license-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/magic-script/magic-script-components-lumin/workflows/CI/badge.svg)](https://github.com/magic-script/magic-script-components-lumin/actions) [![npm version](https://badge.fury.io/js/magic-script-components-lumin.svg)](https://badge.fury.io/js/magic-script-components-lumin) [![License](https://img.shields.io/:license-Apache%202.0-blue.svg)](LICENSE)
 
 MagicScript Component Framework for Lumin Runtime platform
 
@@ -38,6 +38,7 @@ magic-script build
 5. Refer to MagicScript [Getting Started](https://www.magicscript.org/docs/getting-started) guide for more information.
 
 ## Update Existing Project
+
 To update your existing MagicScript Components project run the following commands:
 
 ```bash
