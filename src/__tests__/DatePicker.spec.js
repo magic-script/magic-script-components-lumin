@@ -1,11 +1,11 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
+import { DatePicker } from "magic-script-components";
 
 describe("DatePicker component", () => {
   test("Matches the snapshot", () => {
-    const props = {label: "Test DatePicker"}
-    const datepicker = create(React.createElement("datePicker", props));
-    expect(datepicker.toJSON()).toMatchSnapshot();
+    const datePicker = create(<DatePicker label="Test DatePicker" />);
+    expect(datePicker.toJSON()).toMatchSnapshot();
   });
 });
