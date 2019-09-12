@@ -50,6 +50,7 @@ export class LoadingSpinnerBuilder extends UiNodeBuilder {
         PropertyDescriptor.throwIfNotTypeOf(newProperties.resourceId, 'number');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.resourcePath, 'string');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.determinate, 'boolean');
     }
 }
 
