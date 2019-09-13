@@ -1,11 +1,11 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
+import { PageView } from "magic-script-components";
 
 describe("PageView component", () => {
   test("Matches the snapshot", () => {
-    const props = {width: 0.2, height: 0.2}
-    const pageView = create(React.createElement("pageView", props));
+    const pageView = create(<PageView width={0.2} height={0.2} />);
     expect(pageView.toJSON()).toMatchSnapshot();
   });
 });

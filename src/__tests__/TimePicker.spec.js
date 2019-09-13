@@ -1,11 +1,11 @@
 //
 import React from "react";
 import { create } from "react-test-renderer";
+import { TimePicker } from "magic-script-components";
 
 describe("TimePicker component", () => {
   test("Matches the snapshot", () => {
-    const props = {label: "Test TimePicker"}
-    const timePicker = create(React.createElement("timePicker", props));
+    const timePicker = create(<TimePicker label="Test TimePicker" />);
     expect(timePicker.toJSON()).toMatchSnapshot();
   });
 });

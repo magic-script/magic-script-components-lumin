@@ -32,15 +32,17 @@
   },
   "peerDependencies": {
     "@babel/core": "^7.6.0",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
     "rollup-plugin-babel": "^4.3.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
+    "magic-script-components": "2.0.0",
     "react-test-renderer": "^16.9.0"
   }
 }
