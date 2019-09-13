@@ -70,4 +70,18 @@ export class DialogBuilder extends UiNodeBuilder {
 
         PropertyDescriptor.throwIfNotTypeOf(scrolling, 'boolean');
     }
+
+    _getText(children) {
+        let text;
+
+        if (Array.isArray(children)) {
+            text = children.join('');
+        } else if (typeof children === 'number') {
+            text = children.toString();
+        } else {
+            text = children;
+        }
+
+        return text;
+    }
 }
