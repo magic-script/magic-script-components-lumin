@@ -2,7 +2,7 @@
 
 import { ui } from 'lumin';
 
-import { UiNodeBuilder } from './ui-node-builder.js';
+import { TextProviderBuilder } from './text-provider-builder.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
@@ -12,7 +12,7 @@ import { DialogLayout } from '../../types/dialog-layout.js';
 import { EclipseButtonType } from '../../types/eclipse-button-type.js';
 import { SystemIcons } from '../../types/system-icons.js';
 
-export class DialogBuilder extends UiNodeBuilder {
+export class DialogBuilder extends TextProviderBuilder {
     constructor() {
         super();
 
@@ -71,19 +71,5 @@ export class DialogBuilder extends UiNodeBuilder {
 
         PropertyDescriptor.throwIfNotTypeOf(newProperties.scrolling, 'boolean');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.title, 'string');
-    }
-
-    _getText(children) {
-        let text;
-
-        if (Array.isArray(children)) {
-            text = children.join('');
-        } else if (typeof children === 'number') {
-            text = children.toString();
-        } else {
-            text = children;
-        }
-
-        return text;
     }
 }
