@@ -18,5 +18,8 @@ module.exports = {
   },
   testEnvironment: "node",
   testMatch: ["**/__tests__/*.js"],
-  testPathIgnorePatterns: ["/node_modules/", ".eslintrc.js"]
+  testPathIgnorePatterns: ["/node_modules/", ".eslintrc.js"],
+  transformIgnorePatterns: [
+    "/node_modules/(?!magic-script-components).+(js|jsx)$"
+ ]
 };
