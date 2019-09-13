@@ -4,6 +4,8 @@ import { ui } from 'lumin';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { EnumProperty } from '../properties/enum-property.js';
+import { PropertyDescriptor } from '../properties/property-descriptor.js';
+
 
 import { DialogType } from '../../types/dialog-type.js';
 import { DialogLayout } from '../../types/dialog-layout.js';
@@ -30,28 +32,56 @@ export class DialogBuilder extends UiNodeBuilder {
 
         this.validate(undefined, undefined, properties);
 
-        let { text, title, type, layout } = properties;
+        let text = properties.text;
 
         if (text === undefined) {
             text = this._getText(properties.children);
         }
 
-        type = type === undefined
-            ? ui.DialogType.kDualAction
-            : DialogType[type];
+        const type = this.getPropertyValue('type', 'dual-action', properties);
+        const layout = this.getPropertyValue('layout', 'standard', properties);
+        const scrolling = this.getPropertyValue('scrolling', false, properties);
 
-        layout = layout === undefined
-            ? DialogLayout.kStandard
-            : DialogLayout[layout];
+        let element
 
-        const element = title === undefined
-            ? ui.UiTab.Create(prism, type, layout)
-            : ui.UiTab.CreateEclipseTab(prism, title, text, null, type, layout);
+        if (scrolling) {
+            element = ui.UiDialog.CreateScrolling(prism, title, text, DialogType[type], DialogLayout[layout]);
+        } else {
+            element = title === undefined
+                ? ui.UiDialog.Create(prism, DialogType[type], DialogLayout[layout])
+                : ui.UiDialog.Create(prism, title, text, null, DialogType[type], DialogLayout[layout]);
+        }
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'title', 'type', 'layout']);
 
         this.apply(element, undefined, unapplied);
 
+        // Initialize the dialog:
+        // - For modal dialogs, the cursor will transition to one of the dialog's action buttons
+        // and will be constrained to the dialog area.
+        // - For timed, modeless dialogs, the expiration timer will be started automatically.
+        element.init();
+
         return element;
+    }
+
+    validate(element, oldProperties, newProperties) {
+        super.validate(element, oldProperties, newProperties);
+
+        PropertyDescriptor.throwIfNotTypeOf(scrolling, 'boolean');
+    }
+
+    _getText(children) {
+        let text;
+
+        if (Array.isArray(children)) {
+            text = children.join('');
+        } else if (typeof children === 'number') {
+            text = children.toString();
+        } else {
+            text = children;
+        }
+
+        return text;
     }
 }
