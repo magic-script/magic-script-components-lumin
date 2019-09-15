@@ -41,6 +41,7 @@ export class DialogBuilder extends UiNodeBuilder {
         const type = this.getPropertyValue('type', 'dual-action', properties);
         const layout = this.getPropertyValue('layout', 'standard', properties);
         const scrolling = this.getPropertyValue('scrolling', false, properties);
+        const title = properties.title;
 
         let element
 
@@ -68,7 +69,8 @@ export class DialogBuilder extends UiNodeBuilder {
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);
 
-        PropertyDescriptor.throwIfNotTypeOf(scrolling, 'boolean');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.scrolling, 'boolean');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.title, 'string');
     }
 
     _getText(children) {
