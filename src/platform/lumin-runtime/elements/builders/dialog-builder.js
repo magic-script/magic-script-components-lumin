@@ -19,10 +19,10 @@ export class DialogBuilder extends UiNodeBuilder {
         // DialogContent
 
         this._propertyDescriptors['buttonType'] = new EnumProperty('buttonType', 'setButtonType', true, EclipseButtonType, 'EclipseButtonType');
-        this._propertyDescriptors['cancelText'] = new PrimitiveTypeProperty('cancelText', 'setCancelText', true, 'string');
-        this._propertyDescriptors['cancelIcon'] = new EnumProperty('cancelIcon', 'setCancelIcon', true, SystemIcons, 'SystemIcon');
-        this._propertyDescriptors['confirmText'] = new PrimitiveTypeProperty('confirmText', 'setConfirmText', true, 'string');
-        this._propertyDescriptors['confirmIcon'] = new EnumProperty('confirmIcon', 'setConfirmIcon', true, SystemIcons, 'SystemIcon');
+        this._propertyDescriptors['cancelText'] = new PrimitiveTypeProperty('cancelText', 'setCancelButtonText', true, 'string');
+        this._propertyDescriptors['cancelIcon'] = new EnumProperty('cancelIcon', 'setCancelButtonIcon', true, SystemIcons, 'SystemIcon');
+        this._propertyDescriptors['confirmText'] = new PrimitiveTypeProperty('confirmText', 'setConfirmButtonText', true, 'string');
+        this._propertyDescriptors['confirmIcon'] = new EnumProperty('confirmIcon', 'setConfirmButtonIcon', true, SystemIcons, 'SystemIcon');
         this._propertyDescriptors['expireTime'] = new PrimitiveTypeProperty('expireTime', 'setExpireTime', true, 'number');
     }
 
