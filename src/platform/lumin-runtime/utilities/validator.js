@@ -37,6 +37,7 @@ import { TimeFormat } from '../types/time-format.js';
 import { ToggleType } from '../types/toggle-type.js';
 import { VideoAction } from '../types/video-action.js';
 import { ViewMode } from '../types/view-mode.js';
+import { WebViewAction } from '../types/web-view-action.js';
 
 function validate(value, enumSet) {
     return typeof value === 'string' && enumSet[value] !== undefined;
@@ -80,5 +81,6 @@ export const validator = {
     validateTimeFormat: value => (typeof value === 'string') && TimeFormat.includes(value),
     validateToggleType: value => validate(value, ToggleType),
     validateVideoAction: value => validate(value, VideoAction),
-    validateViewMode: value => validate(value, ViewMode)
+    validateViewMode: value => validate(value, ViewMode),
+    validateWebViewAction: value => validate(value, WebViewAction)
 }
