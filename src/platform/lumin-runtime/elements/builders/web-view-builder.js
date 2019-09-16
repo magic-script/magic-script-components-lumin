@@ -3,11 +3,19 @@
 import { ui } from 'lumin';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
+import { WebViewAction } from '../../types/web-view-action.js';
+
+import { ArrayProperty } from '../properties/array-property.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 export class WebViewBuilder extends UiNodeBuilder {
     constructor(){
         super();
+
+        this._propertyDescriptors['url'] = new PrimitiveTypeProperty('url', 'loadUrl', true, 'string');
+        this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, WebViewAction, 'WebViewAction');
+        this._propertyDescriptors['scrollBy'] = new ArrayProperty('scrollBy', 'scrollBy', false, 'vec2');
     }
 
     create(prism, properties) {
@@ -40,6 +48,34 @@ export class WebViewBuilder extends UiNodeBuilder {
             throw new TypeError(errorMessage);
         }
     }
+
+    setAction(element, oldProperties, newProperties) {
+        const action = newProperties.action;
+
+        if (action === undefined) {
+            return;
+        }
+
+        if (WebViewAction[action] === WebViewAction.back) {
+            element.goBack();
+        } else if (WebViewAction[action] === WebViewAction.forward) {
+            element.goForward();
+        } else if (WebViewAction[action] === WebViewAction.reload) {
+            element.reload();
+        }
+    }
+
+    scrollBy(element, oldProperties, newProperties) {
+        const distances = newProperties.scrollBy;
+
+        if (Array.isArray(distances)) {
+            if (distances.every( distance => typeof distance === 'number')) {
+                element.scrollBy(distances[0], distances[1]);
+            } else {
+                throw new TypeError('WebView scrollBy property should be an array of numbers: [xPixels, yPixels]');
+            }
+        } else {
+            throw new TypeError('WebView scrollBy property should be an array: [xPixels, yPixels]');
+        }
+    }
 }
-
-
