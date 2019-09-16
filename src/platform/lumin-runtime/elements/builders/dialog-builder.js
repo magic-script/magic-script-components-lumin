@@ -5,7 +5,7 @@ import { ui } from 'lumin';
 import { TextProviderBuilder } from './text-provider-builder.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
-
+import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
 import { DialogType } from '../../types/dialog-type.js';
 import { DialogLayout } from '../../types/dialog-layout.js';
