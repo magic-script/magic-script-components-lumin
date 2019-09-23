@@ -53,7 +53,10 @@ export class MxsPrismController extends PrismController {
         if (root === undefined || root === null) {
             this._children.push(child);
         } else {
-            root.addChild(child);
+            // Temporary fix for adding child node
+            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
+            // root.addChild(child);
+            setTimeout(() => root.addChild(child), 0);
         }
     }
 
@@ -66,7 +69,12 @@ export class MxsPrismController extends PrismController {
             this._controllers.push(controller);
         } else {
             super.addChildController(controller);
-            this.addChild(controller.getRoot());
+
+            // Temporary fix for adding child node
+            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
+            // this.addChild(controller.getRoot());
+            const node = this;
+            setTimeout(() => node.addChild(controller.getRoot()), 0);
         }
     }
 
@@ -116,13 +124,19 @@ export class MxsPrismController extends PrismController {
         if (this._controllers !== undefined) {
             this._controllers.forEach(controller => {
                 super.addChildController(controller);
-                root.addChild(controller.getRoot());
+                // Temporary fix for adding child node
+                // Use setTimeout(func, 0) in order to let the other threads to catch-up.
+                // root.addChild(controller.getRoot());
+                setTimeout(() => root.addChild(controller.getRoot()), 0);
             });
             this._controllers = undefined;
         }
 
         if (this._children !== undefined) {
-            this._children.forEach(child => root.addChild(child));
+            // Temporary fix for adding child node
+            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
+            // this._children.forEach(child => root.addChild(child));
+            this._children.forEach(child => setTimeout(() => root.addChild(child), 0));
             this._children = undefined;
         }
 
