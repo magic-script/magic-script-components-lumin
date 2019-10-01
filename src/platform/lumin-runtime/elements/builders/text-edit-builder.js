@@ -26,7 +26,7 @@ export class TextEditBuilder extends TextContainerBuilder {
         super();
 
         this._propertyDescriptors['textAlignment'] = new EnumProperty('textAlignment', 'setTextAlignment', true, HorizontalTextAlignment, 'HorizontalTextAlignment');
-        this._propertyDescriptors['charLimit'] = new PrimitiveTypeProperty('charLimit', 'setCharacterLimit', true, 'number');
+        this._propertyDescriptors['charLimit'] = new PrimitiveTypeProperty('charLimit', 'setCharacterLimit', false, 'number');
         this._propertyDescriptors['charSpacing'] = new PrimitiveTypeProperty('charSpacing', 'setCharacterSpacing', true, 'number');
         this._propertyDescriptors['cursorEdgeScrollMode'] = new EnumProperty('cursorEdgeScrollMode', 'setCursorEdgeScrollMode', true, CursorEdgeScrollMode, 'CursorEdgeScrollMode');
         this._propertyDescriptors['lineSpacing'] = new PrimitiveTypeProperty('lineSpacing', 'setLineSpacing', true, 'number');
@@ -57,7 +57,7 @@ export class TextEditBuilder extends TextContainerBuilder {
             new PrimitiveTypeProperty('allCaps', undefined, undefined, 'boolean'),
         ];
 
-        this._propertyDescriptors['fontParams'] = new ClassProperty('fontParams', 'setFontParams', false, fontParamsProperties);
+        this._propertyDescriptors['fontParameters'] = new ClassProperty('fontParameters', 'setFontParameters', false, fontParamsProperties);
 
         // keyboardProperties
     }
@@ -105,14 +105,26 @@ export class TextEditBuilder extends TextContainerBuilder {
         this._validateSelectedText(newProperties);
     }
 
-    setFontParams(element, oldProperties, newProperties) {
-        const style = FontStyle[this.getPropertyValue('style', 'normal', newProperties.fontParams)];
-        const weight = FontWeight[this.getPropertyValue('weight', 'regular', newProperties.fontParams)];
-        const fontSize = this.getPropertyValue('fontSize', 0.02, newProperties.fontParams);
-        const tracking = this.getPropertyValue('tracking', 50, newProperties.fontParams);
-        const allCaps = this.getPropertyValue('allCaps', false, newProperties.fontParams);
+    setCharacterLimit(element, oldProperties, newProperties) {
+        const charLimit = newProperties.charLimit;
 
-        element.setFontParams(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+        if (charLimit !== undefined && typeof charLimit === 'number') {
+            element.setCharacterLimit(BigInt(charLimit));
+        }
+    }
+
+    setFontParameters(element, oldProperties, newProperties) {
+        const fontParameters = newProperties.fontParameters;
+
+        if (fontParameters !== undefined) {
+            const style = FontStyle[this.getPropertyValue('style', 'normal', fontParameters)];
+            const weight = FontWeight[this.getPropertyValue('weight', 'regular', fontParameters)];
+            const fontSize = this.getPropertyValue('fontSize', 0.02, fontParameters);
+            const tracking = this.getPropertyValue('tracking', 50, fontParameters);
+            const allCaps = this.getPropertyValue('allCaps', false, fontParameters);
+
+            element.setFontParameters(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+        }
     }
 
     _setFont2dResource(prism, element, properties) {
@@ -202,5 +214,10 @@ export class TextEditBuilder extends TextContainerBuilder {
                 element.setSelectedText(selectedBegin, selectedEnd);
             }
         }
+    }
+
+    _getText(children) {
+        const text = super._getText(children);
+        return text === undefined ? '' : text;
     }
 }

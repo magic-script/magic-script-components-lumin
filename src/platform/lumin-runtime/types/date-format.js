@@ -4,10 +4,14 @@ import { ui } from 'lumin';
 
 function createDate(year, month, day) {
     const date = new ui.Date();
-    
-    date.setYear(year);
-    date.setMonth(month);
-    date.setDay(day);
+
+    try {
+        date.setYear(Number.parseInt(year));
+        date.setMonth(Number.parseInt(month));
+        date.setDay(Number.parseInt(day));
+    } catch (error) {
+        throw new TypeError(`Cannot convert date string to Date, error: ${error.message}`);
+    }
 
     return date;
 }

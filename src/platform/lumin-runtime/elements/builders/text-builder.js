@@ -47,7 +47,7 @@ export class TextBuilder extends TextContainerBuilder {
             new PrimitiveTypeProperty('allCaps', undefined, undefined, 'boolean')
         ];
 
-        this._propertyDescriptors['fontParams'] = new ClassProperty('fontParams', 'setFontParams', false, fontParamsProperties);
+        this._propertyDescriptors['fontParameters'] = new ClassProperty('fontParameters', 'setFontParameters', false, fontParamsProperties);
     }
 
     create(prism, properties) {
@@ -59,7 +59,7 @@ export class TextBuilder extends TextContainerBuilder {
         if (text === undefined) {
             text = this._getText(children);
         }
-        
+
         const { style, weight } = properties;
 
         const fontStyle  = style  === undefined ? DEFAULT_FONT_STYLE  : FontStyle[style];
@@ -145,13 +145,17 @@ export class TextBuilder extends TextContainerBuilder {
         element.setBoundsSize(boundsSize, wrap);
     }
 
-    setFontParams(element, oldProperties, newProperties) {
-        const style = FontStyle[this.getPropertyValue('style', 'normal', newProperties.fontParams)];
-        const weight = FontWeight[this.getPropertyValue('weight', 'regular', newProperties.fontParams)];
-        const fontSize = this.getPropertyValue('fontSize', 0.02, newProperties.fontParams);
-        const tracking = this.getPropertyValue('tracking', 50, newProperties.fontParams);
-        const allCaps = this.getPropertyValue('allCaps', false, newProperties.fontParams);
+    setFontParameters(element, oldProperties, newProperties) {
+        const fontParameters = newProperties.fontParameters;
 
-        element.setFontParams(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+        if (fontParameters !== undefined) {
+            const style = FontStyle[this.getPropertyValue('style', 'normal', fontParameters)];
+            const weight = FontWeight[this.getPropertyValue('weight', 'regular', fontParameters)];
+            const fontSize = this.getPropertyValue('fontSize', 0.02, fontParameters);
+            const tracking = this.getPropertyValue('tracking', 50, fontParameters);
+            const allCaps = this.getPropertyValue('allCaps', false, fontParameters);
+
+            element.setFontParameters(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+        }
     }
 }
