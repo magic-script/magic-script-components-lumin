@@ -178,12 +178,12 @@ export class PlatformFactory extends NativeFactory {
                 }
             }
         } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
-            const { Padding, ItemAlignment } = child;
-            if (Padding !== undefined) {
-                if (ItemAlignment !== undefined) {
-                    parent.addItem(child, Padding, ItemAlignment);
+            const { Padding: padding, ItemAlignment: itemAlignment } = child;
+            if (padding !== undefined) {
+                if (itemAlignment !== undefined) {
+                    parent.addItem(child, padding, itemAlignment);
                 } else {
-                    parent.addItem(child, Padding);
+                    parent.addItem(child, padding);
                 }
             } else {
                 parent.addItem(child);
