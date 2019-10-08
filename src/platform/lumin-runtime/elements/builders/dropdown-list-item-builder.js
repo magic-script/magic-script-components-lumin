@@ -5,76 +5,100 @@ import { ui } from 'lumin';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 export class DropdownListItemBuilder {
+  create (prism, properties) {
+    this.validate(undefined, undefined, properties);
 
-    create(prism, properties) {
+    const content = this._getValue(properties.children);
 
-        const { id, label, children } = properties;
-
-        const content = this._getValue(children);
-
-        const element = content.isText
-            ? new ui.DropDownListItem(content.value, [], id)
-            : new ui.DropDownListItem(label, content.value, id);
-
-        this.update(element, undefined, properties);
-
-        return element;
+    let id = properties.id;
+    if (id === undefined) {
+        id = 0;
     }
 
-    validate(element, oldProperties, newProperties) {
-        const { id, label, children, selected } = newProperties;
-
-        if (PropertyDescriptor.hasValue(id)) {
-            PropertyDescriptor.throwIfNotTypeOf(id, 'number');
-        }
-
-        if (PropertyDescriptor.hasValue(label)) {
-            PropertyDescriptor.throwIfNotTypeOf(label, 'string');
-        }
-
-        if (PropertyDescriptor.hasValue(children)) {
-            this._validateChildren(children);
-        }
-
-        if (PropertyDescriptor.hasValue(selected)) {
-            PropertyDescriptor.throwIfNotTypeOf(selected, 'boolean');
-        }
+    let label = properties.label;
+    if (label === undefined && content !== undefined && content.isText) {
+        label = content.value;
     }
 
-    apply(element, oldProperties, newProperties) {
-        element.setSelected(newProperties.selected);
+    console.log('input props: ', label, id);
+
+    const element = content === undefined || content.isText
+      ? new ui.DropDownListItem(label, id)
+      : new ui.DropDownListItem(label, content.value, id);
+
+    this.update(element, undefined, properties);
+
+    return element;
+  }
+
+  validate (element, oldProperties, newProperties) {
+    const { id, label, children, selected } = newProperties;
+
+    if (PropertyDescriptor.hasValue(id)) {
+      PropertyDescriptor.throwIfNotTypeOf(id, 'number');
     }
 
-    update(element, oldProperties, newProperties) {
-        // this.throwIfNotInstanceOf(element, ui.UiDropDownListItem);
-        this.validate(element, oldProperties, newProperties);
-        this.apply(element, oldProperties, newProperties);
+    if (PropertyDescriptor.hasValue(label)) {
+      PropertyDescriptor.throwIfNotTypeOf(label, 'string');
     }
 
-    _getValue(children) {
-        if (Array.isArray(children)) {
-            return children.every(child => typeof child === 'string' || typeof child === 'number')
-                ? { isText: true,  value: children.join('') }
-                : { isText: false, value: children };
-        } else {
-            return typeof children === 'number'
-                ? { isText: true, value: children.toString() }
-                : { isText: true, value: children };
-        }
+    if (PropertyDescriptor.hasValue(children)) {
+      this._validateChildren(children);
     }
 
-    _validateChildren(children) {
-        const message = 'Invalid DropDownListItem content, it should be string, number or DropDownListItem';
-        const predicate = (item) => typeof item === 'string' || typeof item === 'number';
-
-        if (Array.isArray(children)) {
-            if ( children.some(child => !( child instanceof ui.DropDownListItem || predicate(child) ))) {
-                throw new TypeError(message);
-            }
-        } else {
-            if (predicate(children)) {
-                throw new TypeError(message);
-            }
-        }
+    if (PropertyDescriptor.hasValue(selected)) {
+      PropertyDescriptor.throwIfNotTypeOf(selected, 'boolean');
     }
+  }
+
+  apply (element, oldProperties, newProperties) {
+    const selected = newProperties.selected;
+    if (PropertyDescriptor.hasValue(selected)) {
+        element.setSelected(selected);
+    }
+  }
+
+  update (element, oldProperties, newProperties) {
+    // this.throwIfNotInstanceOf(element, ui.UiDropDownListItem);
+    this.validate(element, oldProperties, newProperties);
+    this.apply(element, oldProperties, newProperties);
+  }
+
+  _getValue (children) {
+    if (children === undefined) {
+        return undefined;
+    }
+
+    if (Array.isArray(children)) {
+      return children.every(child => typeof child === 'string' || typeof child === 'number')
+        ? { isText: true, value: children.join(' ') }
+        : { isText: false, value: children };
+    } else {
+      return typeof children === 'number'
+        ? { isText: true, value: children.toString() }
+        : { isText: true, value: children };
+    }
+  }
+
+  _validateChildren (children) {
+    if (children === undefined) {
+        return;
+    }
+
+    const message = 'Invalid DropDownListItem content, it should be string, number or DropDownListItem';
+    const predicate = (item) => typeof item === 'string' || typeof item === 'number';
+
+    if (Array.isArray(children)) {
+    //   if (children.some(child => !(child instanceof ui.DropDownListItem || predicate(child)))) {
+    if (children.some(child => !(child.type.name === 'DropdownListItem' || predicate(child)))) {
+        console.log('children array:', children);
+        throw new TypeError(message);
+      }
+    } else {
+      if (predicate(children)) {
+        console.log('children array:', children);
+        throw new TypeError(message);
+      }
+    }
+  }
 }
