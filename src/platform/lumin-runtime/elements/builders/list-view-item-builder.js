@@ -8,39 +8,51 @@ import { EnumProperty } from '../properties/enum-property.js';
 
 import { Alignment } from '../../types/alignment.js';
 
-import { MxsListViewItem } from '../mxs-list-view-item.js';
-
 export class ListViewItemBuilder extends UiNodeBuilder {
-    constructor(){
-        super();
+  constructor () {
+    super();
 
-        this._propertyDescriptors['backgroundColor'] = new ArrayProperty('backgroundColor', 'setBackgroundColor', true, 'vec3');
+    this._propertyDescriptors['backgroundColor'] = new ArrayProperty('backgroundColor', 'setBackgroundColor', true, 'vec3');
 
-        this._propertyDescriptors['padding'] = new ArrayProperty('padding', 'setPadding', false, 'vec4');
-        this._propertyDescriptors['itemAlignment'] = new EnumProperty('itemAlignment', 'setItemAlignment', false, Alignment, 'Alignment');
+    this._propertyDescriptors['padding'] = new ArrayProperty('padding', 'setPadding', false, 'vec4');
+    this._propertyDescriptors['itemAlignment'] = new EnumProperty('itemAlignment', 'setItemAlignment', false, Alignment, 'Alignment');
+  }
+
+  create (prism, properties) {
+    this.throwIfInvalidPrism(prism);
+
+    const element = ui.UiListViewItem.Create(prism);
+
+    Object.defineProperty(element, 'Padding', {
+      enumerable: true,
+      writable: true,
+      configurable: false,
+      value: [0, 0, 0, 0]
+    });
+
+    Object.defineProperty(element, 'ItemAlignment', {
+      enumerable: true,
+      writable: true,
+      configurable: false,
+      value: ui.Alignment.CENTER_CENTER
+    });
+
+    this.update(element, undefined, properties);
+
+    return element;
+  }
+
+  setPadding (element, oldProperties, newProperties) {
+    const padding = newProperties.padding;
+    if (padding !== undefined) {
+      element.Padding = padding;
     }
+  }
 
-    create(prism, properties) {
-        this.throwIfInvalidPrism(prism);
-
-        const element = MxsListViewItem.Create(prism);
-
-        this.update(element, undefined, properties);
-
-        return element;
+  setItemAlignment (element, oldProperties, newProperties) {
+    const itemAlignment = newProperties.itemAlignment;
+    if (itemAlignment !== undefined) {
+      element.ItemAlignment = Alignment[itemAlignment];
     }
-
-    setPadding(element, oldProperties, newProperties) {
-        const padding = newProperties.padding
-        if (padding !== undefined) {
-            element.Padding = padding;
-        }
-    }
-
-    setItemAlignment(element, oldProperties, newProperties) {
-        const itemAlignment = newProperties.itemAlignment;
-        if (itemAlignment !== undefined) {
-            element.ItemAlignment = Alignment[itemAlignment];
-        }
-    }
+  }
 }
