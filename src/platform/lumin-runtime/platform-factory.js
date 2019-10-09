@@ -250,8 +250,9 @@ export class PlatformFactory extends NativeFactory {
         } else {
             // Temporary fix for adding child node
             // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-            // parent.addChild(child);
-            setTimeout(() => parent.addChild(child), 0);
+            // setTimeout(() => parent.addChild(child), 0); -> BREAKS Adding child node to UiListViewItem
+            // Switching back to original code:
+            parent.addChild(child);
         }
     }
 
