@@ -14,7 +14,7 @@ export class ListViewItemBuilder extends UiNodeBuilder {
     constructor(){
         super();
 
-        this._propertyDescriptors['backgroundColor'] = new ArrayProperty('backgroundColor', 'setBackgroundColor', true, 'vec3');
+        this._propertyDescriptors['backgroundColor'] = new ArrayProperty('backgroundColor', 'setBackgroundColor', true, 'vec4');
 
         this._propertyDescriptors['padding'] = new ArrayProperty('padding', 'setPadding', false, 'vec4');
         this._propertyDescriptors['itemAlignment'] = new EnumProperty('itemAlignment', 'setItemAlignment', false, Alignment, 'Alignment');
