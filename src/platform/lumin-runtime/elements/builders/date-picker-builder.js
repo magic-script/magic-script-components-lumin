@@ -19,6 +19,7 @@ export class DatePickerBuilder extends UiNodeBuilder {
 
         this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
         this._propertyDescriptors['date'] = new PrimitiveTypeProperty('date', 'setDate', false, 'string');
+        this._propertyDescriptors['showHint'] = new PrimitiveTypeProperty('showHint', 'showDateFormatHint', true, 'boolean');
     }
 
     create(prism, properties) {
