@@ -4,12 +4,10 @@ import { ui } from 'lumin';
 import { TimePeriod } from './time-period.js';
 
 function createTime(hour, minute, second) {
-    const time = new ui.Time();
+    let time;
 
     try {
-        time.setHour(Number.parseInt(hour));
-        time.setMinute(Number.parseInt(minute));
-        time.setSecond(Number.parseInt(second));
+        time = new ui.Time(Number.parseInt(hour), Number.parseInt(minute), Number.parseInt(second));
     } catch (error) {
         throw new TypeError(`Cannot convert time string to Time, error: ${error.message}`);
     }
@@ -21,8 +19,8 @@ export const TimeFormat = ['hh:mm:ss p', 'hh:mm p', 'hh:ss p', 'hh:mm:ss', 'hh:m
 export const TimeFormatConverter = {
     'hh:mm:ss p': {
         toTime(stringTime) {
-            const { time, period } = stringTime.split(' ');
-            let { hour, minute, second } = time.split(':');
+            const [ time, period ] = stringTime.split(' ');
+            let [ hour, minute, second ] = time.split(':');
 
             if (period === TimePeriod.pm) {
                 hour = hour + 12;
@@ -36,8 +34,8 @@ export const TimeFormatConverter = {
     },
     'hh:mm p': {
         toTime(stringTime) {
-            const { time, period } = stringTime.split(' ');
-            let { hour, minute } = time.split(':');
+            const [ time, period ] = stringTime.split(' ');
+            let [ hour, minute ] = time.split(':');
 
             if (period === TimePeriod.pm) {
                 hour = hour + 12;
@@ -51,8 +49,8 @@ export const TimeFormatConverter = {
     },
     'hh:ss p': {
         toTime(stringTime) {
-            const { time, period } = stringTime.split(' ');
-            let { hour, second } = time.split(':');
+            const [ time, period ] = stringTime.split(' ');
+            let [ hour, second ] = time.split(':');
 
             if (period === TimePeriod.pm) {
                 hour = hour + 12;
@@ -66,7 +64,7 @@ export const TimeFormatConverter = {
     },
     'hh:mm:ss': {
         toTime(stringTime) {
-            const { hour, minute, second } = stringTime.split(':');
+            const [ hour, minute, second ] = stringTime.split(':');
             return createTime(hour, minute, second);
         },
         toString(time) {
@@ -75,7 +73,7 @@ export const TimeFormatConverter = {
     },
     'hh:mm': {
         toTime(stringTime) {
-            const { hour, minute } = stringTime.split(':');
+            const [ hour, minute ] = stringTime.split(':');
             return createTime(hour, minute, 0);
         },
         toString(time) {
@@ -84,7 +82,7 @@ export const TimeFormatConverter = {
     },
     'hh:ss': {
         toTime(stringTime) {
-            const { hour, second } = stringTime.split(':');
+            const [ hour, second ] = stringTime.split(':');
             return createTime(hour, 0, second);
         },
         toString(time) {
@@ -93,7 +91,7 @@ export const TimeFormatConverter = {
     },
     'mm:ss': {
         toTime(stringTime) {
-            const { minute, second } = stringTime.split(':');
+            const [ minute, second ] = stringTime.split(':');
             return createTime(0, minute, second);
         },
         toString(time) {
