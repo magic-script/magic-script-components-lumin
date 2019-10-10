@@ -227,9 +227,11 @@ export class PlatformFactory extends NativeFactory {
       }
     } else if (parent instanceof ui.UiPanel) {
       if (child instanceof ui.UiPanel) {
-        if (child.Side !== undefined) {
-          parent.setEdgeTransition(child.Side, child);
+        if (child.side !== undefined) {
+          parent.setEdgeTransition(child.side, child);
         }
+      } else {
+        parent.addChild(child);
       }
     } else if (parent instanceof ui.UiPortalIcon) {
       if (child instanceof ModelNode) {
