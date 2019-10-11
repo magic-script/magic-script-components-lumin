@@ -135,10 +135,12 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
     }
 
+    const prism = this._app.getPrism(args[0].getPrismId());
+
     if (this._mapping.elements[name] !== undefined) {
-      this.elementBuilders[name].update(...args);
+      this.elementBuilders[name].update(...args, prism);
     } else if (this._mapping.controllers[name] !== undefined) {
-      this.controllerBuilders[name].update(...args);
+      this.controllerBuilders[name].update(...args, prism);
     } else {
       throw new Error(`Unknown tag: ${name}`);
     }
