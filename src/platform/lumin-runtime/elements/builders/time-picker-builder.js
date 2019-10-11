@@ -19,6 +19,7 @@ export class TimePickerBuilder extends UiNodeBuilder {
 
         this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
         this._propertyDescriptors['time'] = new PrimitiveTypeProperty('time', 'setTime', false, 'string');
+        this._propertyDescriptors['showHint'] = new PrimitiveTypeProperty('showHint', 'showTimeFormatHint', true, 'boolean');
     }
 
     create(prism, properties) {
