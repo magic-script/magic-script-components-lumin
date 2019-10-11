@@ -107,11 +107,12 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   _setFilePath (element, oldProperties, newProperties, prism) {
-    const filePath = newProperties.filePath;
-    const oldResourceId = element.getRenderResource();
-    const newResourceId = prism.createTextureResourceId(Desc2d.DEFAULT, filePath);
+    if (oldProperties.filePath !== newProperties.filePath) {
+        const oldResourceId = element.getRenderResource();
+        const newResourceId = prism.createTextureResourceId(Desc2d.DEFAULT, newProperties.filePath);
 
-    element.setRenderResource(newResourceId);
-    prism.destroyResource(oldResourceId);
+        element.setRenderResource(newResourceId);
+        prism.destroyResource(oldResourceId);
+    }
   }
 }
