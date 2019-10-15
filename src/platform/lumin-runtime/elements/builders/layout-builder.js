@@ -25,7 +25,7 @@ export class LayoutBuilder extends UiNodeBuilder {
     }
 
     _setSize(element, properties) {
-        const { height, width } = properties;
+        let { height, width } = properties;
 
         if (width || height) {
             if (width === undefined) {
@@ -36,7 +36,7 @@ export class LayoutBuilder extends UiNodeBuilder {
                 height = element.getSize()[1];
             }
 
-            element.setSize([height, width]);
+            element.setSize([width, height]);
         }
     }
 }
