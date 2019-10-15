@@ -45,7 +45,7 @@ export class ScrollViewBuilder extends UiNodeBuilder {
     }
 
     setScrollBounds(element, oldProperties, newProperties) {
-        const { min, max } = newProperties;
+        const { min, max } = newProperties.scrollBounds;
 
         if ( min !== undefined && max !== undefined ) {
             element.setScrollBounds(new math.AABB(min, max));
