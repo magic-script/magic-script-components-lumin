@@ -107,12 +107,20 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   _setFilePath (element, oldProperties, newProperties, prism) {
-    if (oldProperties.filePath !== newProperties.filePath) {
-        const oldResourceId = element.getRenderResource();
-        const newResourceId = prism.createTextureResourceId(Desc2d.DEFAULT, newProperties.filePath);
-
-        element.setRenderResource(newResourceId);
-        prism.destroyResource(oldResourceId);
+    if (oldProperties.filePath === undefined) {
+      if (newProperties.filePath !== undefined) {
+        element.setRenderResource(prism.createTextureResourceId(Desc2d.DEFAULT, newProperties.filePath));
+      }
+    } else {
+      if (newProperties.filePath !== undefined) {
+        if (oldProperties.filePath !== newProperties.filePath) {
+          const oldResourceId = element.getRenderResource();
+          element.setRenderResource(prism.createTextureResourceId(Desc2d.DEFAULT, filePath));
+          prism.destroyResource(oldResourceId);
+        }
+      } else {
+        prism.destroyResource(element.getRenderResource());
+      }
     }
   }
 }
