@@ -218,6 +218,7 @@ export class PlatformFactory extends NativeFactory {
     } else if (parent instanceof ui.UiDialog) {
       if (child instanceof TransformNode) {
         parent.setDialogContent(child);
+        parent.init();
       }
     } else if (parent instanceof ui.UiToggle) {
       if (child instanceof TransformNode) {
