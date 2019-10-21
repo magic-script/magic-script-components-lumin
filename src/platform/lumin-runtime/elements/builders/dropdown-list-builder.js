@@ -39,7 +39,7 @@ export class DropdownListBuilder extends UiNodeBuilder {
     this._propertyDescriptors['listMaxHeight'] = new PrimitiveTypeProperty('listMaxHeight', 'setListMaxHeight', true, 'number');
     this._propertyDescriptors['listTextSize'] = new PrimitiveTypeProperty('listTextSize', 'setListTextSize', true, 'number');
     this._propertyDescriptors['maxCharacterLimit'] = new PrimitiveTypeProperty('maxCharacterLimit', 'setMaxCharacterLimit', true, 'number');
-    this._propertyDescriptors['multiSelect'] = new PrimitiveTypeProperty('multiSelect', 'setMultiSelect', true, 'boolean');
+    this._propertyDescriptors['multiSelect'] = new PrimitiveTypeProperty('multiSelect', 'setMultiSelectMode', true, 'boolean');
     this._propertyDescriptors['showList'] = new PrimitiveTypeProperty('showList', 'showList', true, 'boolean');
 
     // Selected
