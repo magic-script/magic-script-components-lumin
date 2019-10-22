@@ -40,7 +40,7 @@ export class DropdownListBuilder extends UiNodeBuilder {
     this._propertyDescriptors['listTextSize'] = new PrimitiveTypeProperty('listTextSize', 'setListTextSize', true, 'number');
     this._propertyDescriptors['maxCharacterLimit'] = new PrimitiveTypeProperty('maxCharacterLimit', 'setMaxCharacterLimit', true, 'number');
     this._propertyDescriptors['multiSelect'] = new PrimitiveTypeProperty('multiSelect', 'setMultiSelectMode', true, 'boolean');
-    this._propertyDescriptors['showList'] = new PrimitiveTypeProperty('showList', 'showList', true, 'boolean');
+    this._propertyDescriptors['showList'] = new PrimitiveTypeProperty('showList', 'setShowList', false, 'boolean');
 
     // Selected
     const selectedProperties = [
@@ -58,6 +58,14 @@ export class DropdownListBuilder extends UiNodeBuilder {
 
     const element = ui.UiDropDownList.Create(prism, properties.text);
 
+    // UiDropDownList.showList(boolean) needs to be executed after setting up the list.
+    Object.defineProperty(element, 'showListItems', {
+      enumerable: true,
+      writable: true,
+      configurable: false,
+      value: false
+    });
+
     this.update(element, undefined, properties);
 
     return element;
@@ -69,6 +77,11 @@ export class DropdownListBuilder extends UiNodeBuilder {
     if (id !== undefined && selected !== undefined) {
       element.setSelected(id, selected);
     }
+  }
+
+  setShowList (element, oldProperties, newProperties) {
+    element.showListItems = newProperties.showList;
+    element.showList(element.showListItems);
   }
 
   validate(element, oldProperties, newProperties) {

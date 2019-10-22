@@ -135,7 +135,9 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
     }
 
-    const prism = this._app.getPrism(args[0].getPrismId());
+    const prism = typeof args[0].getPrismId === 'function'
+      ? this._app.getPrism(args[0].getPrismId())
+      : undefined;
 
     if (this._mapping.elements[name] !== undefined) {
       this.elementBuilders[name].update(...args, prism);
@@ -209,9 +211,12 @@ export class PlatformFactory extends NativeFactory {
         }
       }
       if (child instanceof ui.DropDownListItem) {
-        const list = parent.getList();
+        const list = [...parent.getList()];
         list.push(child);
         parent.setList(list);
+        if (parent.showListItems) {
+          parent.showList(parent.showListItems);
+        }
       }
       // ListFont: Font2dResource(fontDesc, fontFile, a_absolutePath)
       // fontDesc = Font2dDesc(advanceDir, flowDir, tileSize, quality, minAlpha)
