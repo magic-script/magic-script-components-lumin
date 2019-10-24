@@ -93,7 +93,7 @@ export class PageViewBuilder extends UiNodeBuilder {
         height = element.getSize()[1];
       }
 
-      element.setSize([height, width]);
+      element.setSize([width, height]);
     }
   }
 }
