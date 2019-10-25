@@ -29,7 +29,7 @@ export class VideoBuilder extends QuadBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        let { width, height, volume, viewMode, videoPath } = properties;
+        let { width, height, volume, viewMode, videoPath, videoUri } = properties;
 
         width  = width  === undefined ? DEFAULT_FRAME_WIDTH  : width;
         height = height === undefined ? DEFAULT_FRAME_HEIGHT : height;

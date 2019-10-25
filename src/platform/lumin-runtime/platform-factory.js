@@ -31,7 +31,7 @@ export class PlatformFactory extends NativeFactory {
       .map(key => ({ name: key, handler: properties[key] }));
 
     for (const pair of eventHandlers) {
-      const eventDescriptor = UiNodeEvents[pair.name];
+      let eventDescriptor = UiNodeEvents[pair.name];
 
       if (eventDescriptor !== undefined) {
         if (typeof pair.handler === 'function') {
