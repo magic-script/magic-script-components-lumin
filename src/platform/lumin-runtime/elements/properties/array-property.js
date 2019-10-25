@@ -10,6 +10,10 @@ export class ArrayProperty extends PropertyDescriptor {
     }
 
     validate(value) {
+        if (!super.validate(value)) {
+            return false;
+        }
+
         this.throwIfNotArray(value, this._arrayType);
         return true;
     }

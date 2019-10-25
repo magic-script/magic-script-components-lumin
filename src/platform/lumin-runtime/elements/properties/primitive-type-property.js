@@ -10,6 +10,10 @@ export class PrimitiveTypeProperty extends PropertyDescriptor {
     }
 
     validate(value) {
+        if (!super.validate(value)) {
+            return false;
+        }
+
         this.throwIfNotTypeOf(value, this._typeName);
         return true;
     }

@@ -10,6 +10,10 @@ export class ClassProperty extends PropertyDescriptor {
     }
 
     validate(value) {
+        if (!super.validate(value)) {
+            return false;
+        }
+
         for (const property of this._properties) {
             property.validate( value[property.Name] );
         }
