@@ -25,7 +25,7 @@ export class PlatformFactory extends NativeFactory {
     return element instanceof MxsPrismController;
   }
 
-  setComponentEvents (element, properties) {
+  setComponentEvents (element, properties, controller) {
     const eventHandlers = Object.keys(properties)
       .filter(key => key.length > 2 && key.startsWith('on'))
       .map(key => ({ name: key, handler: properties[key] }));
@@ -126,7 +126,7 @@ export class PlatformFactory extends NativeFactory {
     const element = this.elementBuilders[name].create(prism, ...args);
 
     // TODO: Move setComponentEvents to the builders !!!
-    this.setComponentEvents(element, args[0]); // args = [props]
+    this.setComponentEvents(element, args[0], container.controller); // args = [props]
 
     return element;
   }

@@ -40,7 +40,12 @@ export class VideoBuilder extends QuadBuilder {
             : ViewMode[viewMode];
 
         const element = prism.createVideoNode(width, height);
-        const statusCode = element.setVideoPath(videoPath);
+
+        if (videoPath !== undefined) {
+            element.setVideoPath(videoPath);
+        } else {
+            element.setVideoUri(videoUri);
+        }
 
         element.setViewMode(viewMode);
         element.setVolume(volume);
@@ -69,7 +74,7 @@ export class VideoBuilder extends QuadBuilder {
         const action = newProperties.action;
 
         if (action === undefined) {
-            return
+            return;
         }
 
         if (VideoAction[action] === VideoAction.start) {
