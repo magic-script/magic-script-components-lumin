@@ -39,7 +39,7 @@ export class PropertyDescriptor {
     }
 
     validate(value) {
-        return this.hasValue(value);
+        throw new Error('PropertyDescriptor.validate should be overridden');
     }
 
     hasValue(value) {

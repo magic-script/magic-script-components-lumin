@@ -57,12 +57,12 @@ export class ElementBuilder {
     }
 
     _validateProperty(value, descriptor) {
-        if ( !descriptor.validate(value)) {
+        if ( descriptor.validate(value) ) {
+            return true;
+        } else {
             console.log(`Property ${descriptor.Name} does not have a valid value: ${value}`);
             return false;
         }
-
-        return true;
     }
 
     throwIfNotInstanceOf(element, ...expectedTypes) {

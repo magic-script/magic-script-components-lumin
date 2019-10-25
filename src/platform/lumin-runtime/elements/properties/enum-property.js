@@ -15,10 +15,6 @@ export class EnumProperty extends PropertyDescriptor {
     }
 
     validate(value) {
-        if (!super.validate(value)) {
-            return false;
-        }
-
         const message = `The provided value ${value} is not valid ${this._enumName} value`;
         this.throwIfConditionFails(value, message, this._enumType[value] !== undefined);
         return true;

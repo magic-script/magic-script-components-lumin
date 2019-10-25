@@ -8,14 +8,10 @@ export class TextChildrenProperty extends PropertyDescriptor {
     }
 
     validate(value) {
-        if (!super.validate(value)) {
-            return false;
-        }
-
         this.throwIfNotText(value);
         return true;
     }
-
+    
     throwIfNotText(children) {
         TextChildrenProperty.throwIfNotText(children);
     }
@@ -30,7 +26,7 @@ export class TextChildrenProperty extends PropertyDescriptor {
 
             return valid;
         }
-
+       
         if (this.hasValue(children) && !validateItem(children) ) {
             throw new TypeError('Children elements should be of type string or number ');
         }

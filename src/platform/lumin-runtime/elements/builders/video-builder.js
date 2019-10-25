@@ -56,26 +56,18 @@ export class VideoBuilder extends QuadBuilder {
         return element;
     }
 
-    setValue (element, oldProperties, newProperties, property, setter) {
-      const newValue = newProperties[property];
-
-      if (newValue === undefined) {
-        return;
+    setValue(element, oldValue, newValue, setter) {
+      if (newValue !== undefined && newValue !== oldValue ) {
+        element[setter](newValue);
       }
-
-      if (oldProperties !== undefined && oldProperties[property] === newValue) {
-        return;
-      }
-
-      element[setter](newValue);
     }
 
     setVideoPath (element, oldProperties, newProperties) {
-      this.setValue(element, oldProperties, newProperties, 'videoPath', 'setVideoPath');
+        this.setValue(element, oldProperties.videoPath, newProperties.videoPath, 'setVideoPath');
     }
 
     setVideoUri (element, oldProperties, newProperties) {
-      this.setValue(element, oldProperties, newProperties, 'videoUri', 'setVideoUri');
+      this.setValue(element, oldProperties.videoUri, newProperties.videoUri, 'setVideoUri');
     }
 
     setAction(element, oldProperties, newProperties) {
