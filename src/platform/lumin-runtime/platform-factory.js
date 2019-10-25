@@ -7,6 +7,7 @@ import { MxsLandscapeApp } from './mxs-landscape-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
 
 import { UiNodeEvents } from './types/ui-node-events.js';
+import { ControllerEvents } from './types/controller-events.js';
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
@@ -41,7 +42,16 @@ export class PlatformFactory extends NativeFactory {
           throw new TypeError(`The event handler for ${pair.name} is not a function`);
         }
       } else {
-        throw new TypeError(`Event ${pair.name} is not recognized event`);
+        eventDescriptor = ControllerEvents[pair.name];
+        if (eventDescriptor !== undefined) {
+          if (typeof pair.handler === 'function') {
+            controller.addListener(element.getNodeId(), eventDescriptor.subName, pair.handler);
+          } else {
+            throw new TypeError(`The event handler for ${pair.name} is not a function`);
+          }
+        } else {
+          throw new TypeError(`Event ${pair.name} is not recognized event`);
+        }
       }
     }
   }

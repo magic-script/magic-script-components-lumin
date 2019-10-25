@@ -17,10 +17,10 @@ export class VideoBuilder extends QuadBuilder {
     constructor(){
         super();
 
-        this._propertyDescriptors['looping'] = new PrimitiveTypeProperty('looping', 'setLooping', false, 'boolean');
+        this._propertyDescriptors['looping'] = new PrimitiveTypeProperty('looping', 'setLooping', true, 'boolean');
         this._propertyDescriptors['timedTextPath'] = new PrimitiveTypeProperty('timedTextPath', 'setTimedTextPath', true, 'string');
-        this._propertyDescriptors['videoPath'] = new PrimitiveTypeProperty('videoPath', 'setVideoPath', true, 'string');
-        this._propertyDescriptors['videoUri'] = new PrimitiveTypeProperty('videoUri', 'setVideoUri', true, 'string');
+        this._propertyDescriptors['videoPath'] = new PrimitiveTypeProperty('videoPath', 'setVideoPath', false, 'string');
+        this._propertyDescriptors['videoUri'] = new PrimitiveTypeProperty('videoUri', 'setVideoUri', false, 'string');
         this._propertyDescriptors['volume'] = new PrimitiveTypeProperty('volume', 'setVolume', true, 'number');
         this._propertyDescriptors['seekTo'] = new PrimitiveTypeProperty('seekTo', 'seekTo', true, 'number');
         this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, VideoAction, 'VideoAction');
@@ -51,17 +51,18 @@ export class VideoBuilder extends QuadBuilder {
         return element;
     }
 
-    update(element, oldProperties, newProperties) {
-        super.update(element, oldProperties, newProperties);
-
-        this.setLooping(element, oldProperties, newProperties)
+    setValue(element, oldValue, newValue, setter) {
+      if (newValue !== undefined && newValue !== oldValue ) {
+        element[setter](newValue);
+      }
     }
 
-    setLooping(element, oldProperties, newProperties) {
-        const looping = newProperties.looping;
-        if ( looping !== undefined ) {
-            element.setLooping(looping ? 1 : 0);
-        }
+    setVideoPath (element, oldProperties, newProperties) {
+        this.setValue(element, oldProperties.videoPath, newProperties.videoPath, 'setVideoPath');
+    }
+
+    setVideoUri (element, oldProperties, newProperties) {
+      this.setValue(element, oldProperties.videoUri, newProperties.videoUri, 'setVideoUri');
     }
 
     setAction(element, oldProperties, newProperties) {
