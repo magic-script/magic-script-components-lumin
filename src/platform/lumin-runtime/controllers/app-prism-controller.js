@@ -23,7 +23,7 @@ export class AppPrismController extends PrismController {
 
       this._eventHandlers = {
         onEvent: [],
-        onUpdateLoop: []
+        onUpdate: []
       };
 
       this._eventTypes = [
@@ -120,7 +120,7 @@ export class AppPrismController extends PrismController {
     }
 
     onUpdate (delta) {
-      this._eventHandlers.onUpdateLoop
+      this._eventHandlers.onUpdate
         .forEach(subscriber => subscriber.handler(delta));
     }
 
