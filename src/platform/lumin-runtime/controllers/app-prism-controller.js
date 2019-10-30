@@ -106,17 +106,23 @@ export class AppPrismController extends PrismController {
 
     onEvent (event) {
       const eventData = this._getEventDataByEventType(event);
+      let eventIsConsumed = false;
 
-      this._eventHandlers.onEvent.forEach(subscriber => {
+      for (let subscriber of this._eventHandlers.onEvent) {
+        if (eventIsConsumed === true) {
+          break;
+        }
+
         if (typeof event.getAffectedNodeId === 'function') {
           if (subscriber.id === event.getAffectedNodeId()) {
-            subscriber.handler(eventData);
+            eventIsConsumed = subscriber.handler(eventData);
           }
         } else {
-          subscriber.handler(eventData);
+          eventIsConsumed = subscriber.handler(eventData);
         }
-      });
-      return false;
+      }
+
+      return eventIsConsumed;
     }
 
     onUpdate (delta) {
