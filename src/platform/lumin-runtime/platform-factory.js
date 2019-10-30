@@ -45,7 +45,7 @@ export class PlatformFactory extends NativeFactory {
         eventDescriptor = ControllerEvents[pair.name];
         if (eventDescriptor !== undefined) {
           if (typeof pair.handler === 'function') {
-            controller.addListener(element.getNodeId(), eventDescriptor.subName, pair.handler);
+            controller.addListener(element.getNodeId(), eventDescriptor.eventName, pair.handler);
           } else {
             throw new TypeError(`The event handler for ${pair.name} is not a function`);
           }

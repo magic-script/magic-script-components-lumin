@@ -1,4 +1,4 @@
 export const ControllerEvents = {
-  'onEvent': { subName: 'onEvent' },
-  'onUpdateLoop': { subName: 'onUpdate' }
+  'onEvent': { eventName: 'onEvent' },
+  'onUpdateLoop': { eventName: 'onUpdate' }
 };

@@ -83,24 +83,24 @@ export class AppPrismController extends PrismController {
         this.deleteSceneGraph();
     }
 
-    addListener (nodeId, eventName, eventHandler) {
-      const handlers = this._eventHandlers[eventName];
+    addListener (nodeId, event, eventHandlerCallback) {
+      const handlers = this._eventHandlers[event];
       if (handlers !== undefined) {
-        handlers.push({ id: nodeId, handler: eventHandler });
+        handlers.push({ id: nodeId, handler: eventHandlerCallback });
       } else {
-        throw TypeError(`Event ${eventName} is not supported by the controller`);
+        throw TypeError(`Event ${event} is not supported by the controller`);
       }
     }
 
-    removeListener (nodeId, eventName, eventHandler) {
-      const handlers = this._eventHandlers[eventName];
+    removeListener (nodeId, event, eventHandlerCallback) {
+      const handlers = this._eventHandlers[event];
       if (handlers !== undefined) {
-        const index = handlers.findIndex(subscriber => subscriber.id === nodeId && subscriber.handler === eventHandler);
+        const index = handlers.findIndex(subscriber => subscriber.id === nodeId && subscriber.handler === eventHandlerCallback);
         if (index !== -1) {
           handlers.splice(index, 1);
         }
       } else {
-        throw TypeError(`Event ${eventName} is not supported by the controller`);
+        throw TypeError(`Event ${event} is not supported by the controller`);
       }
     }
 
