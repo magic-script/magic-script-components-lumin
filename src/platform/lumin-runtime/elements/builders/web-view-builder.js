@@ -8,74 +8,67 @@ import { WebViewAction } from '../../types/web-view-action.js';
 import { ArrayProperty } from '../properties/array-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
+import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
 export class WebViewBuilder extends UiNodeBuilder {
-    constructor(){
-        super();
+  constructor () {
+    super();
 
-        this._propertyDescriptors['url'] = new PrimitiveTypeProperty('url', 'loadUrl', true, 'string');
-        this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, WebViewAction, 'WebViewAction');
-        this._propertyDescriptors['scrollBy'] = new ArrayProperty('scrollBy', 'scrollBy', false, 'vec2');
+    this._propertyDescriptors['url'] = new PrimitiveTypeProperty('url', 'loadUrl', true, 'string');
+    this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, WebViewAction, 'WebViewAction');
+    this._propertyDescriptors['scrollBy'] = new ArrayProperty('scrollBy', 'scrollBy', false, 'vec2');
+  }
+
+  create (prism, properties) {
+    this.throwIfInvalidPrism(prism);
+
+    this.validate(undefined, undefined, properties);
+
+    const { width, height } = properties;
+
+    const element = ui.UiWebView.Create(prism, [width, height]);
+
+    const unapplied = this.excludeProperties(properties, ['width', 'height']);
+
+    this.apply(element, undefined, unapplied);
+
+    return element;
+  }
+
+  validate (element, oldProperties, newProperties) {
+    super.validate(element, oldProperties, newProperties);
+
+    PropertyDescriptor.throwIfNotTypeOf(newProperties.width, 'number');
+    PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
+  }
+
+  setAction (element, oldProperties, newProperties) {
+    const action = newProperties.action;
+
+    if (action === undefined) {
+      return;
     }
 
-    create(prism, properties) {
-        this.throwIfInvalidPrism(prism);
-
-        this.validate(undefined, undefined, properties);
-
-        const { width, height } = properties;
-
-        const element = ui.UiWebView.Create(prism, [width, height]);
-
-        const unapplied = this.excludeProperties(properties, ['width, height']);
-
-        this.apply(element, undefined, unapplied);
-
-        return element;
+    if (WebViewAction[action] === WebViewAction.back) {
+      element.goBack();
+    } else if (WebViewAction[action] === WebViewAction.forward) {
+      element.goForward();
+    } else if (WebViewAction[action] === WebViewAction.reload) {
+      element.reload();
     }
+  }
 
-    validate(element, oldProperties, newProperties) {
-        super.validate(element, oldProperties, newProperties);
+  scrollBy (element, oldProperties, newProperties) {
+    const distances = newProperties.scrollBy;
 
-        _validateProperty(newProperties.width, 'number', 'Property width is required.');
-        _validateProperty(newProperties.height, 'number', 'Property height is required.');
+    if (Array.isArray(distances)) {
+      if (distances.every(distance => typeof distance === 'number')) {
+        element.scrollBy(distances[0], distances[1]);
+      } else {
+        throw new TypeError('WebView scrollBy property should be an array of numbers: [xPixels, yPixels]');
+      }
+    } else {
+      throw new TypeError('WebView scrollBy property should be an array: [xPixels, yPixels]');
     }
-
-    _validateProperty(value, type, errorMessage) {
-        if (PropertyDescriptor.hasValue(value)) {
-            PropertyDescriptor.throwIfNotTypeOf(value, type);
-        } else {
-            throw new TypeError(errorMessage);
-        }
-    }
-
-    setAction(element, oldProperties, newProperties) {
-        const action = newProperties.action;
-
-        if (action === undefined) {
-            return;
-        }
-
-        if (WebViewAction[action] === WebViewAction.back) {
-            element.goBack();
-        } else if (WebViewAction[action] === WebViewAction.forward) {
-            element.goForward();
-        } else if (WebViewAction[action] === WebViewAction.reload) {
-            element.reload();
-        }
-    }
-
-    scrollBy(element, oldProperties, newProperties) {
-        const distances = newProperties.scrollBy;
-
-        if (Array.isArray(distances)) {
-            if (distances.every( distance => typeof distance === 'number')) {
-                element.scrollBy(distances[0], distances[1]);
-            } else {
-                throw new TypeError('WebView scrollBy property should be an array of numbers: [xPixels, yPixels]');
-            }
-        } else {
-            throw new TypeError('WebView scrollBy property should be an array: [xPixels, yPixels]');
-        }
-    }
+  }
 }
