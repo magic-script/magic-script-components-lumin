@@ -17,10 +17,10 @@ export class VideoBuilder extends QuadBuilder {
     constructor(){
         super();
 
-        this._propertyDescriptors['looping'] = new PrimitiveTypeProperty('looping', 'setLooping', false, 'boolean');
+        this._propertyDescriptors['looping'] = new PrimitiveTypeProperty('looping', 'setLooping', true, 'boolean');
         this._propertyDescriptors['timedTextPath'] = new PrimitiveTypeProperty('timedTextPath', 'setTimedTextPath', true, 'string');
-        this._propertyDescriptors['videoPath'] = new PrimitiveTypeProperty('videoPath', 'setVideoPath', true, 'string');
-        this._propertyDescriptors['videoUri'] = new PrimitiveTypeProperty('videoUri', 'setVideoUri', true, 'string');
+        this._propertyDescriptors['videoPath'] = new PrimitiveTypeProperty('videoPath', 'setVideoPath', false, 'string');
+        this._propertyDescriptors['videoUri'] = new PrimitiveTypeProperty('videoUri', 'setVideoUri', false, 'string');
         this._propertyDescriptors['volume'] = new PrimitiveTypeProperty('volume', 'setVolume', true, 'number');
         this._propertyDescriptors['seekTo'] = new PrimitiveTypeProperty('seekTo', 'seekTo', true, 'number');
         this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, VideoAction, 'VideoAction');
@@ -29,7 +29,7 @@ export class VideoBuilder extends QuadBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        let { width, height, volume, viewMode, videoPath } = properties;
+        let { width, height, volume, viewMode, videoPath, videoUri } = properties;
 
         width  = width  === undefined ? DEFAULT_FRAME_WIDTH  : width;
         height = height === undefined ? DEFAULT_FRAME_HEIGHT : height;
@@ -40,7 +40,12 @@ export class VideoBuilder extends QuadBuilder {
             : ViewMode[viewMode];
 
         const element = prism.createVideoNode(width, height);
-        const statusCode = element.setVideoPath(videoPath);
+
+        if (videoPath !== undefined) {
+            element.setVideoPath(videoPath);
+        } else {
+            element.setVideoUri(videoUri);
+        }
 
         element.setViewMode(viewMode);
         element.setVolume(volume);
@@ -51,24 +56,33 @@ export class VideoBuilder extends QuadBuilder {
         return element;
     }
 
-    update(element, oldProperties, newProperties) {
-        super.update(element, oldProperties, newProperties);
+    setValue (element, oldProperties, newProperties, property, setter) {
+      const newValue = newProperties[property];
 
-        this.setLooping(element, oldProperties, newProperties)
+      if (newValue === undefined) {
+        return;
+      }
+
+      if (oldProperties !== undefined && oldProperties[property] === newValue) {
+        return;
+      }
+
+      element[setter](newValue);
     }
 
-    setLooping(element, oldProperties, newProperties) {
-        const looping = newProperties.looping;
-        if ( looping !== undefined ) {
-            element.setLooping(looping ? 1 : 0);
-        }
+    setVideoPath (element, oldProperties, newProperties) {
+      this.setValue(element, oldProperties, newProperties, 'videoPath', 'setVideoPath');
+    }
+
+    setVideoUri (element, oldProperties, newProperties) {
+      this.setValue(element, oldProperties, newProperties, 'videoUri', 'setVideoUri');
     }
 
     setAction(element, oldProperties, newProperties) {
         const action = newProperties.action;
 
         if (action === undefined) {
-            return
+            return;
         }
 
         if (VideoAction[action] === VideoAction.start) {

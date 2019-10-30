@@ -7,6 +7,7 @@ import { MxsLandscapeApp } from './mxs-landscape-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
 
 import { UiNodeEvents } from './types/ui-node-events.js';
+import { ControllerEvents } from './types/controller-events.js';
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
@@ -24,13 +25,13 @@ export class PlatformFactory extends NativeFactory {
     return element instanceof MxsPrismController;
   }
 
-  setComponentEvents (element, properties) {
+  setComponentEvents (element, properties, controller) {
     const eventHandlers = Object.keys(properties)
       .filter(key => key.length > 2 && key.startsWith('on'))
       .map(key => ({ name: key, handler: properties[key] }));
 
     for (const pair of eventHandlers) {
-      const eventDescriptor = UiNodeEvents[pair.name];
+      let eventDescriptor = UiNodeEvents[pair.name];
 
       if (eventDescriptor !== undefined) {
         if (typeof pair.handler === 'function') {
@@ -41,7 +42,16 @@ export class PlatformFactory extends NativeFactory {
           throw new TypeError(`The event handler for ${pair.name} is not a function`);
         }
       } else {
-        throw new TypeError(`Event ${pair.name} is not recognized event`);
+        eventDescriptor = ControllerEvents[pair.name];
+        if (eventDescriptor !== undefined) {
+          if (typeof pair.handler === 'function') {
+            controller.addListener(element.getNodeId(), eventDescriptor.eventName, pair.handler);
+          } else {
+            throw new TypeError(`The event handler for ${pair.name} is not a function`);
+          }
+        } else {
+          throw new TypeError(`Event ${pair.name} is not recognized event`);
+        }
       }
     }
   }
@@ -116,7 +126,7 @@ export class PlatformFactory extends NativeFactory {
     const element = this.elementBuilders[name].create(prism, ...args);
 
     // TODO: Move setComponentEvents to the builders !!!
-    this.setComponentEvents(element, args[0]); // args = [props]
+    this.setComponentEvents(element, args[0], container.controller); // args = [props]
 
     return element;
   }
