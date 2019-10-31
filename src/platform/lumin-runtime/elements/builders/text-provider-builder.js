@@ -2,37 +2,40 @@
 
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { ChildrenProperty } from '../properties/children-property.js';
 import { TextChildrenProperty } from '../properties/text-children-property.js';
 
 export class TextProviderBuilder extends UiNodeBuilder {
-    constructor(){
-        super();
+  constructor () {
+    super();
 
-        this._propertyDescriptors['children'] = new TextChildrenProperty('children', 'setText', false);
-        this._propertyDescriptors['text'] = new PrimitiveTypeProperty('text', 'setText', false, 'string');
+    this._propertyDescriptors['children'] = new ChildrenProperty('children', 'setChildrenAsText', false);
+    this._propertyDescriptors['text'] = new PrimitiveTypeProperty('text', 'setText', true, 'string');
+  }
+
+  setChildrenAsText (element, oldProperties, newProperties) {
+    // Property 'text' has priority over 'children' property
+    if (newProperties.text !== undefined) {
+      return;
     }
 
-    setText(element, oldProperties, newProperties) {
-        let text = newProperties.text;
+    const children = newProperties.children;
+    if (TextChildrenProperty.isValid(children)) {
+      element.setText(this._getText(children));
+    }
+  }
 
-        if (text === undefined) {
-            text = this._getText(newProperties.children);
-        }
+  _getText (children) {
+    let text;
 
-        element.setText(text);
+    if (Array.isArray(children)) {
+      text = children.join('');
+    } else if (typeof children === 'number') {
+      text = children.toString();
+    } else {
+      text = children;
     }
 
-    _getText(children) {
-        let text;
-
-        if (Array.isArray(children)) {
-            text = children.join('');
-        } else if (typeof children === 'number') {
-            text = children.toString();
-        } else {
-            text = children;
-        }
-
-        return text;
-    }
+    return text;
+  }
 }

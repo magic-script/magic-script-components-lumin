@@ -3,32 +3,32 @@
 import { PropertyDescriptor } from './property-descriptor.js';
 
 export class TextChildrenProperty extends PropertyDescriptor {
-    constructor(name, setterName, isNativeSetter) {
-        super(name, setterName, isNativeSetter)
-    }
+  validate (value) {
+    this.throwIfNotText(value);
+    return true;
+  }
 
-    validate(value) {
-        this.throwIfNotText(value);
-        return true;
-    }
-    
-    throwIfNotText(children) {
-        TextChildrenProperty.throwIfNotText(children);
-    }
+  throwIfNotText (children) {
+    TextChildrenProperty.throwIfNotText(children);
+  }
 
-    static throwIfNotText(children) {
-        const validateItem = (item) => {
-            let valid = true;
+  static _validateChildren (children) {
+    let valid = true;
 
-            valid &= Array.isArray(item)
-                ? item.every(item => validateItem(item))
-                : typeof item === 'string' || typeof item === 'number';
+    valid &= Array.isArray(children)
+      ? children.every(child => this._validateChildren(child))
+      : typeof children === 'string' || typeof children === 'number';
 
-            return valid;
-        }
-       
-        if (this.hasValue(children) && !validateItem(children) ) {
-            throw new TypeError('Children elements should be of type string or number ');
-        }
+    return valid;
+  }
+
+  static isValid (children) {
+    return this.hasValue(children) && this._validateChildren(children);
+  }
+
+  static throwIfNotText (children) {
+    if (this.hasValue(children) && !this._validateChildren(children)) {
+      throw new TypeError('Children elements should be of type string or number ');
     }
+  }
 }
