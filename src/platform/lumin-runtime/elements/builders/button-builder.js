@@ -34,9 +34,6 @@ export class ButtonBuilder extends TextContainerBuilder {
             const roundness = this.getPropertyValue('roundness', 1.0, properties);
 
             element = ui.UiButton.Create(prism, text, width, height, roundness);
-
-            // const enabled = this.getPropertyValue('enabled', true, properties);
-            // element.setEnabled(enabled);
         } else {
             element = ui.UiButton.CreateEclipseButton(prism, this.getEclipseButtonParams(properties));
         }
