@@ -31,12 +31,6 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   updateLoop(delta) {
-    for (let controller of this._prismControllers) {
-      if (controller.onUpdate) {
-        controller.onUpdate(delta);
-      }
-    }
-
     if ( this._app.props.updateLoop !== undefined
       && typeof this._app.props.updateLoop === 'function') {
       this._app.props.updateLoop(delta);
@@ -46,16 +40,10 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   eventListener(event) {
-    for (let controller of this._prismControllers) {
-      if (controller.onEvent) {
-        controller.onEvent(event);
-      }
-    }
-
     if ( this._app.props.eventListener !== undefined
       && typeof this._app.props.eventListener === 'function') {
       // TODO: Convert Lumin RT event data to (abstract) Mxs event data
-      this._app.props.eventListener(delta);
+      this._app.props.eventListener(event);
     }
 
     return true;
