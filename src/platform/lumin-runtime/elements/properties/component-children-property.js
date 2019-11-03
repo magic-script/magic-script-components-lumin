@@ -14,7 +14,7 @@ export class ComponentChildrenProperty extends PropertyDescriptor {
   }
 
   static _isComponent (children) {
-    return children.type.name === CONTENT_TYPE_NAME;
+    return children.type && children.type.name === CONTENT_TYPE_NAME;
   }
 
   static isValid (children) {
