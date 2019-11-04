@@ -93,4 +93,9 @@ export class VideoBuilder extends QuadBuilder {
             element.pause();
         }
     }
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n';
+    }
 }

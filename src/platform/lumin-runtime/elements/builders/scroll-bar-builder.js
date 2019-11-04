@@ -60,4 +60,9 @@ export class ScrollBarBuilder extends UiNodeBuilder {
     PropertyDescriptor.throwIfNotTypeOf(properties.height, 'number');
     PropertyDescriptor.throwIfNotTypeOf(properties.width, 'number');
   }
+
+  extraTypeScript() {
+    return  '    width?: number;\n' +
+            '    height?: number;\n';
+  }
 }

@@ -107,6 +107,13 @@ export class ButtonBuilder extends TextContainerBuilder {
 
         throw new TypeError('Cannot create button with provided parameters');
     }
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n' +
+                '    roundness?: number;\n' +
+                '    onClick?: (event: any) => void;\n';
+    }
 }
 
 
