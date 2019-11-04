@@ -1,10 +1,18 @@
 import configuration from "../configuration.js";
 
 export function generateTypeScript () {
-  let str = 'declare module "magic-script-components" {\n\n';
+  let str = `declare module "magic-script-components" {
 
-  str += '  // Components:\n'
-  str += '  // --------------------------------------------------------------------------------\n\n'
+  // Components:
+  // --------------------------------------------------------------------------------
+
+  interface AppProps {
+    type: 'landscape' | 'immersive';
+    volumeSize: vec3;
+  }
+
+`;
+
   let deps = {};
 
   const elements = configuration.nativeMapping.elements;
