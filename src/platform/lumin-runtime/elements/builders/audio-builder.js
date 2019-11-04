@@ -39,7 +39,7 @@ export class AudioBuilder extends TransformBuilder {
             new PrimitiveTypeProperty('gainMf', undefined, undefined, 'number')
         ];
 
-        this._propertyDescriptors['spatialSoundDirectSendLevels'] = new ClassProperty('spatialSpatialSoundDirectSendLevels', 'setSpatialSoundDirectSendLevels', false, spatialSoundDirectSendLevelsProperties);
+        this._propertyDescriptors['spatialSoundDirectSendLevels'] = new ClassProperty('spatialSoundDirectSendLevels', 'setSpatialSoundDirectSendLevels', false, spatialSoundDirectSendLevelsProperties);
 
         // SpatialSoundDistanceProperties
         const spatialSoundDistanceProperties = [
