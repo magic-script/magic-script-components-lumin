@@ -118,4 +118,9 @@ export class ListViewBuilder extends UiNodeBuilder {
       element.setSize([width, height]);
     }
   }
+
+  extraTypeScript() {
+    return  '    width?: number;\n' +
+            '    height?: number;\n';
+  }
 }

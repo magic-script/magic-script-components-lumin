@@ -75,4 +75,14 @@ export class ElementBuilder {
         const  value = properties[name];
         return value !== undefined ? value : defaultValue;
     }
+
+    /**
+     * Returns a string with any extra TypeScript code that should be injected
+     * into this props Interface.
+     *
+     * This should be used for any props not handled automatically via _propertyDescriptors.
+     */
+    extraTypeScript() {
+        return '';
+    }
 }

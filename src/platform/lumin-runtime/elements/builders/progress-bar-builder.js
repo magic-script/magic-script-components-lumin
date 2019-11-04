@@ -56,6 +56,11 @@ export class ProgressBarBuilder extends UiNodeBuilder {
             element.setProgressColor( beginColor, endColor );
         }
     }
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n';
+    }
 }
 
 

@@ -220,4 +220,10 @@ export class TextEditBuilder extends TextContainerBuilder {
         const text = super._getText(children);
         return text === undefined ? '' : text;
     }
+
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n';
+    }
 }

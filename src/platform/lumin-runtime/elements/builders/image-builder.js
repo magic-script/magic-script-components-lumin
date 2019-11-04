@@ -123,4 +123,9 @@ export class ImageBuilder extends UiNodeBuilder {
       }
     }
   }
+
+  extraTypeScript() {
+    return  '    width?: number;\n' +
+            '    height?: number;\n';
+  }
 }

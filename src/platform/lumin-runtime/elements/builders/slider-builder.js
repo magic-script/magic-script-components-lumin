@@ -41,4 +41,9 @@ export class SliderBuilder extends UiNodeBuilder {
         PropertyDescriptor.throwIfNotTypeOf(newProperties.width, 'number');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
     }
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n';
+    }
 }

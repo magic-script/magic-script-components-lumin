@@ -71,4 +71,9 @@ export class WebViewBuilder extends UiNodeBuilder {
       throw new TypeError('WebView scrollBy property should be an array: [xPixels, yPixels]');
     }
   }
+
+  extraTypeScript() {
+    return  '    width?: number;\n' +
+            '    height?: number;\n';
+  }
 }

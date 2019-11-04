@@ -24,6 +24,10 @@ export function generateTypeScript () {
       str += `    ${propTs}\n`;
     }
 
+    if (typeof builder.extraTypeScript === 'function') {
+      str += builder.extraTypeScript();
+    }
+
     str += '  }\n\n';
     str += `  const ${elementName}: React.FC<${elementName}Props>;\n\n`
   }

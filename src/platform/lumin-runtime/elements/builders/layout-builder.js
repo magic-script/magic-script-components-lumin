@@ -39,4 +39,10 @@ export class LayoutBuilder extends UiNodeBuilder {
             element.setSize([width, height]);
         }
     }
+
+    extraTypeScript() {
+        return  '    width?: number;\n' +
+                '    height?: number;\n';
+    }
+
 }
