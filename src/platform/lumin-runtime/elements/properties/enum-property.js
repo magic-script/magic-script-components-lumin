@@ -19,4 +19,12 @@ export class EnumProperty extends PropertyDescriptor {
         this.throwIfConditionFails(value, message, this._enumType[value] !== undefined);
         return true;
     }
+
+    tsType() {
+        return this._enumName;
+    }
+
+    tsDependentTypes() {
+        return { [this._enumName]: "'" + Object.keys(this._enumType).join("' | '") + "'"};
+    }
 }

@@ -16,4 +16,19 @@ export class ClassProperty extends PropertyDescriptor {
 
         return true;
     }
+
+    tsType() {
+        const propTs = this._properties.map(p => p.generateTypeScript());
+        return `{ ${propTs.join(' ')} }`
+    }
+
+    tsDependentTypes() {
+        let deps = {};
+        this._properties.forEach(p => {
+            if (typeof p.tsDependentTypes === 'function') {
+                deps = {...deps, ...p.tsDependentTypes()};
+            }
+        });
+        return deps;
+    }
 }

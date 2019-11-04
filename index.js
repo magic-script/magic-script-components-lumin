@@ -1,4 +1,5 @@
 import configuration from './src/configuration.js';
+import { generateTypeScript } from './src/util/gen-type-script.js';
 
 export default {
     _init() {
@@ -13,5 +14,7 @@ export default {
 
     getContainer(nodeName) {
         return this._app.getContainer(nodeName);
-    }
+    },
+
+    generateTypeScript
 }
