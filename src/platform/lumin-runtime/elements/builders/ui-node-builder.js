@@ -21,6 +21,9 @@ export class UiNodeBuilder extends TransformBuilder {
     constructor(){
         super();
 
+        this._propertyDescriptors['height'] = new PrimitiveTypeProperty('height', undefined, undefined, 'number');
+        this._propertyDescriptors['width'] = new PrimitiveTypeProperty('width', undefined, undefined, 'number');
+
         // RenderingLayer - second setter
 
         this._propertyDescriptors['alignment'] = new EnumProperty('alignment', 'setAlignment', true, Alignment, 'Alignment');
