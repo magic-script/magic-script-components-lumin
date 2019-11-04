@@ -13,4 +13,8 @@ export class PrimitiveTypeProperty extends PropertyDescriptor {
         this.throwIfNotTypeOf(value, this._typeName);
         return true;
     }
+
+    tsType() {
+        return this._typeName;;
+    }
 }

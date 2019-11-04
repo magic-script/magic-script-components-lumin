@@ -110,4 +110,16 @@ export class PropertyDescriptor {
             throw new TypeError(message);
         }
     }
+
+    tsType() {
+        return 'any';
+    }
+
+    tsDependentTypes() {
+        return {};
+    }
+
+    generateTypeScript() {
+        return `${this._name}?: ${this.tsType()};`;
+    }
 }
