@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import { ColorPickerEventData } from './event-data/color-picker-event-data.js';
 import { DatePickerEventData } from './event-data/date-picker-event-data.js';
 import { DropDownListEventData } from './event-data/drop-down-list-event-data.js';
 import { ProgressBarEventData } from './event-data/progress-bar-event-data.js';
@@ -42,7 +43,7 @@ export const UiNodeEvents = {
     // UiSlider
     'onSliderChanged': { subName: 'onSliderChangedSub', dataType: SliderEventData },
     // UiListView
-    // UiScrollBar
+    // UiScrollView
     'onScrollChanged': { subName: 'onScrollChangedSub', dataType: ScrollViewEventData },
     // UiProgressBar
     'onProgressBarChanged': { subName: 'onProgressBarChangedSub', dataType: ProgressBarEventData },
@@ -57,11 +58,12 @@ export const UiNodeEvents = {
     'onPanelEnter': { subName: 'onPanelEnterSub', dataType: UiEventData },
     'onPanelExit': { subName: 'onPanelExitSub', dataType: UiEventData },
     // UiDialog
-    // UiColorPicker
     'onCancel': { subName: 'onCancelSub', dataType: UiEventData },
     'onConfirm': { subName: 'onConfirmSub', dataType: UiEventData },
     // UiColorPicker
-    'onColorChanged': { subName: 'onColorChangedSub', dataType: UiEventData },
+    'onColorCanceled': { subName: 'onCancelSub', dataType: ColorPickerEventData },
+    'onColorChanged': { subName: 'onColorChangedSub', dataType: ColorPickerEventData },
+    'onColorConfirmed': { subName: 'onConfirmSub', dataType: ColorPickerEventData },
     // UiTimePicker
     'onTimeChanged': { subName: 'onTimeChangedSub', dataType: TimePickerEventData },
     'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: TimePickerEventData },
