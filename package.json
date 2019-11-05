@@ -8,6 +8,7 @@
     "src/platform",
     "src/react-magic-script",
     "src/configuration.js",
+    "index.d.ts",
     "index.js"
   ],
   "scripts": {
