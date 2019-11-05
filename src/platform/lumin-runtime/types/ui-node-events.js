@@ -3,6 +3,7 @@
 import { DropDownListEventData } from './event-data/drop-down-list-event-data.js';
 import { ProgressBarEventData } from './event-data/progress-bar-event-data.js';
 import { TextEditEventData } from './event-data/text-edit-event-data.js';
+import { TimePickerEventData } from './event-data/time-picker-event-data.js';
 import { ToggleEventData } from './event-data/toggle-event-data.js';
 import { ScrollViewEventData } from './event-data/scroll-view-event-data.js';
 import { SliderEventData } from './event-data/slider-event-data.js';
@@ -61,8 +62,8 @@ export const UiNodeEvents = {
     // UiColorPicker
     'onColorChanged': { subName: 'onColorChangedSub', dataType: UiEventData },
     // UiTimePicker
-    'onTimeChanged': { subName: 'onTimeChangedSub', dataType: UiEventData },
-    'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: UiEventData },
+    'onTimeChanged': { subName: 'onTimeChangedSub', dataType: TimePickerEventData },
+    'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: TimePickerEventData },
     // UiDatePicker
     'onDateChanged': { subName: 'onDateChangedSub', dataType: UiEventData },
     'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: UiEventData },
