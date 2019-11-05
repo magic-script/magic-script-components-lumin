@@ -1,8 +1,11 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import { ColorPickerEventData } from './event-data/color-picker-event-data.js';
+import { DatePickerEventData } from './event-data/date-picker-event-data.js';
 import { DropDownListEventData } from './event-data/drop-down-list-event-data.js';
 import { ProgressBarEventData } from './event-data/progress-bar-event-data.js';
 import { TextEditEventData } from './event-data/text-edit-event-data.js';
+import { TimePickerEventData } from './event-data/time-picker-event-data.js';
 import { ToggleEventData } from './event-data/toggle-event-data.js';
 import { ScrollViewEventData } from './event-data/scroll-view-event-data.js';
 import { SliderEventData } from './event-data/slider-event-data.js';
@@ -40,7 +43,7 @@ export const UiNodeEvents = {
     // UiSlider
     'onSliderChanged': { subName: 'onSliderChangedSub', dataType: SliderEventData },
     // UiListView
-    // UiScrollBar
+    // UiScrollView
     'onScrollChanged': { subName: 'onScrollChangedSub', dataType: ScrollViewEventData },
     // UiProgressBar
     'onProgressBarChanged': { subName: 'onProgressBarChangedSub', dataType: ProgressBarEventData },
@@ -55,17 +58,18 @@ export const UiNodeEvents = {
     'onPanelEnter': { subName: 'onPanelEnterSub', dataType: UiEventData },
     'onPanelExit': { subName: 'onPanelExitSub', dataType: UiEventData },
     // UiDialog
-    // UiColorPicker
     'onCancel': { subName: 'onCancelSub', dataType: UiEventData },
     'onConfirm': { subName: 'onConfirmSub', dataType: UiEventData },
     // UiColorPicker
-    'onColorChanged': { subName: 'onColorChangedSub', dataType: UiEventData },
+    'onColorCanceled': { subName: 'onCancelSub', dataType: ColorPickerEventData },
+    'onColorChanged': { subName: 'onColorChangedSub', dataType: ColorPickerEventData },
+    'onColorConfirmed': { subName: 'onConfirmSub', dataType: ColorPickerEventData },
     // UiTimePicker
-    'onTimeChanged': { subName: 'onTimeChangedSub', dataType: UiEventData },
-    'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: UiEventData },
+    'onTimeChanged': { subName: 'onTimeChangedSub', dataType: TimePickerEventData },
+    'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: TimePickerEventData },
     // UiDatePicker
-    'onDateChanged': { subName: 'onDateChangedSub', dataType: UiEventData },
-    'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: UiEventData },
+    'onDateChanged': { subName: 'onDateChangedSub', dataType: DatePickerEventData },
+    'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: DatePickerEventData },
     // UiCircleConfirmation
     'onConfirmationCanceled': { subName: 'onConfirmationCanceledSub', dataType: UiEventData },
     'onConfirmationComplete': { subName: 'onConfirmationCompleteSub', dataType: UiEventData },
