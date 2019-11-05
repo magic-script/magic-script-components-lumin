@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import { DatePickerEventData } from './event-data/date-picker-event-data.js';
 import { DropDownListEventData } from './event-data/drop-down-list-event-data.js';
 import { ProgressBarEventData } from './event-data/progress-bar-event-data.js';
 import { TextEditEventData } from './event-data/text-edit-event-data.js';
@@ -65,8 +66,8 @@ export const UiNodeEvents = {
     'onTimeChanged': { subName: 'onTimeChangedSub', dataType: TimePickerEventData },
     'onTimeConfirmed': { subName: 'onTimeConfirmedSub', dataType: TimePickerEventData },
     // UiDatePicker
-    'onDateChanged': { subName: 'onDateChangedSub', dataType: UiEventData },
-    'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: UiEventData },
+    'onDateChanged': { subName: 'onDateChangedSub', dataType: DatePickerEventData },
+    'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: DatePickerEventData },
     // UiCircleConfirmation
     'onConfirmationCanceled': { subName: 'onConfirmationCanceledSub', dataType: UiEventData },
     'onConfirmationComplete': { subName: 'onConfirmationCompleteSub', dataType: UiEventData },

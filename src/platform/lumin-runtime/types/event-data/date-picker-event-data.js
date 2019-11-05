@@ -2,17 +2,17 @@
 import { ui } from 'lumin';
 import { UiEventData } from './ui-event-data.js';
 
-export class TimePickerEventData extends UiEventData {
+export class DatePickerEventData extends UiEventData {
     constructor(nativeEvent) {
         super(nativeEvent);
 
         this._addGetProperties([
-            'Time',
-            'TimeString'
+            'Date',
+            'DateString'
         ]);
     }
 
     static isSupported(event) {
-        return (event.getUiNode() instanceof ui.UiTimePicker);
+        return (event.getUiNode() instanceof ui.UiDatePicker);
     }
 }
