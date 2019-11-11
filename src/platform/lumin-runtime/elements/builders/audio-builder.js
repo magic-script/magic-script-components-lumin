@@ -200,7 +200,7 @@ export class AudioBuilder extends TransformBuilder {
            && outerGain    !== undefined
            && outerGainHf  !== undefined ) {
 
-            const radiationProperties	= new SpatialSoundRadiationProperties();
+            const radiationProperties = new SpatialSoundRadiationProperties();
             radiationProperties.innerAngle  = innerAngle;
             radiationProperties.outerAngle  = outerAngle;
             radiationProperties.outerGain   = outerGain;
@@ -229,11 +229,11 @@ export class AudioBuilder extends TransformBuilder {
 
         if (AudioAction[action] === AudioAction.start) {
             element.startSound();
-        } else if (AudioAction[action] === VideoAction.stop) {
+        } else if (AudioAction[action] === AudioAction.stop) {
             element.stopSound();
-        } else if (AudioAction[action] === VideoAction.pause) {
+        } else if (AudioAction[action] === AudioAction.pause) {
             element.pauseSound();
-        } else if (AudioAction[action] === VideoAction.resume) {
+        } else if (AudioAction[action] === AudioAction.resume) {
             element.resumeSound();
         }
     }
