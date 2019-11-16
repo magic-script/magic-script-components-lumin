@@ -227,6 +227,12 @@ export class AudioBuilder extends TransformBuilder {
             return
         }
 
+        if (oldProperties !== undefined &&
+            oldProperties.action !== undefined &&
+            oldProperties.action === action) {
+            return;
+        }
+
         if (AudioAction[action] === AudioAction.start) {
             element.startSound();
         } else if (AudioAction[action] === AudioAction.stop) {
