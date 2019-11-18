@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import { ui } from 'lumin';
-import { EventData } from './event-data.js';
+import { TransformNodeEventData } from './transform-node-event-data.js';
 import { FocusRequest } from '../../types/focus-request.js';
 import { extractor } from '../../utilities/extractor.js';
 
-export class UiEventData extends EventData {
+export class UiEventData extends TransformNodeEventData {
     constructor(nativeEvent) {
         super(nativeEvent.getUiNode());
 
