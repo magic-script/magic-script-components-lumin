@@ -72,6 +72,6 @@ export const UiNodeEvents = {
     'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: DatePickerEventData },
     // UiCircleConfirmation
     'onConfirmationCanceled': { subName: 'onConfirmationCanceledSub', dataType: UiEventData },
-    'onConfirmationComplete': { subName: 'onConfirmationCompleteSub', dataType: UiEventData },
-    'onConfirmationUpdate': { subName: 'onConfirmationUpdateSub', dataType: UiEventData }
+    'onConfirmationCompleted': { subName: 'onConfirmationCompleteSub', dataType: UiEventData },
+    'onConfirmationUpdated': { subName: 'onConfirmationUpdateSub', dataType: UiEventData }
 }
