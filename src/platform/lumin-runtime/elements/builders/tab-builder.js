@@ -47,7 +47,7 @@ export class TabBuilder extends TextContainerBuilder {
         
         const { type } = newProperties;
         const message = `The provided eclipse label type ${type} is not a valid value`;
-        super._throwIfPredicateFails(type, message, validator.validateEclipseLabelType);
+        PropertyDescriptor.throwIfPredicateFails(type, message, validator.validateEclipseLabelType);
     }
 }
 
