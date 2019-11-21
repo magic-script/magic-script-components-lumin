@@ -38,6 +38,10 @@ export class DialogBuilder extends TextProviderBuilder {
             message = this._getText(properties.children);
         }
 
+        if (message === undefined) {
+            message = '';
+        }
+
         const type = this.getPropertyValue('type', 'dual-action', properties);
         const layout = this.getPropertyValue('layout', 'standard', properties);
         const scrolling = this.getPropertyValue('scrolling', false, properties);
