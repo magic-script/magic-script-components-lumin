@@ -32,10 +32,10 @@ export class DialogBuilder extends TextProviderBuilder {
 
         this.validate(undefined, undefined, properties);
 
-        let text = properties.text;
+        let message = properties.message;
 
-        if (text === undefined) {
-            text = this._getText(properties.children);
+        if (message === undefined) {
+            message = this._getText(properties.children);
         }
 
         const type = this.getPropertyValue('type', 'dual-action', properties);
@@ -46,14 +46,14 @@ export class DialogBuilder extends TextProviderBuilder {
         let element
 
         if (scrolling) {
-            element = ui.UiDialog.CreateScrolling(prism, title, text, DialogType[type], DialogLayout[layout]);
+            element = ui.UiDialog.CreateScrolling(prism, title, message, DialogType[type], DialogLayout[layout]);
         } else {
             element = title === undefined
                 ? ui.UiDialog.Create(prism, DialogType[type], DialogLayout[layout])
-                : ui.UiDialog.Create(prism, title, text, null, DialogType[type], DialogLayout[layout]);
+                : ui.UiDialog.Create(prism, title, message, null, DialogType[type], DialogLayout[layout]);
         }
 
-        const unapplied = this.excludeProperties(properties, ['children', 'text', 'title', 'type', 'layout']);
+        const unapplied = this.excludeProperties(properties, ['children', 'message', 'title', 'type', 'layout']);
 
         this.apply(element, undefined, unapplied);
 
