@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import { CircleConfirmationEventData } from './event-data/circle-confirmation-event-data.js';
 import { ColorPickerEventData } from './event-data/color-picker-event-data.js';
 import { DatePickerEventData } from './event-data/date-picker-event-data.js';
 import { DropDownListEventData } from './event-data/drop-down-list-event-data.js';
@@ -71,7 +72,7 @@ export const UiNodeEvents = {
     'onDateChanged': { subName: 'onDateChangedSub', dataType: DatePickerEventData },
     'onDateConfirmed': { subName: 'onDateConfirmedSub', dataType: DatePickerEventData },
     // UiCircleConfirmation
-    'onConfirmationCanceled': { subName: 'onConfirmationCanceledSub', dataType: UiEventData },
-    'onConfirmationCompleted': { subName: 'onConfirmationCompleteSub', dataType: UiEventData },
-    'onConfirmationUpdated': { subName: 'onConfirmationUpdateSub', dataType: UiEventData }
+    'onConfirmationCanceled': { subName: 'onConfirmationCanceledSub', dataType: CircleConfirmationEventData },
+    'onConfirmationCompleted': { subName: 'onConfirmationCompleteSub', dataType: CircleConfirmationEventData },
+    'onConfirmationUpdated': { subName: 'onConfirmationUpdateSub', dataType: CircleConfirmationEventData }
 }
