@@ -58,8 +58,9 @@ export const UiNodeEvents = {
     'onPanelEnter': { subName: 'onPanelEnterSub', dataType: UiEventData },
     'onPanelExit': { subName: 'onPanelExitSub', dataType: UiEventData },
     // UiDialog
-    'onCancel': { subName: 'onCancelSub', dataType: UiEventData },
-    'onConfirm': { subName: 'onConfirmSub', dataType: UiEventData },
+    'onDialogCanceled': { subName: 'onCancelSub', dataType: UiEventData },
+    'onDialogConfirmed': { subName: 'onConfirmSub', dataType: UiEventData },
+    'onDialogTimeExpired': { subName: 'onTimeExpiredSub', dataType: UiEventData },
     // UiColorPicker
     'onColorCanceled': { subName: 'onCancelSub', dataType: ColorPickerEventData },
     'onColorChanged': { subName: 'onColorChangedSub', dataType: ColorPickerEventData },
