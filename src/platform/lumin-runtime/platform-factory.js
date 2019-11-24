@@ -85,10 +85,7 @@ export class PlatformFactory extends NativeFactory {
           if (this.isController(child)) {
             element.addChildController(child);
           } else {
-            // Temporary fix for adding child node
-            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-            // element.addChild(child);
-            setTimeout(() => element.addChild(child), 0);
+            element.addChild(child);
             if (child.childController !== undefined) {
               element.addChildController(child.childController);
             }
@@ -97,10 +94,7 @@ export class PlatformFactory extends NativeFactory {
           if (this.isController(child)) {
             element.childController = child;
             const handler = () => {
-              // Temporary fix for adding child node
-              // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-              // element.addChild(child.getRoot());
-              setTimeout(() => element.addChild(child.getRoot()), 0);
+              element.addChild(child.getRoot());
               child.removeListener('onAttachPrism', handler);
             };
 
@@ -279,10 +273,6 @@ export class PlatformFactory extends NativeFactory {
         }
       }
     } else {
-      // Temporary fix for adding child node
-      // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-      // setTimeout(() => parent.addChild(child), 0); -> BREAKS Adding child node to UiListViewItem
-      // Switching back to original code:
       parent.addChild(child);
     }
   }
@@ -353,28 +343,14 @@ export class PlatformFactory extends NativeFactory {
         }
         parent.removeChildController(child);
       } else if (this.isController(parent)) {
-        // Temporary fix for adding child node
-        // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-        // parent.getRoot().removeChild(child);
-        // parent.getPrism().deleteNode(child);
-        setTimeout(() => {
-          parent.getRoot().removeChild(child);
-          parent.getPrism().deleteNode(child);
-        }, 0);
+        parent.getRoot().removeChild(child);
+        parent.getPrism().deleteNode(child);
       } else if (parent instanceof ui.UiListView) {
         parent.removeItem(this._getListViewIndex(parent, child));
       } else {
-        // Temporary fix for adding child node
-        // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-        // parent.removeChild(child);
-        // const prism = this._app.getPrism(child.getPrismId());
-        // prism.deleteNode(child);
-        const factory = this;
-        setTimeout(() => {
-          parent.removeChild(child);
-          const prism = factory._app.getPrism(child.getPrismId());
-          prism.deleteNode(child);
-        }, 0);
+        parent.removeChild(child);
+        const prism = this._app.getPrism(child.getPrismId());
+        prism.deleteNode(child);
       }
     }
   }
@@ -385,15 +361,9 @@ export class PlatformFactory extends NativeFactory {
 
     if (this.isController(child)) {
       container.controller.addChildController(child);
-      // Temporary fix for adding child node
-      // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-      // container.parent.addChild(child.getRoot());
-      setTimeout(() => container.parent.addChild(child.getRoot()), 0);
+      container.parent.addChild(child.getRoot());
     } else {
-      // Temporary fix for adding child node
-      // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-      // container.controller.getRoot().addChild(child);
-      setTimeout(() => container.controller.getRoot().addChild(child), 0);
+      container.controller.getRoot().addChild(child);
     }
   }
 
@@ -401,15 +371,9 @@ export class PlatformFactory extends NativeFactory {
     if (this.isController(child)) {
       container.controller.removeChildController(child);
     } else {
-      // Temporary fix for adding child node
-      // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-      // container.controller.getRoot().removeChild(child);
-      const factory = this;
-      setTimeout(() => {
-        container.controller.getRoot().removeChild(child);
-        const prism = factory._app.getPrism(child.getPrismId());
-        prism.deleteNode(child);
-      }, 0);
+      container.controller.getRoot().removeChild(child);
+      const prism = this._app.getPrism(child.getPrismId());
+      prism.deleteNode(child);
     }
   }
 
