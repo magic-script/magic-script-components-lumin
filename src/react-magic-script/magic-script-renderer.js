@@ -279,10 +279,7 @@ function insertBefore(parentInstance, child, beforeChild) {
   } else if (typeof child === 'number') {
     parentInstance.setText(child.toString());
   } else {
-    // Temporary fix for adding child node
-    // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-    // parentInstance.addChild(child);
-    setTimeout(() => parentInstance.addChild(child), 0);
+    parentInstance.addChild(child);
   }
 }
 

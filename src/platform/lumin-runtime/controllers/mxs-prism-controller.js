@@ -53,10 +53,7 @@ export class MxsPrismController extends PrismController {
         if (root === undefined || root === null) {
             this._children.push(child);
         } else {
-            // Temporary fix for adding child node
-            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-            // root.addChild(child);
-            setTimeout(() => root.addChild(child), 0);
+            root.addChild(child);
         }
     }
 
@@ -69,12 +66,7 @@ export class MxsPrismController extends PrismController {
             this._controllers.push(controller);
         } else {
             super.addChildController(controller);
-
-            // Temporary fix for adding child node
-            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-            // this.addChild(controller.getRoot());
-            const node = this;
-            setTimeout(() => node.addChild(controller.getRoot()), 0);
+            this.addChild(controller.getRoot());
         }
     }
 
@@ -124,19 +116,13 @@ export class MxsPrismController extends PrismController {
         if (this._controllers !== undefined) {
             this._controllers.forEach(controller => {
                 super.addChildController(controller);
-                // Temporary fix for adding child node
-                // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-                // root.addChild(controller.getRoot());
-                setTimeout(() => root.addChild(controller.getRoot()), 0);
+                root.addChild(controller.getRoot());
             });
             this._controllers = undefined;
         }
 
         if (this._children !== undefined) {
-            // Temporary fix for adding child node
-            // Use setTimeout(func, 0) in order to let the other threads to catch-up.
-            // this._children.forEach(child => root.addChild(child));
-            this._children.forEach(child => setTimeout(() => root.addChild(child), 0));
+            this._children.forEach(child => root.addChild(child));
             this._children = undefined;
         }
 
