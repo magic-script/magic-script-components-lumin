@@ -12,11 +12,11 @@ export class CircleConfirmationBuilder extends UiNodeBuilder {
 
         this.validate(undefined, undefined, properties);
 
-        const height = this.getPropertyValue('height', 0.0, properties);
+        const radius = this.getPropertyValue('radius', 0.0, properties);
 
-        const element = ui.UiCircleConfirmation.Create(prism, height);
+        const element = ui.UiCircleConfirmation.Create(prism, radius);
 
-        const unapplied = this.excludeProperties(properties, ['height']);
+        const unapplied = this.excludeProperties(properties, ['radius']);
 
         this.apply(element, undefined, unapplied);
 
@@ -26,7 +26,7 @@ export class CircleConfirmationBuilder extends UiNodeBuilder {
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);
 
-        PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.radius, 'number');
     }
 }
 
