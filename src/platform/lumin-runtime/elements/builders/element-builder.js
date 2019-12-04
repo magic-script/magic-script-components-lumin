@@ -85,4 +85,13 @@ export class ElementBuilder {
     extraTypeScript() {
         return '';
     }
+
+    /**
+     * Returns an object mapping dependent type names to their TypeScript type syntax.
+     *
+     * This should be used for types not handled automatically via _propertyDescriptors.
+     */
+    tsDependentTypes() {
+        return {};
+    }
 }

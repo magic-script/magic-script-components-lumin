@@ -35,6 +35,9 @@ export function generateTypeScript () {
     if (typeof builder.extraTypeScript === 'function') {
       str += builder.extraTypeScript();
     }
+    if (typeof builder.tsDependentTypes === 'function') {
+      deps = {...deps, ...builder.tsDependentTypes()};
+    }
 
     str += '  }\n\n';
     str += `  const ${elementName}: React.FC<${elementName}Props>;\n\n`

@@ -158,4 +158,29 @@ export class TextBuilder extends TextContainerBuilder {
             element.setFontParameters(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
         }
     }
+
+    extraTypeScript() {
+        return  '    fontDescription?: FontDescription;\n' +
+                '    filePath?: string;\n' +
+                '    absolutePath?: boolean;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            FontDescription: TextBuilder.fontDescriptionType(),
+            AdvanceDirection: EnumProperty.getTsType(AdvanceDirection),
+            FlowDirection: EnumProperty.getTsType(FlowDirection),
+            Quality: EnumProperty.getTsType(Quality)
+        };
+    }
+
+    static fontDescriptionType() {
+        return `{
+    advanceDirection: AdvanceDirection,
+    flowDirection: FlowDirection,
+    tileSize: number,
+    quality?: Quality,
+    minAlpha?: number
+  }`;
+    }
 }

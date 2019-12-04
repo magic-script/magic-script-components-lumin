@@ -74,4 +74,8 @@ export class QuadBuilder extends RenderBuilder {
         texCoords.forEach( coordinate => PropertyDescriptor.throwIfNotArray(coordinate, 'vec2') );
         element.setTexCoords(texCoords);
     }
+
+    extraTypeScript() {
+        return  '    subTexture?: string | number;\n';
+    }
 }

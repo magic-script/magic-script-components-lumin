@@ -67,4 +67,10 @@ export class TimePickerBuilder extends UiNodeBuilder {
         const time = TimeFormatConverter[DEFAULT_TIME_FORMAT].toTime(newProperties.time);
         element.setTime(time);
     }
+
+    extraTypeScript() {
+        return  '    label?: string;\n' +
+                '    labelSide?: Side;\n' +
+                '    defaultTime?: string;\n';
+    }
 }

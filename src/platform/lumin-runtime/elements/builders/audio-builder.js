@@ -243,4 +243,14 @@ export class AudioBuilder extends TransformBuilder {
             element.resumeSound();
         }
     }
+
+    extraTypeScript() {
+        return  '    fileName?: string;\n' +
+                '    loadFile?: boolean;\n' +
+                '    absolutePath?: boolean;\n' +
+                '    descriptor?: number;\n' +
+                '    basePath?: string;\n' +
+                '    autoDestroy?: boolean;\n' +
+                '    dynamicDecode?: boolean;\n';
+    }
 }

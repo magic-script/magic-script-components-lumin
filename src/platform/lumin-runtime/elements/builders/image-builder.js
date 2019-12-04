@@ -126,6 +126,11 @@ export class ImageBuilder extends UiNodeBuilder {
 
   extraTypeScript() {
     return  '    width?: number;\n' +
-            '    height?: number;\n';
+            '    height?: number;\n' +
+            '    icon?: SystemIcon;\n' +
+            '    filePath?: string;\n' +
+            '    resourceId?: bigint;\n' +
+            '    absolutePath?: boolean;\n' +
+            '    useFrame?: boolean;\n';
   }
 }
