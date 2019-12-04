@@ -64,4 +64,14 @@ export class PortalIconBuilder extends TextContainerBuilder {
         const message = `The provided icon size ${newProperties.iconSize} is not a valid value`;
         PropertyDescriptor.throwIfPredicateFails(newProperties.iconSize, message, validator.validatePortalIconSize);
     }
+
+    extraTypeScript() {
+        return  '    iconSize?: PortalIconSize;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            PortalIconSize: EnumProperty.getTsType(PortalIconSize)
+        };
+    }
 }

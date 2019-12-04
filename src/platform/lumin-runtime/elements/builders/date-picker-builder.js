@@ -72,4 +72,12 @@ export class DatePickerBuilder extends UiNodeBuilder {
         const date = DateFormatConverter[DEFAULT_DATE_FORMAT].toDate(newProperties.date);
         element.setDate(date);
     }
+
+    extraTypeScript() {
+        return  '    label?: string;\n' +
+                '    labelSide?: Side;\n' +
+                '    defaultDate?: string;\n' +
+                '    yearMin?: number;\n' +
+                '    yearMax?: number;\n';
+    }
 }

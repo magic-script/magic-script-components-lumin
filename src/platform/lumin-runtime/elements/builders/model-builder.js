@@ -164,4 +164,11 @@ export class ModelBuilder extends RenderBuilder {
             element.playAnimation(resourceId, name, paused, loops);
         }
     }
+
+    extraTypeScript() {
+        return  '    modelPath?: string;\n' +
+                '    materialPath?: string;\n' +
+                '    importScale?: number;\n' +
+                '    texturePaths?: number[];\n'
+    }
 }

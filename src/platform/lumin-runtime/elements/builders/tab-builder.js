@@ -9,6 +9,7 @@ import { TextChildrenProperty } from '../properties/text-children-property.js';
 import { EclipseLabelType } from '../../types/eclipse-label-type.js';
 
 import { validator } from '../../utilities/validator.js';
+import { EnumProperty } from '../properties/enum-property.js';
 
 export class TabBuilder extends TextContainerBuilder {
 
@@ -44,11 +45,19 @@ export class TabBuilder extends TextContainerBuilder {
 
         PropertyDescriptor.throwIfNotTypeOf(newProperties.text, 'string');
         TextChildrenProperty.throwIfNotText(newProperties.children);
-        
+
         const { type } = newProperties;
         const message = `The provided eclipse label type ${type} is not a valid value`;
         PropertyDescriptor.throwIfPredicateFails(type, message, validator.validateEclipseLabelType);
     }
+
+    extraTypeScript() {
+        return  '    type?: EclipseLabelType;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            EclipseLabelType: EnumProperty.getTsType(EclipseLabelType)
+        };
+    }
 }
-
-

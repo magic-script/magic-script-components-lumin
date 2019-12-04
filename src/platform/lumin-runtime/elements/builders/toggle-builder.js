@@ -9,6 +9,7 @@ import { TextChildrenProperty } from '../properties/text-children-property.js';
 import { ToggleType } from '../../types/toggle-type.js';
 
 import { validator } from '../../utilities/validator.js';
+import { EnumProperty } from '../properties/enum-property.js';
 
 export class ToggleBuilder extends TextContainerBuilder {
     constructor(){
@@ -57,6 +58,16 @@ export class ToggleBuilder extends TextContainerBuilder {
         const message = `The provided toggle type ${type} is not a valid value`;
         PropertyDescriptor.throwIfPredicateFails(type, message, validator.validateToggleType);
     }
-}
+
+    extraTypeScript() {
+        return  '    height?: number;\n' +
+                '    type?: ToggleType;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            ToggleType: EnumProperty.getTsType(ToggleType)
+        };
+    }}
 
 

@@ -10,6 +10,7 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import { LoadingSpinnerType } from '../../types/loading-spinner-type.js';
 
 import { validator } from '../../utilities/validator.js';
+import { EnumProperty } from '../properties/enum-property.js';
 
 export class LoadingSpinnerBuilder extends UiNodeBuilder {
     constructor(){
@@ -51,6 +52,20 @@ export class LoadingSpinnerBuilder extends UiNodeBuilder {
         PropertyDescriptor.throwIfNotTypeOf(newProperties.resourcePath, 'string');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.determinate, 'boolean');
+    }
+
+    extraTypeScript() {
+        return  '    type?: LoadingSpinnerType;\n' +
+                '    id?: bigint;\n' +
+                '    path?: string;\n' +
+                '    height?: number;\n' +
+                '    determinate?: boolean;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            LoadingSpinnerType: EnumProperty.getTsType(LoadingSpinnerType)
+        };
     }
 }
 

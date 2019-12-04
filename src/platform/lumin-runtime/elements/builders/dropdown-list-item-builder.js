@@ -97,4 +97,9 @@ export class DropdownListItemBuilder {
       }
     }
   }
+
+  extraTypeScript() {
+    return  '    label?: string;\n' +
+            '    id?: number;\n';
+  }
 }

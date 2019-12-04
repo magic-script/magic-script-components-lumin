@@ -76,4 +76,19 @@ export class DialogBuilder extends TextProviderBuilder {
         PropertyDescriptor.throwIfNotTypeOf(newProperties.scrolling, 'boolean');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.title, 'string');
     }
+
+    extraTypeScript() {
+        return  '    message?: string;\n' +
+                '    title?: string;\n' +
+                '    type?: DialogType;\n' +
+                '    layout?: DialogLayout;\n' +
+                '    scrolling?: boolean;\n';
+    }
+
+    tsDependentTypes() {
+        return {
+            DialogType: EnumProperty.getTsType(DialogType),
+            DialogLayout: EnumProperty.getTsType(DialogLayout)
+        };
+    }
 }

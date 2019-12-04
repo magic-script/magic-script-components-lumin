@@ -28,6 +28,10 @@ export class CircleConfirmationBuilder extends UiNodeBuilder {
 
         PropertyDescriptor.throwIfNotTypeOf(newProperties.radius, 'number');
     }
+
+    extraTypeScript() {
+        return  '    radius?: number;\n';
+    }
 }
 
 

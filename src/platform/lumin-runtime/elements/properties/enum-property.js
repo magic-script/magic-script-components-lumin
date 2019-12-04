@@ -25,6 +25,10 @@ export class EnumProperty extends PropertyDescriptor {
     }
 
     tsDependentTypes() {
-        return { [this._enumName]: "'" + Object.keys(this._enumType).join("' | '") + "'"};
+        return { [this._enumName]: EnumProperty.getTsType(this._enumType) };
+    }
+
+    static getTsType(enumType) {
+        return "'" + Object.keys(enumType).join("' | '") + "'";
     }
 }

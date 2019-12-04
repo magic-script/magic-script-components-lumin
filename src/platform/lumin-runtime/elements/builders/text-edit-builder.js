@@ -222,9 +222,11 @@ export class TextEditBuilder extends TextContainerBuilder {
         return text === undefined ? '' : text;
     }
 
-
     extraTypeScript() {
         return  '    width?: number;\n' +
-                '    height?: number;\n';
+                '    height?: number;\n' +
+                '    fontDescription?: FontDescription;\n' +
+                '    filePath?: string;\n' +
+                '    absolutePath?: boolean;\n';
     }
 }

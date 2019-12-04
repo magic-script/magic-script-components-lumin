@@ -38,4 +38,8 @@ export class ColorPickerBuilder extends UiNodeBuilder {
 
         PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
     }
+
+    extraTypeScript() {
+        return  '    height?: number;\n';
+    }
 }
