@@ -1,4 +1,31 @@
 import configuration from "../configuration.js";
+import { UiNodeEvents } from '../platform/lumin-runtime/types/ui-node-events.js';
+
+// For now just include ALL possible event handlers for all components
+// (which matches what the current implementation will allow you to register)
+function genEventHandlerProps() {
+  let str = '  interface EventHandlerProps {\n';
+
+  let eventDataTypes = {};
+
+  Object.keys(UiNodeEvents)
+    .filter(key => key.length > 2 && key.startsWith('on'))
+    .forEach(key => {
+      const dataType = UiNodeEvents[key].dataType;
+      eventDataTypes[dataType.name] = dataType;
+      str += `    ${key}?: (eventData: ${dataType.name}) => void;\n`;
+    });
+
+  str += '  }\n\n';
+
+  for (const dataType of Object.keys(eventDataTypes)) {
+    str += `  type ${dataType} = any;\n`;
+  }
+
+  str += '\n';
+
+  return str;
+}
 
 export function generateTypeScript () {
   let str = `declare module "magic-script-components" {
@@ -13,6 +40,8 @@ export function generateTypeScript () {
 
 `;
 
+  str += genEventHandlerProps();
+
   let deps = {};
 
   const elements = configuration.nativeMapping.elements;
@@ -20,7 +49,7 @@ export function generateTypeScript () {
     const builder = elements[elementName]();
     // captialize the name to match exposed Component name
     elementName = elementName[0].toUpperCase() + elementName.slice(1)
-    str += `  interface ${elementName}Props {\n`
+    str += `  interface ${elementName}Props extends EventHandlerProps {\n`
 
     for (let propName in builder._propertyDescriptors) {
       const propertyDescriptor = builder._propertyDescriptors[propName];
@@ -48,7 +77,9 @@ export function generateTypeScript () {
   for (let dep in deps) {
     str += `  type ${dep} = ${deps[dep]};\n\n`;
   }
-  str += '}\n';
+  str += '}\n\n';
+
+  str += 'declare function print(...args: any[]): void\n';
 
   return str;
 }

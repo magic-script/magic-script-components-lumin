@@ -111,8 +111,7 @@ export class ButtonBuilder extends TextContainerBuilder {
     extraTypeScript() {
         return  '    width?: number;\n' +
                 '    height?: number;\n' +
-                '    roundness?: number;\n' +
-                '    onClick?: (event: any) => void;\n';
+                '    roundness?: number;\n';
     }
 }
 
