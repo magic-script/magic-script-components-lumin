@@ -20,8 +20,6 @@ export class DropdownListItemBuilder {
         label = content.value;
     }
 
-    // console.log('input props: ', label, id);
-
     const element = content === undefined || content.isText
       ? new ui.DropDownListItem(label, id)
       : new ui.DropDownListItem(label, content.value, id);
@@ -91,12 +89,10 @@ export class DropdownListItemBuilder {
     if (Array.isArray(children)) {
     //   if (children.some(child => !(child instanceof ui.DropDownListItem || predicate(child)))) {
     if (children.some(child => !(child.type.name === 'DropdownListItem' || predicate(child)))) {
-        // console.log('children array:', children);
         throw new TypeError(message);
       }
     } else {
       if (predicate(children)) {
-        // console.log('children array:', children);
         throw new TypeError(message);
       }
     }
