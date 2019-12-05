@@ -3,9 +3,11 @@
 export class EventData {
     constructor(nativeEvent) {
         this._nativeEvent = nativeEvent;
+        this._propertyNames = [];
     }
 
     _addGetProperties(propertyNames) {
+        this._propertyNames = this._propertyNames.concat(propertyNames);
         propertyNames
             .filter( name => typeof this._nativeEvent[`get${name}`] === 'function')
             .forEach( name => {

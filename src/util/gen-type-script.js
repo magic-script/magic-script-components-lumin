@@ -16,13 +16,26 @@ function genEventHandlerProps() {
       str += `    ${key}?: (eventData: ${dataType.name}) => void;\n`;
     });
 
-  str += '  }\n\n';
+  str += `  }
 
-  for (const dataType of Object.keys(eventDataTypes)) {
-    str += `  type ${dataType} = any;\n`;
+  // Event Data:
+  // --------------------------------------------------------------------------------
+
+`;
+
+  for (const dataTypeName of Object.keys(eventDataTypes)) {
+    const dummyEvent = {
+      getUiNode() {
+        return {};
+      }
+    };
+    str += `  interface ${dataTypeName} {\n`;
+    const eventData = new eventDataTypes[dataTypeName](dummyEvent);
+    for (const key of eventData._propertyNames) {
+      str += (`    ${key}?: any;\n`);
+    }
+    str += `  }\n\n`;
   }
-
-  str += '\n';
 
   return str;
 }
@@ -39,8 +52,6 @@ export function generateTypeScript () {
   }
 
 `;
-
-  str += genEventHandlerProps();
 
   let deps = {};
 
@@ -71,6 +82,8 @@ export function generateTypeScript () {
     str += '  }\n\n';
     str += `  const ${elementName}: React.FC<${elementName}Props>;\n\n`
   }
+
+  str += genEventHandlerProps();
 
   str += '  // Other Types:\n'
   str += '  // --------------------------------------------------------------------------------\n\n'
