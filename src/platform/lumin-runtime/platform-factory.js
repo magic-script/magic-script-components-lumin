@@ -356,8 +356,8 @@ export class PlatformFactory extends NativeFactory {
   }
 
   appendChildToContainer (container, child) {
-    console.log(child);
-    console.log(container);
+    // console.log(child);
+    // console.log(container);
 
     if (this.isController(child)) {
       container.controller.addChildController(child);

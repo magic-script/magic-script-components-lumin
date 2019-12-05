@@ -84,7 +84,7 @@ export class ControllerBuilder {
 
     _updateRootNodeProperties(controller, properties) {
         const root = controller.getRoot();
-        console.log(JSON.stringify(root));
+        // console.log(JSON.stringify(root));
         this._transformBuilder.update(root, undefined, properties);
     }
 
