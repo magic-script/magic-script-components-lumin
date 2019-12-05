@@ -35,11 +35,11 @@ const UPDATE_SIGNAL = {};
 //  hostContext: HostContext,
 //  internalInstanceHandle: Object
 function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-  console.log(`createInstance ${type}`);
-  console.log(props);
-  console.log(rootContainerInstance);
-  console.log(hostContext);
-  console.log(internalInstanceHandle);
+  // console.log(`createInstance ${type}`);
+  // console.log(props);
+  // console.log(rootContainerInstance);
+  // console.log(hostContext);
+  // console.log(internalInstanceHandle);
 
   return mxs._nativeFactory.createElement(type, rootContainerInstance, props);
 }
@@ -53,7 +53,7 @@ function createInstance(type, props, rootContainerInstance, hostContext, interna
 //  hostContext: HostContext,
 //  internalInstanceHandle: Object
 function createTextInstance(text, rootContainerInstance, hostContext, internalInstanceHandle) {
-  console.log(`createTextInstance ${text}`);
+  // console.log(`createTextInstance ${text}`);
   return text;
 }
 
@@ -64,9 +64,9 @@ function createTextInstance(text, rootContainerInstance, hostContext, internalIn
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function appendInitialChild(parentInstance, child) {
-  console.log('appendInitialChild');
-  console.log(parentInstance);
-  console.log(child);
+  // console.log('appendInitialChild');
+  // console.log(parentInstance);
+  // console.log(child);
 
   mxs._nativeFactory.addChildElement(parentInstance, child);
 }
@@ -81,7 +81,7 @@ function appendInitialChild(parentInstance, child) {
 //  rootContainerInstance: Container,
 //  hostContext: HostContext
 function finalizeInitialChildren(parentInstance, type, props, rootContainerInstance, hostContext) {
-  console.log('finalizeInitialChildren');
+  // console.log('finalizeInitialChildren');
   return false;
 }
 
@@ -91,7 +91,7 @@ function finalizeInitialChildren(parentInstance, type, props, rootContainerInsta
 // Input parameters:
 //  rootContainerInstance: Container
 function getRootHostContext(rootContainerInstance) {
-  console.log('getRootHostContext');
+  // console.log('getRootHostContext');
 
   // React-360
   // return {};
@@ -108,7 +108,7 @@ function getRootHostContext(rootContainerInstance) {
 //  type: string,
 //  rootContainerInstance: Container
 function getChildHostContext(parentHostContext, type, rootContainerInstance) {
-  console.log('getChildHostContext');
+  // console.log('getChildHostContext');
   // React-360
   // return {};
 
@@ -124,7 +124,7 @@ function getChildHostContext(parentHostContext, type, rootContainerInstance) {
 // Input parameters:
 //  instance: Instance
 function getPublicInstance(instance) {
-  console.log('getPublicInstance');
+  // console.log('getPublicInstance');
   return instance;
 }
 
@@ -134,7 +134,7 @@ function getPublicInstance(instance) {
 // Input parameters:
 //  containerInfo: Container
 function prepareForCommit(containerInfo) {
-  console.log('prepareForCommit');
+  // console.log('prepareForCommit');
 }
 
 // Function: resetAfterCommit
@@ -143,7 +143,7 @@ function prepareForCommit(containerInfo) {
 // Input parameters:
 //  containerInfo: Container
 function resetAfterCommit(containerInfo) {
-  console.log('resetAfterCommit');
+  // console.log('resetAfterCommit');
 }
 
 // Function: prepareUpdate
@@ -157,7 +157,7 @@ function resetAfterCommit(containerInfo) {
 //  rootContainerInstance: Container,
 //  hostContext: HostContext
 function prepareUpdate(instance, type, oldProps, newProps, rootContainerInstance, hostContext) {
-  console.log('prepareUpdate');
+  // console.log('prepareUpdate');
   return true;
 }
 
@@ -183,9 +183,9 @@ function shouldSetTextContent(type, props) {
   //  Always returning false simplifies the createInstance() implementation,
   //  But creates an additional child Fiber for raw text children.
   //  No additional native views are created though.
-  console.log('shouldSetTextContent');
-  console.log(type);
-  console.log(props);
+  // console.log('shouldSetTextContent');
+  // console.log(type);
+  // console.log(props);
 
   return false;
 }
@@ -197,9 +197,9 @@ function shouldSetTextContent(type, props) {
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function appendChild(parentInstance, child) {
-  console.log('appendChild');
-  console.log(parentInstance);
-  console.log(child);
+  // console.log('appendChild');
+  // console.log(parentInstance);
+  // console.log(child);
 
   mxs._nativeFactory.addChildElement(parentInstance, child);
 }
@@ -211,9 +211,9 @@ function appendChild(parentInstance, child) {
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function appendChildToContainer(container, child) {
-  console.log('appendChildToContainer');
-  console.log(container);
-  console.log(child);
+  // console.log('appendChildToContainer');
+  // console.log(container);
+  // console.log(child);
 
   mxs._nativeFactory.appendChildToContainer(container, child);
 }
@@ -227,9 +227,9 @@ function appendChildToContainer(container, child) {
 //  newText: string
 function commitTextUpdate(textInstance, oldText, newText) {
   logNotImplemented('commitTextUpdate');
-  console.log(textInstance);
-  console.log(oldText);
-  console.log(newText);
+  // console.log(textInstance);
+  // console.log(oldText);
+  // console.log(newText);
 }
 
 // Function: commitMount
@@ -256,12 +256,12 @@ function commitMount(instance, type, newProps, internalInstanceHandle) {
 //  internalInstanceHandle: Object
 function commitUpdate(instance, updatePayload, type, oldProps, newProps, internalInstanceHandle) {
   // logNotImplemented('commitUpdate');
-  console.log('commitUpdate');
-  console.log(instance);
-  console.log(type);
-  console.log(updatePayload);
-  console.log(oldProps);
-  console.log(newProps);
+  // console.log('commitUpdate');
+  // console.log(instance);
+  // console.log(type);
+  // console.log(updatePayload);
+  // console.log(oldProps);
+  // console.log(newProps);
 
   mxs._nativeFactory.updateElement(type, instance, oldProps, newProps);
 }
@@ -301,7 +301,7 @@ function insertInContainerBefore(container, child, beforeChild) {
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function removeChild(parentInstance, child) {
-  console.log('removeChild');
+  // console.log('removeChild');
 
   mxs._nativeFactory.removeChildElement(parentInstance, child);
 }
@@ -313,8 +313,8 @@ function removeChild(parentInstance, child) {
 //  parentInstance: Container,
 //  child: Instance | TextInstance
 function removeChildFromContainer(parentInstance, child) {
-  console.log(parentInstance);
-  console.log(child);
+  // console.log(parentInstance);
+  // console.log(child);
   mxs._nativeFactory.removeChildFromContainer(parentInstance, child);
 }
 
