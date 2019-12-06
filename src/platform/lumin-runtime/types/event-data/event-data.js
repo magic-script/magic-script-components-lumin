@@ -7,7 +7,7 @@ export class EventData {
     }
 
     _addGetProperties(propertyNames) {
-        this._propertyNames = this._propertyNames.concat(propertyNames);
+        this._propertyNames = propertyNames;
         propertyNames
             .filter( name => typeof this._nativeEvent[`get${name}`] === 'function')
             .forEach( name => {

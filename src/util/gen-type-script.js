@@ -23,20 +23,41 @@ function genEventHandlerProps() {
 
 `;
 
-  for (const dataTypeName of Object.keys(eventDataTypes)) {
-    const dummyEvent = {
-      getUiNode() {
-        return {};
-      }
-    };
-    str += `  interface ${dataTypeName} {\n`;
-    const eventData = new eventDataTypes[dataTypeName](dummyEvent);
-    for (const key of eventData._propertyNames) {
-      str += (`    ${key}?: any;\n`);
-    }
-    str += `  }\n\n`;
+
+  const dataTypeNames = Object.keys(eventDataTypes);
+  const knownDataTypes = new Set(dataTypeNames);
+  for (const dataTypeName of dataTypeNames) {
+    const dataType = eventDataTypes[dataTypeName];
+    str += generateEventType(dataType, knownDataTypes);
   }
 
+  return str;
+}
+
+function generateEventType (dataType, knownDataTypes) {
+  const dummyEvent = {
+    getUiNode() {
+      return {};
+    }
+  };
+
+  const eventData = new dataType(dummyEvent);
+
+  const parent = eventData.__proto__.__proto__;
+  const parentName = parent && parent.__proto__ ? parent.constructor.name : undefined;
+  const extendsClause = parentName ? ` extends ${parentName}` : '';
+
+  let str = '';
+  if (parentName && !knownDataTypes.has(parentName)) {
+    knownDataTypes.add(parentName);
+    str += generateEventType(parent.constructor, knownDataTypes);
+  }
+
+  str += `  interface ${dataType.name}${extendsClause} {\n`;
+  for (const key of eventData._propertyNames) {
+    str += (`    ${key}?: any;\n`);
+  }
+  str += '  }\n\n';
   return str;
 }
 
