@@ -147,7 +147,11 @@ function generatePropsTypeScript (props) {
   let comp = props.name;
   comp = comp.substring(0, comp.length - "Props".length);
   let str = `  interface ${props.name} extends ${props.parent ? props.parent + ', ' : ''}EventHandlerProps {\n`
-  props.list.forEach(propTs => str += `    ${propTs}\n`);
+  props.list.forEach(propTs => {
+    if (!propTs.startsWith('children?:')) {
+      str += `    ${propTs}\n`;
+    }
+  });
   str += props.extraTypeScript;
   str += '  }\n\n';
   str += `  const ${comp}: React.FC<${props.name}>;\n\n`
