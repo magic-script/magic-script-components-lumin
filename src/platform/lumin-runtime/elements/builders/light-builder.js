@@ -18,7 +18,7 @@ export class LightBuilder extends TransformBuilder {
         this._propertyDescriptors['intensity'] = new PrimitiveTypeProperty('intensity', 'setIntensity', true, 'number');
         this._propertyDescriptors['range'] = new PrimitiveTypeProperty('range', 'setRange', true, 'number');
         this._propertyDescriptors['spotAngle'] = new PrimitiveTypeProperty('spotAngle', 'setSpotAngle', true, 'number');
-        this._propertyDescriptors['type'] = new EnumProperty('type', '// setType', true, LightType, 'LightType');
+        this._propertyDescriptors['type'] = new EnumProperty('type', 'setType', true, LightType, 'LightType');
         this._propertyDescriptors['castsShadows'] = new PrimitiveTypeProperty('castsShadows', 'trySetCastsShadows', true, 'boolean');
 
         // setUseHeadPose
