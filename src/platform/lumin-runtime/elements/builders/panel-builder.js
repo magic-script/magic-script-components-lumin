@@ -72,7 +72,7 @@ export class PanelBuilder extends UiNodeBuilder {
     const { side, constraintMagnitude } = newProperties.edgeConstraint;
 
     if (side !== undefined && constraintMagnitude !== undefined) {
-      element.setEdgeConstraint(side, constraintMagnitude);
+      element.setEdgeConstraint(Side[side], constraintMagnitude);
     }
   }
 
@@ -80,7 +80,7 @@ export class PanelBuilder extends UiNodeBuilder {
     const { side, level } = newProperties.edgeConstraintLevel;
 
     if (side !== undefined && level !== undefined) {
-      element.setEdgeConstraintLevel(side, level);
+      element.setEdgeConstraintLevel(Side[side], PanelEdgeConstraintLevel[level]);
     }
   }
 
