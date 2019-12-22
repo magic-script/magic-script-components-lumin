@@ -1,7 +1,8 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import { ui } from 'lumin';
 import { TransformNodeEventData } from './transform-node-event-data.js';
-import { FocusRequest } from '../../types/focus-request.js';
+import { FocusRequest } from '../focus-request.js';
+import { SoundEvent } from '../sound-event.js';
 import { extractor } from '../../utilities/extractor.js';
 
 export class UiEventData extends TransformNodeEventData {
@@ -12,7 +13,6 @@ export class UiEventData extends TransformNodeEventData {
             'Alignment',
             'Enabled',
             'EventPassThrough',
-            'EventSoundID',
             'GravityWellEnabled',
             'GravityWellProperties',
             'RenderingLayer'
@@ -24,6 +24,10 @@ export class UiEventData extends TransformNodeEventData {
         return {
             focusRequest: extractor.getKeyByValue( FocusRequest, onActiveResponse.getFocusRequest() )
         };
+    }
+
+    getEventSoundID (event) {
+        return this._nativeEvent.getEventSoundID(SoundEvent[event]);
     }
 
     static isSupported(event) {
