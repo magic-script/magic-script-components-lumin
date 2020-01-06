@@ -36,6 +36,6 @@ export { PrismEventData } from './src/platform/lumin-runtime/types/event-data/pr
 export { ProgressBarEventData } from './src/platform/lumin-runtime/types/event-data/progress-bar-event-data.js';
 export { ScrollBarEventData } from './src/platform/lumin-runtime/types/event-data/scroll-bar-event-data.js';
 export { ScrollViewEventData } from './src/platform/lumin-runtime/types/event-data/scroll-view-event-data.js';
-export { SliderEventData } from './src/platform/lumin-runtime/types/event-data/text-edit-event-data.js';
+export { SliderEventData } from './src/platform/lumin-runtime/types/event-data/slider-event-data';
 export { TextEditEventData } from './src/platform/lumin-runtime/types/event-data/text-edit-event-data.js';
 export { ToggleEventData } from './src/platform/lumin-runtime/types/event-data/toggle-event-data.js';
