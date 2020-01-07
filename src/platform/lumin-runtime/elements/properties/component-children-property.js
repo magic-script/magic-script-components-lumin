@@ -18,7 +18,9 @@ export class ComponentChildrenProperty extends PropertyDescriptor {
   }
 
   static isValid (children) {
-    return this.hasValue(children) && this._isComponent(children);
+    return this.hasValue(children) &&
+           typeof children === 'object' &&
+           this._isComponent(children);
   }
 
   static throwIfNotComponent (children) {
