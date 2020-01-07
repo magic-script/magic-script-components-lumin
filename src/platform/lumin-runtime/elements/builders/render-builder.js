@@ -2,8 +2,8 @@
 
 import { TransformBuilder } from './transform-builder.js';
 
-import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
@@ -16,7 +16,7 @@ export class RenderBuilder extends TransformBuilder {
         super();
 
         this._propertyDescriptors['bloomStrength'] = new PrimitiveTypeProperty('bloomStrength', 'setBloomStrength', true, 'number');
-        this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
+        this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
         this._propertyDescriptors['drmContent'] = new PrimitiveTypeProperty('drmContent', 'setDrmContent', true, 'boolean');
         this._propertyDescriptors['shader'] = new EnumProperty('shader', 'setShader', true, ShaderType, 'ShaderType');
         this._propertyDescriptors['renderingLayer'] = new EnumProperty('renderingLayer', 'setRenderingLayer', true, RenderingLayer, 'RenderingLayer');

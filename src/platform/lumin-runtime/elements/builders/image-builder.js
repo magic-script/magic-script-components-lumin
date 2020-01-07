@@ -5,6 +5,7 @@ import { SystemIcons } from '../../types/system-icons.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
@@ -16,7 +17,7 @@ export class ImageBuilder extends UiNodeBuilder {
 
     this._propertyDescriptors['ui'] = new PrimitiveTypeProperty('ui', 'setIsUI', true, 'boolean');
     this._propertyDescriptors['opaque'] = new PrimitiveTypeProperty('opaque', 'setIsOpaque', true, 'boolean');
-    this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
+    this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
     this._propertyDescriptors['texCoords'] = new ArrayProperty('texCoords', 'setTexCoords', false, 'vec4');
 
     // Expects Id
