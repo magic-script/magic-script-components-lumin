@@ -24,8 +24,8 @@ export class ScrollBarBuilder extends UiNodeBuilder {
 
     this.validate(undefined, undefined, properties);
 
-    const width = properties.width;
-    const height = this.getPropertyValue('height', 0, properties);
+    const width = properties.length;
+    const height = this.getPropertyValue('thickness', 0, properties);
 
     const element = ui.UiScrollBar.Create(prism, width, height);
 
@@ -36,7 +36,7 @@ export class ScrollBarBuilder extends UiNodeBuilder {
       value: ui.Orientation.kVertical
     });
 
-    const unapplied = this.excludeProperties(properties, ['width', 'height']);
+    const unapplied = this.excludeProperties(properties, ['length', 'thickness']);
 
     this.apply(element, undefined, unapplied);
 
@@ -57,12 +57,12 @@ export class ScrollBarBuilder extends UiNodeBuilder {
   }
 
   _validateSize (properties) {
-    PropertyDescriptor.throwIfNotTypeOf(properties.height, 'number');
-    PropertyDescriptor.throwIfNotTypeOf(properties.width, 'number');
+    PropertyDescriptor.throwIfNotTypeOf(properties.thickness, 'number');
+    PropertyDescriptor.throwIfNotTypeOf(properties.length, 'number');
   }
 
   extraTypeScript() {
-    return  '    width?: number;\n' +
-            '    height?: number;\n';
+    return  '    length?: number;\n' +
+            '    thickness?: number;\n';
   }
 }
