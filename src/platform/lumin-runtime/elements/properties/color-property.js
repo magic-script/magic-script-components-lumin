@@ -8,7 +8,11 @@ class ColorProperty extends PropertyDescriptor {
   //   string: 'hotpink'; '#ff3399'; 'F39'
   //   number: 0xff3399
   //    array: [r, g, b, a?]
-  //   object: { h:120, s:1, l:0.75}; { l:80, c:25, h:200 }; { c:1, m:0.5, y:0, k:0.2}
+  //   object:
+  //    { h:120, s:1, l:0.75 }
+  //    { l:80, c:25, h:200 }
+  //    { c:1, m:0.5, y:0, k:0.2}
+  //    { r:255, g:165, b:0, a: 0.8 }
   validate (value) {
     return ColorProperty.validate(value);
   }
