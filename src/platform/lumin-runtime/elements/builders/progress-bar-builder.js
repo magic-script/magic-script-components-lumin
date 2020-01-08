@@ -3,10 +3,10 @@
 import { ui } from 'lumin';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
+import { ColorProperty } from '../properties/color-property.js';
+import { ClassProperty } from '../properties/class-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
-import { ArrayProperty } from '../properties/array-property.js';
-import { ClassProperty } from '../properties/class-property.js';
 
 export class ProgressBarBuilder extends UiNodeBuilder {
     constructor(){
@@ -14,8 +14,8 @@ export class ProgressBarBuilder extends UiNodeBuilder {
 
         // progressColor
         const progressColorProperties = [
-            new ArrayProperty('beginColor', undefined, undefined, 'vec4'),
-            new ArrayProperty('endColor', undefined, undefined, 'vec4')
+            new ColorProperty('beginColor', undefined, undefined),
+            new ColorProperty('endColor', undefined, undefined)
         ];
 
         this._propertyDescriptors['progressColor'] = new ClassProperty('progressColor', 'setProgressColor', false, progressColorProperties);
@@ -53,7 +53,7 @@ export class ProgressBarBuilder extends UiNodeBuilder {
     setProgressColor (element, oldProperties, newProperties) {
         const { beginColor, endColor } = newProperties.progressColor;
         if ( beginColor !== undefined && endColor !== undefined ) {
-            element.setProgressColor( beginColor, endColor );
+            element.setProgressColor( ColorProperty.validate(beginColor), ColorProperty.validate(endColor) );
         }
     }
 

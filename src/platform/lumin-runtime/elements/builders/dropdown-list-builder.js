@@ -6,6 +6,7 @@ import { UiNodeBuilder } from './ui-node-builder.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 export class DropdownListBuilder extends UiNodeBuilder {
@@ -31,11 +32,11 @@ export class DropdownListBuilder extends UiNodeBuilder {
     this._propertyDescriptors['text'] = new PrimitiveTypeProperty('text', 'setText', true, 'string');
 
     // TextContainerBuilder
-    this._propertyDescriptors['textColor'] = new ArrayProperty('textColor', 'setTextColor', true, 'vec4');
+    this._propertyDescriptors['textColor'] = new ColorProperty('textColor', 'setTextColor', true);
     this._propertyDescriptors['textSize'] = new PrimitiveTypeProperty('textSize', 'setTextSize', true, 'number');
 
     this._propertyDescriptors['iconSize'] = new PrimitiveTypeProperty('iconSize', 'setIconSize', true, 'number');
-    this._propertyDescriptors['iconColor'] = new ArrayProperty('iconColor', 'setIconColor', true, 'vec4');
+    this._propertyDescriptors['iconColor'] = new ColorProperty('iconColor', 'setIconColor', true);
     this._propertyDescriptors['listMaxHeight'] = new PrimitiveTypeProperty('listMaxHeight', 'setListMaxHeight', true, 'number');
     this._propertyDescriptors['listTextSize'] = new PrimitiveTypeProperty('listTextSize', 'setListTextSize', true, 'number');
     this._propertyDescriptors['maxCharacterLimit'] = new PrimitiveTypeProperty('maxCharacterLimit', 'setMaxCharacterLimit', true, 'number');

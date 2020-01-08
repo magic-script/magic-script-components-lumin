@@ -13,6 +13,7 @@ import { ScrollBarVisibility } from '../../types/scroll-bar-visibility.js';
 import { TextEntryMode } from '../../types/text-entry-mode.js';
 
 import { ArrayProperty } from '../properties/array-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { ClassProperty } from '../properties/class-property.js';
 import { CursorEdgeScrollMode } from '../../types/cursor-edge-scroll-mode.js';
 import { EnumProperty } from '../properties/enum-property.js';
@@ -32,7 +33,7 @@ export class TextEditBuilder extends TextContainerBuilder {
         this._propertyDescriptors['lineSpacing'] = new PrimitiveTypeProperty('lineSpacing', 'setLineSpacing', true, 'number');
         this._propertyDescriptors['textPadding'] = new ArrayProperty('textPadding', 'setTextPadding', true, 'vec4');
         this._propertyDescriptors['hint'] = new PrimitiveTypeProperty('hint', 'setHintText', true, 'string');
-        this._propertyDescriptors['hintColor'] = new ArrayProperty('hintColor', 'setHintTextColor', true, 'vec4');
+        this._propertyDescriptors['hintColor'] = new ColorProperty('hintColor', 'setHintTextColor', true);
         this._propertyDescriptors['multiline'] = new PrimitiveTypeProperty('multiline', 'setMultilineMode', true, 'boolean');
         this._propertyDescriptors['password'] = new PrimitiveTypeProperty('password', 'setPasswordMode', true, 'boolean');
         this._propertyDescriptors['scrolling'] = new PrimitiveTypeProperty('scrolling', 'setScrollingEnabled', true, 'boolean');
