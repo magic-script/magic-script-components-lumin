@@ -7,7 +7,7 @@ import { ColorProperty } from '../properties/color-property.js';
 
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
-const VEC4_ONE = [255, 255, 255, 1];
+const DEFAULT_COLOR = [255, 255, 255, 1];
 
 export class ColorPickerBuilder extends UiNodeBuilder {
     constructor(){
@@ -21,7 +21,7 @@ export class ColorPickerBuilder extends UiNodeBuilder {
 
         this.validate(undefined, undefined, properties);
 
-        const color  = this.getPropertyValue('color', VEC4_ONE, properties);
+        const color  = this.getPropertyValue('color', DEFAULT_COLOR, properties);
         const height = this.getPropertyValue('height', 0, properties);
 
         const element = ui.UiColorPicker.Create(prism, ColorProperty.parse(color), height);
