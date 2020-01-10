@@ -35,9 +35,11 @@ export class PlatformFactory extends NativeFactory {
 
       if (eventDescriptor !== undefined) {
         if (typeof pair.handler === 'function') {
-          element[eventDescriptor.subName]((eventData) => {
-            pair.handler(new eventDescriptor.dataType(eventData));
-          });
+          try {
+            element[eventDescriptor.subName]((eventData) => pair.handler(new eventDescriptor.dataType(eventData)));
+          } catch (error) {
+            throw new Error(`Tyring to subscribe handler ${pair.name} to ${eventDescriptor.subName} failed, error: ${error.message}`);
+          }
         } else {
           throw new TypeError(`The event handler for ${pair.name} is not a function`);
         }
