@@ -29,7 +29,7 @@ export const UiNodeEvents = {
     'onRelease': { subName: 'onReleasedSub', dataType: UiEventData },
     'onHoverEnter': { subName: 'onHoverEnterSub', dataType: UiEventData },
     'onHoverExit': { subName: 'onHoverExitSub', dataType: UiEventData },
-    'onHoverMove': { subName: 'onHoveMoveSub', dataType: UiEventData },
+    'onHoverMove': { subName: 'onHoverMoveSub', dataType: UiEventData },
     'onEnabled': { subName: 'onEnabledSub', dataType: UiEventData },
     'onDisabled': { subName: 'onDisabledSub', dataType: UiEventData },
     'onFocusGained': { subName: 'onFocusGainedSub', dataType: UiEventData },
