@@ -12,8 +12,6 @@ export class PositionalLayoutBuilder extends LayoutBuilder {
 
         this._propertyDescriptors['defaultItemAlignment'] = new EnumProperty('defaultItemAlignment', 'setDefaultItemAlignment', true, Alignment, 'Alignment');
         this._propertyDescriptors['defaultItemPadding'] = new ArrayProperty('defaultItemPadding', 'setDefaultItemPadding', true, 'vec4');
-        this._propertyDescriptors['itemAlignment'] = new EnumProperty('itemAlignment', 'setItemAlignment', true, Alignment, 'Alignment');
-        this._propertyDescriptors['itemPadding'] = new ArrayProperty('itemPadding', 'setItemPadding', true, 'vec4');
         this._propertyDescriptors['skipInvisibleItems'] = new PrimitiveTypeProperty('skipInvisibleItems', 'setSkipInvisibleItems', true, 'boolean');
     }
 }
