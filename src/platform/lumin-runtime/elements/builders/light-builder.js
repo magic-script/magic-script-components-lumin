@@ -5,6 +5,7 @@ import { SpatialSoundSendLevels, SpatialSoundDistanceProperties, SpatialSoundRad
 import { TransformBuilder } from './transform-builder.js';
 import { ArrayProperty } from '../properties/array-property.js'
 import { ClassProperty } from '../properties/class-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
@@ -14,7 +15,7 @@ export class LightBuilder extends TransformBuilder {
     constructor(){
         super();
 
-        this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
+        this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
         this._propertyDescriptors['intensity'] = new PrimitiveTypeProperty('intensity', 'setIntensity', true, 'number');
         this._propertyDescriptors['range'] = new PrimitiveTypeProperty('range', 'setRange', true, 'number');
         this._propertyDescriptors['spotAngle'] = new PrimitiveTypeProperty('spotAngle', 'setSpotAngle', true, 'number');

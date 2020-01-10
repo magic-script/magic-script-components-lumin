@@ -4,7 +4,7 @@ import { ui } from 'lumin';
 
 import { TextContainerBuilder } from './text-container-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
-import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import { EclipseButtonType } from '../../types/eclipse-button-type.js';
@@ -17,7 +17,7 @@ export class ButtonBuilder extends TextContainerBuilder {
         super();
 
         this._propertyDescriptors['iconSize'] = new ArrayProperty('iconSize', 'setIconSize', true, 'vec2');
-        this._propertyDescriptors['iconColor'] = new ArrayProperty('iconColor', 'setIconColor', true, 'vec4');
+        this._propertyDescriptors['iconColor'] = new ColorProperty('iconColor', 'setIconColor', true);
     }
 
 

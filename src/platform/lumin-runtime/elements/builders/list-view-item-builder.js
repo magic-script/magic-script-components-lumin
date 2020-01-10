@@ -4,6 +4,7 @@ import { ui } from 'lumin';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 
 import { Alignment } from '../../types/alignment.js';
@@ -12,7 +13,7 @@ export class ListViewItemBuilder extends UiNodeBuilder {
   constructor () {
     super();
 
-    this._propertyDescriptors['backgroundColor'] = new ArrayProperty('backgroundColor', 'setBackgroundColor', true, 'vec4');
+    this._propertyDescriptors['backgroundColor'] = new ColorProperty('backgroundColor', 'setBackgroundColor', true);
 
     this._propertyDescriptors['padding'] = new ArrayProperty('padding', 'setPadding', false, 'vec4');
     this._propertyDescriptors['itemAlignment'] = new EnumProperty('itemAlignment', 'setItemAlignment', false, Alignment, 'Alignment');

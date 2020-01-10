@@ -4,9 +4,9 @@ import { ui } from 'lumin';
 import { Side } from '../../types/side.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
-import { ArrayProperty } from '../properties/array-property.js';
-import { PropertyDescriptor } from '../properties/property-descriptor.js';
+import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import { DateFormatConverter } from '../../types/date-format.js';
 import { validator } from '../../utilities/validator.js';
@@ -17,7 +17,7 @@ export class DatePickerBuilder extends UiNodeBuilder {
     constructor() {
         super();
 
-        this._propertyDescriptors['color'] = new ArrayProperty('color', 'setColor', true, 'vec4');
+        this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
         this._propertyDescriptors['date'] = new PrimitiveTypeProperty('date', 'setDate', false, 'string');
         this._propertyDescriptors['showHint'] = new PrimitiveTypeProperty('showHint', 'showDateFormatHint', true, 'boolean');
     }
@@ -49,11 +49,6 @@ export class DatePickerBuilder extends UiNodeBuilder {
 
         return element;
     }
-
-    // update(element, oldProperties, newProperties) {
-    //     // this.throwIfNotInstanceOf(element, ui.UiImage);
-    //     super.update(element, oldProperties, newProperties);
-    // }
 
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);
