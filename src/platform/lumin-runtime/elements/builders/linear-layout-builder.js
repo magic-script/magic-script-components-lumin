@@ -3,8 +3,12 @@
 import { ui } from 'lumin';
 
 import { PositionalLayoutBuilder } from './positional-layout-builder.js';
-import { Orientation } from '../../types/orientation.js';
+import { ArrayProperty } from '../properties/array-property.js';
+import { ClassProperty } from '../properties/class-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
+import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { Alignment } from '../../types/alignment.js';
+import { Orientation } from '../../types/orientation.js';
 
 export class LinearLayoutBuilder extends PositionalLayoutBuilder {
     constructor() {
@@ -76,12 +80,12 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
     }
 
     setItemAlignment (element, oldProperties, newProperties) {
-        newProperties.itemAlignment
-          .forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
+      this._setPropertyValue(element, oldProperties, newProperties, 'itemAlignment',
+        ({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
     }
 
     setItemPadding (element, oldProperties, newProperties) {
-        newProperties.itemPadding
-          .forEach(({ index, padding }) => element.setItemPadding(index, padding));
+      this._setPropertyValue(element, oldProperties, newProperties, 'itemPadding',
+        ({ index, padding }) => element.setItemPadding(index, padding));
     }
 }

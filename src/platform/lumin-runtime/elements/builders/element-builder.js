@@ -30,8 +30,6 @@ export class ElementBuilder {
             const descriptor = this._propertyDescriptors[name];
             if (descriptor !== undefined) {
                 action(properties[name], descriptor);
-            } else {
-                console.log(`Property ${name} does not have a descriptor`);
             }
         }
     }

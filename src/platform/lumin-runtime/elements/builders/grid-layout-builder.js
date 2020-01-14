@@ -3,7 +3,11 @@
 import { ui } from 'lumin';
 
 import { PositionalLayoutBuilder } from './positional-layout-builder.js';
+import { ArrayProperty } from '../properties/array-property.js';
+import { ClassProperty } from '../properties/class-property.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { Alignment } from '../../types/alignment.js';
 
 export class GridLayoutBuilder extends PositionalLayoutBuilder {
     constructor(){
