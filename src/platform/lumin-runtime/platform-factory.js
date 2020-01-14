@@ -194,6 +194,9 @@ export class PlatformFactory extends NativeFactory {
       } else {
         parent.addItem(child);
       }
+      // Should update the alignment and padding after adding items completes !
+      parent.mxsUpdateItemAlignment();
+      parent.mxsUpdateItemPadding();
     } else if (parent instanceof ui.UiSlider) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {

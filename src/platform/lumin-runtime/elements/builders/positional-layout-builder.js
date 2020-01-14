@@ -14,4 +14,14 @@ export class PositionalLayoutBuilder extends LayoutBuilder {
         this._propertyDescriptors['defaultItemPadding'] = new ArrayProperty('defaultItemPadding', 'setDefaultItemPadding', true, 'vec4');
         this._propertyDescriptors['skipInvisibleItems'] = new PrimitiveTypeProperty('skipInvisibleItems', 'setSkipInvisibleItems', true, 'boolean');
     }
+
+    _setPropertyValue (element, oldProperties, newProperties, propertyName, setter) {
+        const count = element.getItemCount();
+        const items = newProperties[propertyName];
+
+        element[propertyName] = items;
+
+        items.filter(({ index }) => index < count)
+          .forEach(value => setter(value));
+    }
 }
