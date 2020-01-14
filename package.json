@@ -30,7 +30,8 @@
   "homepage": "https://github.com/magic-script/magic-script-components-lumin#readme",
   "dependencies": {
     "react": "^16.9.0",
-    "react-reconciler": "^0.21.0"
+    "react-reconciler": "^0.21.0",
+    "chroma-js": "^2.1.0"
   },
   "peerDependencies": {
     "@babel/core": "^7.6.0",
