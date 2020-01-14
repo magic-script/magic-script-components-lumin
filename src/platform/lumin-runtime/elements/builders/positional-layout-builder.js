@@ -16,12 +16,7 @@ export class PositionalLayoutBuilder extends LayoutBuilder {
     }
 
     _setPropertyValue (element, oldProperties, newProperties, propertyName, setter) {
-        const count = element.getItemCount();
-        const items = newProperties[propertyName];
-
-        element[propertyName] = items;
-
-        items.filter(({ index }) => index < count)
-          .forEach(value => setter(value));
+        element[propertyName] = newProperties[propertyName];
+        element[propertyName].forEach(value => setter(value));
     }
 }

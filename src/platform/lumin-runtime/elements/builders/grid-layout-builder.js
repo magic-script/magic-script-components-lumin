@@ -36,41 +36,45 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
 
         const element = ui.UiGridLayout.Create(prism);
 
-        Object.defineProperty(element, 'itemPadding', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: []
-        });
-
-        Object.defineProperty(element, 'mxsUpdateItemPadding', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: () => {
-                element.itemAlignment.forEach(({ row, column, padding }) => element.setItemPadding(row, column, padding));
-            }
-        });
-
-        Object.defineProperty(element, 'itemAlignment', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: []
-        });
-
-        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: () => {
-                element.itemAlignment.forEach(({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
-            }
-        });
+        this._addCustomProperties(element);
 
         this.update(element, undefined, properties);
 
         return element;
+    }
+
+    _addCustomProperties (element) {
+        Object.defineProperty(element, 'itemPadding', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: []
+        });
+
+        Object.defineProperty(element, 'mxsUpdateItemPadding', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: () => {
+            element.itemPadding.forEach(({ row, column, padding }) => element.setItemPadding(row, column, padding));
+          }
+        });
+
+        Object.defineProperty(element, 'itemAlignment', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: []
+        });
+
+        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: () => {
+            element.itemAlignment.forEach(({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
+          }
+        });
     }
 
     setItemAlignment (element, oldProperties, newProperties) {

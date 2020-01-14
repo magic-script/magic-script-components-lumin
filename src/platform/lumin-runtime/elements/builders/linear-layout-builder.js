@@ -34,41 +34,45 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
 
         const element = ui.UiLinearLayout.Create(prism);
 
-        Object.defineProperty(element, 'itemPadding', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: []
-        });
-
-        Object.defineProperty(element, 'mxsUpdateItemPadding', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: () => {
-              element.itemAlignment.forEach(({ index, padding }) => element.setItemPadding(index, padding));
-            }
-        });
-
-        Object.defineProperty(element, 'itemAlignment', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: []
-        });
-
-        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
-            enumerable: true,
-            writable: true,
-            configurable: false,
-            value: () => {
-              element.itemAlignment.forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
-            }
-        });
+        this._addCustomProperties(element);
 
         this.update(element, undefined, properties);
 
         return element;
+    }
+
+    _addCustomProperties (element) {
+        Object.defineProperty(element, 'itemPadding', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: []
+        });
+
+        Object.defineProperty(element, 'mxsUpdateItemPadding', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: () => {
+            element.itemPadding.forEach(({ index, padding }) => element.setItemPadding(index, padding));
+          }
+        });
+
+        Object.defineProperty(element, 'itemAlignment', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: []
+        });
+
+        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
+          enumerable: true,
+          writable: true,
+          configurable: false,
+          value: () => {
+            element.itemAlignment.forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
+          }
+        });
     }
 
     setItemAlignment (element, oldProperties, newProperties) {
