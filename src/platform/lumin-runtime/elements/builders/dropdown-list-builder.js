@@ -35,7 +35,7 @@ export class DropdownListBuilder extends UiNodeBuilder {
     this._propertyDescriptors['textColor'] = new ColorProperty('textColor', 'setTextColor', true);
     this._propertyDescriptors['textSize'] = new PrimitiveTypeProperty('textSize', 'setTextSize', true, 'number');
 
-    this._propertyDescriptors['iconSize'] = new PrimitiveTypeProperty('iconSize', 'setIconSize', true, 'number');
+    this._propertyDescriptors['iconSize'] = new ArrayProperty('iconSize', 'setIconSize', true, 'vec2');
     this._propertyDescriptors['iconColor'] = new ColorProperty('iconColor', 'setIconColor', true);
     this._propertyDescriptors['listMaxHeight'] = new PrimitiveTypeProperty('listMaxHeight', 'setListMaxHeight', true, 'number');
     this._propertyDescriptors['listTextSize'] = new PrimitiveTypeProperty('listTextSize', 'setListTextSize', true, 'number');
