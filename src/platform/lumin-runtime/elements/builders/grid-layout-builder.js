@@ -48,6 +48,30 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
     }
 
     _addCustomProperties (element) {
+        const getItemCell = (element, item) => {
+          const nodeId = item.getNodeId();
+          const rows = element.getCurrentRows();
+          const columns = element.getCurrentColumns();
+          let row = 0;
+          let column = 0;
+          let found = false;
+
+          while (!found && row < rows) {
+            while (!found && column < columns) {
+              const node = element.getItem(row, column);
+              if (node !== null && node.getNodeId() === nodeId) {
+                found = true;
+              } else {
+                column++;
+              }
+            }
+            column = 0;
+            row++;
+          }
+
+          return found ? { row, column } : undefined;
+        };
+
         Object.defineProperty(element, 'itemPadding', {
           enumerable: true,
           writable: true,
@@ -55,12 +79,19 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           value: []
         });
 
-        Object.defineProperty(element, 'mxsUpdateItemPadding', {
+        Object.defineProperty(element, 'mxsSetItemPadding', {
           enumerable: true,
           writable: true,
           configurable: false,
-          value: () => {
-            element.itemPadding.forEach(({ row, column, padding }) => element.setItemPadding(row, column, padding));
+          value: (itemIndex) => {
+            if (itemIndex < element.getItemCount()) {
+              const cell = getItemCell(element.getItem(itemIndex));
+              if (cell !== undefined) {
+                element.itemPadding
+                  .filter(({ row, column }) => row === cell.row && cell.column === column)
+                  .forEach(({ row, column, padding }) => element.setItemPadding(row, column, padding));
+              }
+            }
           }
         });
 
@@ -71,12 +102,19 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           value: []
         });
 
-        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
+        Object.defineProperty(element, 'mxsSetItemAlignment', {
           enumerable: true,
           writable: true,
           configurable: false,
-          value: () => {
-            element.itemAlignment.forEach(({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
+          value: (itemIndex) => {
+            if (itemIndex < element.getItemCount()) {
+              const cell = getItemCell(element.getItem(itemIndex));
+              if (cell !== undefined) {
+                element.itemAlignment
+                  .filter(({ row, column }) => row === cell.row && cell.column === column)
+                  .forEach(({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
+              }
+            }
           }
         });
     }

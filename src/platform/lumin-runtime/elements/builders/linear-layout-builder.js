@@ -53,13 +53,13 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
           value: []
         });
 
-        Object.defineProperty(element, 'mxsUpdateItemPadding', {
+        Object.defineProperty(element, 'mxsSetItemPadding', {
           enumerable: true,
           writable: true,
           configurable: false,
-          value: () => {
-            element.itemPadding.forEach(({ index, padding }) => element.setItemPadding(index, padding));
-          }
+          value: (itemIndex) =>
+            element.itemPadding.filter(({ index }) => index == itemIndex )
+              .forEach(({ index, padding }) => element.setItemPadding(index, padding))
         });
 
         Object.defineProperty(element, 'itemAlignment', {
@@ -69,13 +69,13 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
           value: []
         });
 
-        Object.defineProperty(element, 'mxsUpdateItemAlignment', {
+        Object.defineProperty(element, 'mxsSetItemAlignment', {
           enumerable: true,
           writable: true,
           configurable: false,
-          value: () => {
-            element.itemAlignment.forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
-          }
+          value: (itemIndex) =>
+            element.itemAlignment.filter(({ index }) => index == itemIndex )
+              .forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]))
         });
     }
 
