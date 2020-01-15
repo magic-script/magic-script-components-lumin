@@ -192,9 +192,15 @@ export class PlatformFactory extends NativeFactory {
           parent.addItem(child, padding, itemAlignment);
         } else {
           parent.addItem(child, padding);
+          parent.mxsSetItemAlignment(parent.getItemCount() - 1);
         }
       } else {
         parent.addItem(child);
+
+        // Should set the alignment and padding after adding items completes !
+        const index = parent.getItemCount() - 1;
+        parent.mxsSetItemAlignment(index);
+        parent.mxsSetItemPadding(index);
       }
     } else if (parent instanceof ui.UiSlider) {
       if (child instanceof TransformNode) {

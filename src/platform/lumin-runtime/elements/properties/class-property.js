@@ -9,12 +9,18 @@ export class ClassProperty extends PropertyDescriptor {
         this._properties = properties;
     }
 
-    validate(value) {
-        for (const property of this._properties) {
-            property.validate( value[property.Name] );
-        }
+    _validate (value) {
+      this._properties.forEach(property => property.validate(value[property.Name]));
+    }
 
-        return true;
+    validate (value) {
+      if (Array.isArray(value)) {
+        value.forEach(item => this._validate(item));
+      } else {
+        this._validate(value);
+      }
+
+      return true;
     }
 
     tsType() {
