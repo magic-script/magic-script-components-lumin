@@ -7,7 +7,10 @@ export class EventData {
     }
 
     _addGetProperties(propertyNames) {
+        // Do not filter before storing propertyNames because there is no _nativeEvent
+        // instance available when generating TypeScript declarations
         this._propertyNames = propertyNames;
+
         propertyNames
             .filter( name => typeof this._nativeEvent[`get${name}`] === 'function')
             .forEach( name => {
