@@ -80,7 +80,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
 
         Object.defineProperty(element, 'mxsSetItemPadding', {
           enumerable: true,
-          writable: true,
+          writable: false,
           configurable: false,
           value: (itemIndex) => {
             if (itemIndex < element.getItemCount()) {
@@ -103,7 +103,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
 
         Object.defineProperty(element, 'mxsSetItemAlignment', {
           enumerable: true,
-          writable: true,
+          writable: false,
           configurable: false,
           value: (itemIndex) => {
             if (itemIndex < element.getItemCount()) {

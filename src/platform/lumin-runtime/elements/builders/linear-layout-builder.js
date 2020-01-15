@@ -55,7 +55,7 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
 
         Object.defineProperty(element, 'mxsSetItemPadding', {
           enumerable: true,
-          writable: true,
+          writable: false,
           configurable: false,
           value: (itemIndex) =>
             element.itemPadding.filter(({ index }) => index == itemIndex )
@@ -71,7 +71,7 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
 
         Object.defineProperty(element, 'mxsSetItemAlignment', {
           enumerable: true,
-          writable: true,
+          writable: false,
           configurable: false,
           value: (itemIndex) =>
             element.itemAlignment.filter(({ index }) => index == itemIndex )
