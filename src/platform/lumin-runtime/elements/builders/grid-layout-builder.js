@@ -48,19 +48,18 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
     }
 
     _addCustomProperties (element) {
-        const getItemCell = (element, item) => {
+        const getItemCell = (gridLayout, item) => {
           const nodeId = item.getNodeId();
-          const rows = element.getCurrentRows();
-          const columns = element.getCurrentColumns();
+          const rows = gridLayout.getCurrentRows();
+          const columns = gridLayout.getCurrentColumns();
           let row = 0;
           let column = 0;
-          let found = false;
 
-          while (!found && row < rows) {
-            while (!found && column < columns) {
-              const node = element.getItem(row, column);
+          while (row < rows) {
+            while (column < columns) {
+              const node = gridLayout.getItem(row, column);
               if (node !== null && node.getNodeId() === nodeId) {
-                found = true;
+                return { row, column };
               } else {
                 column++;
               }
@@ -69,7 +68,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
             row++;
           }
 
-          return found ? { row, column } : undefined;
+          return undefined;
         };
 
         Object.defineProperty(element, 'itemPadding', {
@@ -85,7 +84,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           configurable: false,
           value: (itemIndex) => {
             if (itemIndex < element.getItemCount()) {
-              const cell = getItemCell(element.getItem(itemIndex));
+              const cell = getItemCell(element, element.getItem(itemIndex));
               if (cell !== undefined) {
                 element.itemPadding
                   .filter(({ row, column }) => row === cell.row && cell.column === column)
@@ -108,7 +107,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           configurable: false,
           value: (itemIndex) => {
             if (itemIndex < element.getItemCount()) {
-              const cell = getItemCell(element.getItem(itemIndex));
+              const cell = getItemCell(element, element.getItem(itemIndex));
               if (cell !== undefined) {
                 element.itemAlignment
                   .filter(({ row, column }) => row === cell.row && cell.column === column)
