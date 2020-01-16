@@ -36,7 +36,12 @@ class ColorProperty extends PropertyDescriptor {
 
   static parse (value) {
     if (this._isGlFormat(value)) {
-      return value;
+      return [
+        Number.parseFloat(value[0]),
+        Number.parseFloat(value[1]),
+        Number.parseFloat(value[2]),
+        value[3]
+      ];
     }
 
     const [r, g, b, a] = chroma(value).rgba(false);
