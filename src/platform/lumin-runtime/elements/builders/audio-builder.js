@@ -134,7 +134,7 @@ export class AudioBuilder extends TransformBuilder {
         newProperties.spatialSoundDirection
             .forEach(({ channel, channelDirection }) => {
                 if (channel !== undefined && channelDirection !== undefined) {
-                    element(channel, channelDirection);
+                    element.setSpatialSoundDirection(channel, channelDirection);
                 };
             });
     }
