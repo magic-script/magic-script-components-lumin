@@ -7,5 +7,5 @@ import { MessageSeverity } from './util/logger.js';
 export default {
   nativeMapping: nativeComponentMapping,
   nativeFactory: PlatformFactory,
-  logMinMessageSeverity: MessageSeverity.exception
+  logMinMessageSeverity: MessageSeverity.error
 };

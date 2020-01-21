@@ -2,6 +2,7 @@
 
 import Reconciler from 'react-reconciler';
 import mxs from '../../index.js';
+import log, { MessageSeverity } from '../util/logger.js';
 
 // Flow type definitions ------------------------------------------------------
 //  Type = string;
@@ -413,10 +414,7 @@ const HostConfig = {
 };
 
 function logNotImplemented(functionName) {
-  const message = `${functionName} has not been implemented yet`;
-
-  console.log(message);
-  print(message);
+  log(`${functionName} has not been implemented yet`, MessageSeverity.warning);
 }
 
 function throwNotImplemented(functionName) {

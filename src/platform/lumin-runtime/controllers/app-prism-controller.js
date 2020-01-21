@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import log, { MessageSeverity } from '../../../util/logger.js';
 import { PrismController } from 'lumin';
 import { ReactMagicScript } from '../../../react-magic-script/react-magic-script.js'
 
@@ -74,7 +75,7 @@ export class AppPrismController extends PrismController {
         try {
             ReactMagicScript.render(this._app, this.getContainer());
         } catch (error) {
-            console.log(`${error.name} - ${error.message}\n${error.stack}`);
+            log(`${error.name} - ${error.message}\n${error.stack}`, MessageSeverity.exception);
             throw error;
         }
     }

@@ -1,4 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
+import log, { MessageSeverity } from '../../../../util/logger.js';
 
 export class ElementBuilder {
     constructor() {
@@ -57,7 +58,7 @@ export class ElementBuilder {
         if ( descriptor.validate(value) ) {
             return true;
         } else {
-            console.log(`Property ${descriptor.Name} does not have a valid value: ${value}`);
+            log(`Property ${descriptor.Name} does not have a valid value: ${value}`, MessageSeverity.error);
             return false;
         }
     }

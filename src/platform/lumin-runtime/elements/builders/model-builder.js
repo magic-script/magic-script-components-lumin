@@ -9,6 +9,7 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js'
 
 import { TextureType } from '../../types/texture-type.js';
 import { validator } from '../../utilities/validator.js';
+import log, { MessageSeverity } from '../../../../util/logger.js';
 
 export class ModelBuilder extends RenderBuilder {
     constructor() {
@@ -95,19 +96,19 @@ export class ModelBuilder extends RenderBuilder {
 
         const defaultTextureIndex = properties.defaultTextureIndex;
         if ( defaultTextureIndex >= textureIds.length ) {
-            console.log(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`);
+            log(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`, MessageSeverity.error);
             return;
         }
 
         const defaultTextureSlot = properties.defaultTextureSlot;
         if ( !validator.validateTextureType(defaultTextureSlot) ) {
-            console.log(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`);
+            log(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`, MessageSeverity.error);
             return;
         }
 
         const defaultMaterialName = properties.defaultMaterialName;
         if ( defaultMaterialName === undefined) {
-            console.log('Value for defaultMaterialName attribute was not provided');
+            log('Value for defaultMaterialName attribute was not provided', MessageSeverity.error);
             return;
         }
 
@@ -124,17 +125,17 @@ export class ModelBuilder extends RenderBuilder {
         const { materialName, textureSlot, textureId } = texture;
 
         if (materialName === undefined) {
-            console.log('Model.texture.materialName is required');
+            log('Model.texture.materialName is required', MessageSeverity.error);
             return;
         }
 
         if (textureSlot === undefined) {
-            console.log('Model.texture.textureSlot is required');
+            log('Model.texture.textureSlot is required', MessageSeverity.error);
             return;
         }
 
         if ( textureId === undefined) {
-            console.log('Model.texture.textureId is required');
+            log('Model.texture.textureId is required', MessageSeverity.error);
             return;
         }
 
