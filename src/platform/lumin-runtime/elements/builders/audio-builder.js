@@ -130,13 +130,22 @@ export class AudioBuilder extends TransformBuilder {
         }
     }
 
+    setSpatialSoundDirection(element, oldProperties, newProperties) {
+        newProperties.spatialSoundDirection
+            .forEach(({ channel, channelDirection }) => {
+                if (channel !== undefined && channelDirection !== undefined) {
+                    element.setSpatialSoundDirection(channel, channelDirection);
+                };
+            });
+    }
+
     _getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf) {
         let channelSendlevels = undefined;
 
-        if (   gain    !== undefined
-            && gainHf  !== undefined
-            && gainLf  !== undefined
-            && gainMf  !== undefined ) {
+        if ( gain    !== undefined &&
+             gainHf  !== undefined &&
+             gainLf  !== undefined &&
+             gainMf  !== undefined ) {
 
             channelSendlevels = new SpatialSoundSendLevels();
             channelSendlevels.gain = gain;
@@ -148,76 +157,91 @@ export class AudioBuilder extends TransformBuilder {
         return channelSendlevels;
     }
 
-    setSpatialSoundDirection(element, oldProperties, newProperties) {
-        const { channel, channelDirection } = newProperties.spatialSoundDirection;
-
-        if (channel !== undefined && channelDirection !== undefined) {
-            element(channel, channelDirection);
-        }
-    }
-
     setSpatialSoundDirectSendLevels(element, oldProperties, newProperties) {
-        const { channel, gain, gainHf, gainLf, gainMf } = newProperties.spatialSoundDirectSendLevels;
+        newProperties.spatialSoundDirectSendLevels
+            .forEach(({ channel, gain, gainHf, gainLf, gainMf }) => {
+                const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
 
-        const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
-
-        if ( channel !== undefined && channelSendlevels !== undefined ) {
-            element.setSpatialSoundDirectSendLevels(channel, channelSendlevels);
-        }
+                if ( channel !== undefined && channelSendlevels !== undefined ) {
+                    element.setSpatialSoundDirectSendLevels(channel, channelSendlevels);
+                }
+            });
     }
 
-    setSpatialSoundDistance(element, oldProperties, newProperties) {
-        const { channel, minDistance, maxDistance, rolloffFactor }  = newProperties.setSpatialSoundDistance
+    _getSpatialSoundDistanceProperties(minDistance, maxDistance, rolloffFactor) {
+        let distanceProperties = undefined;
 
-        if (  channel !== undefined
-           && minDistance   !== undefined
-           && maxDistance   !== undefined
-           && rolloffFactor !== undefined) {
+        if ( minDistance   !== undefined &&
+             maxDistance   !== undefined &&
+             rolloffFactor !== undefined ) {
 
-            const distanceProperties = new SpatialSoundDistanceProperties();
+            distanceProperties = new SpatialSoundDistanceProperties();
             distanceProperties.minDistance = minDistance;
             distanceProperties.maxDistance = maxDistance;
             distanceProperties.rolloffFactor = rolloffFactor;
+         }
 
-            element.setSpatialSoundDistanceProperties(channel, distanceProperties);
-        }
+         return distanceProperties;
+    }
+
+    setSpatialSoundDistance(element, oldProperties, newProperties) {
+        newProperties.setSpatialSoundDistance
+            .forEach(({ channel, minDistance, maxDistance, rolloffFactor }) => {
+                const distanceProperties = this._getSpatialSoundDistanceProperties(minDistance, maxDistance, rolloffFactor);
+
+                if ( channel !== undefined && distanceProperties !== undefined) {
+                    element.setSpatialSoundDistanceProperties(channel, distanceProperties);
+                }
+            });
     }
 
     setSpatialSoundPosition(element, oldProperties, newProperties) {
-         const { channel, channelPosition } = newProperties.spatialSoundPosition;
+        newProperties.spatialSoundPosition
+            .forEach(({ channel, channelPosition }) => {
+                if (channel !== undefined && channelPosition !== undefined) {
+                    element.setSpatialSoundPosition(channel, channelPosition);
+                }
+            });
+    }
 
-         if (channel !== undefined && channelPosition !== undefined) {
-             element.setSpatialSoundPosition(channel, channelPosition);
+    _getSpatialSoundRadiationProperties(innerAngle, outerAngle, outerGain, outerGainHf) {
+        let radiationProperties = undefined;
+
+        if ( innerAngle   !== undefined &&
+             outerAngle   !== undefined &&
+             outerGain    !== undefined &&
+             outerGainHf  !== undefined ) {
+
+             radiationProperties = new SpatialSoundRadiationProperties();
+             radiationProperties.innerAngle  = innerAngle;
+             radiationProperties.outerAngle  = outerAngle;
+             radiationProperties.outerGain   = outerGain;
+             radiationProperties.outerGainHf = outerGainHf;
          }
+
+         return radiationProperties;
     }
 
     setSpatialSoundRadiation(element, oldProperties, newProperties) {
-        const {channel, innerAngle, outerAngle, outerGain, outerGainHf} = newProperties.spatialSoundRadiation;
+        newProperties.spatialSoundRadiation
+            .forEach(({channel, innerAngle, outerAngle, outerGain, outerGainHf}) => {
+                const radiationProperties = this._getSpatialSoundRadiationProperties(innerAngle, outerAngle, outerGain, outerGainHf);
 
-        if (  channel !== undefined
-           && innerAngle   !== undefined
-           && outerAngle   !== undefined
-           && outerGain    !== undefined
-           && outerGainHf  !== undefined ) {
-
-            const radiationProperties = new SpatialSoundRadiationProperties();
-            radiationProperties.innerAngle  = innerAngle;
-            radiationProperties.outerAngle  = outerAngle;
-            radiationProperties.outerGain   = outerGain;
-            radiationProperties.outerGainHf = outerGainHf;
-
-            element.setSpatialSoundRadiationProperties(channel, radiationProperties);
-        }
+                if ( channel !== undefined && radiationProperties !== undefined ) {
+                    element.setSpatialSoundRadiationProperties(channel, radiationProperties);
+                }
+            });
     }
 
     setSpatialSoundRoomSendLevels(element, oldProperties, newProperties) {
-        const { channel, gain, gainHf, gainLf, gainMf } = newProperties.spatialSoundRoomSendLevels;
+        newProperties.spatialSoundRoomSendLevels
+            .forEach(({ channel, gain, gainHf, gainLf, gainMf }) => {
+                const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
 
-        const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
-
-        if ( channel !== undefined && channelSendlevels !== undefined ) {
-            element.setSpatialSoundRoomSendLevels(channel, channelSendlevels);
-        }
+                if ( channel !== undefined && channelSendlevels !== undefined ) {
+                    element.setSpatialSoundRoomSendLevels(channel, channelSendlevels);
+                }
+            });
     }
 
     setAction(element, oldProperties, newProperties) {
