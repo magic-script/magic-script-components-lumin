@@ -17,140 +17,151 @@ import { UiEventData } from '../types/event-data/ui-event-data.js';
 import { VideoEventData } from '../types/event-data/video-event-data.js';
 
 export class MxsPrismController extends PrismController {
-    constructor(properties) {
-        super(properties.name);
+  constructor (properties) {
+    super(properties.name);
 
-        this._children = [];
-        this._controllers = [];
+    this._children = [];
+    this._controllers = [];
 
-        this._initialProperties = {...properties};
+    this._initialProperties = { ...properties };
 
-        this._eventHandlers = {
-            onPreAttachPrism: [],
-            onAttachPrism: [],
-            onDetachPrism: [],
-            onEvent:[],
-            onUpdate: []
-        };
+    this._eventHandlers = {
+      onPreAttachPrism: [],
+      onAttachPrism: [],
+      onDetachPrism: [],
+      onEvent: [],
+      onUpdate: []
+    };
 
-        this._eventTypes = [
-            ControlPose3DofInputEventData,
-            ControlPose6DofInputEventData,
-            ControlTouchPadInputEventData,
-            EyeTrackingEventData,
-            GestureInputEventData,
-            InputEventData,
-            KeyInputEventData,
-            RayCastEventData,
-            SelectionEventData,
-            UiEventData,
-            VideoEventData
-        ];
+    this._eventTypes = [
+      ControlPose3DofInputEventData,
+      ControlPose6DofInputEventData,
+      ControlTouchPadInputEventData,
+      EyeTrackingEventData,
+      GestureInputEventData,
+      InputEventData,
+      KeyInputEventData,
+      RayCastEventData,
+      SelectionEventData,
+      UiEventData,
+      VideoEventData
+    ];
+
+    this._eventTypes.forEach(eventDataConstructor => {
+      this._eventHandlers[this._getEventTypeName(eventDataConstructor.name)] = [];
+    });
+  }
+
+  addChild (child) {
+    const root = this.getRoot();
+    if (root === undefined || root === null) {
+      this._children.push(child);
+    } else {
+      root.addChild(child);
+    }
+  }
+
+  addChildController (controller) {
+    // It will receive all onEvent callbacks received by this controller (the parent).
+    // If a prism is already attached,
+    // the child controller will also receive an onAttachPrism callback.
+    const root = this.getRoot();
+    if (root === undefined || root === null) {
+      this._controllers.push(controller);
+    } else {
+      super.addChildController(controller);
+      this.addChild(controller.getRoot());
+    }
+  }
+
+  addListener (eventName, eventHandler) {
+    const handlers = this._eventHandlers[eventName];
+    if (handlers !== undefined) {
+      handlers.push(eventHandler);
+    } else {
+      throw TypeError(`Event ${eventName} is not supported by the controller`);
+    }
+  }
+
+  removeListener (eventName, eventHandler) {
+    const handlers = this._eventHandlers[eventName];
+    if (handlers !== undefined) {
+      const index = handlers.indexOf(eventHandler);
+      handlers.splice(index, 1);
+    } else {
+      throw TypeError(`Event ${eventName} is not supported by the controller`);
+    }
+  }
+
+  clearListeners () {
+    Object.values(this._eventHandlers)
+      .forEach(handlers => handlers.splice(0));
+  }
+
+  onPreAttachPrism (prism) {
+    this._eventHandlers.onPreAttachPrism.forEach(handler => handler(new PrismEventData(prism)));
+  }
+
+  onAttachPrism (prism) {
+    const root = this.getRoot();
+
+    if (this._initialProperties !== undefined) {
+      const builder = new TransformBuilder();
+      builder.update(root, undefined, this._initialProperties);
+
+      this._initialProperties = undefined;
     }
 
-    addChild(child) {
-        const root = this.getRoot();
-        if (root === undefined || root === null) {
-            this._children.push(child);
-        } else {
-            root.addChild(child);
-        }
+    if (this._controllers !== undefined) {
+      this._controllers.forEach(controller => {
+        super.addChildController(controller);
+        root.addChild(controller.getRoot());
+      });
+      this._controllers = undefined;
     }
 
-    addChildController(controller) {
-        // It will receive all onEvent callbacks received by this controller (the parent).
-        // If a prism is already attached,
-        // the child controller will also receive an onAttachPrism callback.
-        const root = this.getRoot();
-        if (root === undefined || root === null) {
-            this._controllers.push(controller);
-        } else {
-            super.addChildController(controller);
-            this.addChild(controller.getRoot());
-        }
+    if (this._children !== undefined) {
+      this._children.forEach(child => root.addChild(child));
+      this._children = undefined;
     }
 
-    addListener(eventName, eventHandler) {
-        const handlers = this._eventHandlers[eventName];
-        if (handlers !== undefined) {
-            handlers.push(eventHandler);
-        } else {
-            throw TypeError(`Event ${eventName} is not supported by the controller`);
-        }
+    this._eventHandlers.onAttachPrism.forEach(handler => handler(new PrismEventData(prism)));
+  }
+
+  onDetachPrism (prism) {
+    this._eventHandlers.onDetachPrism.forEach(handler => handler(new PrismEventData(prism)));
+    this.deleteSceneGraph();
+  }
+
+  _getEventDataByEventType (eventData) {
+    const eventConstructor = this._eventTypes
+      .find(eventType => eventType.isSupported(eventData));
+
+    return eventConstructor === undefined
+      ? eventData
+      : new eventConstructor(eventData);
+  }
+
+  _getEventTypeName (eventDataTypeName) {
+    // Remove suffix 'Data' from the event data type name
+    return `on${eventDataTypeName.slice(0, -4)}`;
+  }
+
+  onEvent (event) {
+    const eventData = this._getEventDataByEventType(event);
+    const handlers = this._eventHandlers[this._getEventTypeName(eventData.constructor.name)];
+
+    if (Array.isArray(handlers)) {
+      handlers.forEach(handler => handler(eventData));
+    } else {
+      this._eventHandlers.onEvent.forEach(handler => handler(eventData));
     }
 
-    removeListener(eventName, eventHandler) {
-        const handlers = this._eventHandlers[eventName];
-        if (handlers !== undefined) {
-            const index = handlers.indexOf(eventHandler);
-            handlers.splice(index, 1);
-        } else {
-            throw TypeError(`Event ${eventName} is not supported by the controller`);
-        }
-    }
+    return false;
+  }
 
-    clearListeners() {
-        this._eventHandlers = {
-            onPreAttachPrism: [],
-            onAttachPrism: [],
-            onDetachPrism: [],
-            onEvent:[],
-            onUpdate: []
-        };
-    }
-
-    onPreAttachPrism(prism) {
-        this._eventHandlers.onPreAttachPrism.forEach(handler => handler(new PrismEventData(prism)));
-    }
-
-    onAttachPrism(prism) {
-        const root = this.getRoot();
-
-        if (this._initialProperties !== undefined) {
-            const builder = new TransformBuilder();
-            builder.update(root, undefined, this._initialProperties);
-
-            this._initialProperties = undefined;
-        }
-
-        if (this._controllers !== undefined) {
-            this._controllers.forEach(controller => {
-                super.addChildController(controller);
-                root.addChild(controller.getRoot());
-            });
-            this._controllers = undefined;
-        }
-
-        if (this._children !== undefined) {
-            this._children.forEach(child => root.addChild(child));
-            this._children = undefined;
-        }
-
-        this._eventHandlers.onAttachPrism.forEach(handler => handler(new PrismEventData(prism)));
-    }
-
-    onDetachPrism(prism) {
-        this._eventHandlers.onDetachPrism.forEach(handler => handler(new PrismEventData(prism)));
-        this.deleteSceneGraph();
-    }
-
-    _getEventDataByEventType(eventData) {
-
-        const eventConstructor = this._eventTypes
-            .find( eventType => eventType.isSupported(eventData) );
-
-        return eventConstructor === undefined
-            ? eventData
-            : new eventConstructor(eventData);
-    }
-
-    onEvent(event) {
-        const eventData = this._getEventDataByEventType(event);
-        this._eventHandlers.onEvent.forEach(handler => handler(eventData));
-        return false;
-    }
-
-    onUpdate(delta) {
-        this._eventHandlers.onUpdate.forEach(handler => handler(delta));
-    }
+  onUpdate (delta) {
+    this._eventHandlers.onUpdate
+      .forEach(handler => handler(delta));
+  }
 }
