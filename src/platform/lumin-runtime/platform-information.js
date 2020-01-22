@@ -1,9 +1,9 @@
 class PlatformInformation {
-    platformName() {
+    name() {
         return "Lumin"
     }
 
-    platformVersion() {
+    version() {
         return "0.94.62"
     }
 }
