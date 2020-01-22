@@ -70,9 +70,9 @@ export class ButtonBuilder extends TextContainerBuilder {
         const text = this.getText(properties.children, properties.text);
         const { type, iconPath, labelSide, height, iconType } = properties;
 
-        // 1. EclipseButtonParams(type, iconPath, text, labelSide, height, iconType)
-        if (type !== undefined && iconPath !== undefined && text !== undefined && labelSide !== undefined && height !== undefined && iconType !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], iconPath, text, Side[labelSide], height, SystemIcons[iconType]);
+        // 1. EclipseButtonParams(type, iconType, text, labelSide, height)
+        if (type !== undefined && text !== undefined && labelSide !== undefined && height !== undefined && iconType !== undefined) {
+            return new ui.EclipseButtonParams(EclipseButtonType[type], SystemIcons[iconType], text, Side[labelSide], height);
         }
 
         // 2. EclipseButtonParams(type, iconPath, text, labelSide, height)
