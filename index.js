@@ -1,5 +1,6 @@
 import configuration from './src/configuration.js';
 import { generateTypeScript } from './src/util/gen-type-script.js';
+import { PlatformInformation } from './src/platform/lumin-runtime/platform-information.js';
 
 export default {
     _init() {
@@ -16,5 +17,7 @@ export default {
         return this._app.getContainer(nodeName);
     },
 
-    generateTypeScript
+    generateTypeScript,
+
+    PlatformInformation
 }
