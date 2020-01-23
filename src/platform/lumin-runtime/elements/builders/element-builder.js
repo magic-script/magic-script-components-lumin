@@ -40,7 +40,7 @@ export class ElementBuilder {
                 try {
                     element[descriptor.SetterName](descriptor.parse(value));
                 } catch (error) {
-                    throw new Error(`[Native.${descriptor.SetterName}]: ${error.name} - ${error.message}\n${error.stack}`);
+                    throw new Error(`[Native.${descriptor.SetterName}(${JSON.stringify(value)})]: ${error.name} - ${error.message}\n${error.stack}`);
                 }
             } else {
                 throw new Error(`${JSON.stringify(element)} does not have method ${descriptor.SetterName}`);
@@ -60,6 +60,15 @@ export class ElementBuilder {
         } else {
             log(`Property ${descriptor.Name} does not have a valid value: ${value}`, MessageSeverity.error);
             return false;
+        }
+    }
+
+    _executeFunction(element, name, ...parameters) {
+        try {
+            element[name](...parameters);
+        } catch (error) {
+            const signature = `${name}(${parameters.map(parameter => JSON.stringify(parameter)).join(', ')})`;
+            throw new Error(`[Native.${signature}]: ${error.name} - ${error.message}\n${error.stack}`);
         }
     }
 

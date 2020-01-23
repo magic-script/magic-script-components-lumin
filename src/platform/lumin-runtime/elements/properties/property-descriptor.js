@@ -43,7 +43,7 @@ export class PropertyDescriptor {
     }
 
     hasValue(value) {
-        PropertyDescriptor.hasValue(value);
+        return PropertyDescriptor.hasValue(value);
     }
 
     static hasValue(value) {
@@ -55,8 +55,8 @@ export class PropertyDescriptor {
     }
 
     static throwIfNotTypeOf(value, expectedType) {
-        if ( this.hasValue(value) && typeof value !== expectedType ) {
-            throw new TypeError(`Parameter ${value} should be ${expectedType} value`);
+        if (this.hasValue(value) && (typeof value !== expectedType)) {
+            throw new TypeError(`Value ${value} should be of type ${expectedType}`);
         }
     }
 
