@@ -28,8 +28,8 @@ export class ElementBuilder {
     _applyAction(properties, action){
         for (const [name, value] of Object.entries(properties)) {
             const descriptor = this._propertyDescriptors[name];
-            if (descriptor !== undefined && value !== undefined) {
-                action(properties[name], descriptor);
+            if (value !== undefined && descriptor !== undefined) {
+                action(value, descriptor);
             }
         }
     }
