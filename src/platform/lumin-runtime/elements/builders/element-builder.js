@@ -26,9 +26,9 @@ export class ElementBuilder {
     }
 
     _applyAction(properties, action){
-        for (const name of Object.keys(properties)) {
+        for (const [name, value] of Object.entries(properties)) {
             const descriptor = this._propertyDescriptors[name];
-            if (descriptor !== undefined) {
+            if (descriptor !== undefined && value !== undefined) {
                 action(properties[name], descriptor);
             }
         }
