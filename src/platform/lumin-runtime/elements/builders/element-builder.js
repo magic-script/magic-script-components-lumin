@@ -63,18 +63,46 @@ export class ElementBuilder {
         }
     }
 
-    _executeFunction(element, name, ...parameters) {
+    _composeFunctionSignature (name, ...parameters) {
+        return parameters !== undefined
+          ? `${name}(${parameters.map(parameter => JSON.stringify(parameter)).join(', ')})`
+          : '';
+    }
+
+    _throwNativeCallError (error, signature) {
+        throw new Error(`[Native.${signature}]:\n${error.name} - ${error.message}\n${error.stack}`);
+    }
+
+    // Expects to execute 'Create' or `CreateXXX' static function which returns node object
+    _createNode (classReference, constructorName, prism, ...parameters) {
         try {
-            element[name](...parameters);
+          return classReference[constructorName](prism, ...parameters);
         } catch (error) {
-            const signature = `${name}(${parameters.map(parameter => JSON.stringify(parameter)).join(', ')})`;
-            throw new Error(`[Native.${signature}]: ${error.name} - ${error.message}\n${error.stack}`);
+          this._throwNativeCallError(error, this._composeFunctionSignature(constructorName, ...parameters));
         }
     }
 
-    throwIfNotInstanceOf(element, ...expectedTypes) {
-        if ( !expectedTypes.some(instanceType => element instanceof instanceType)){
-            throw new TypeError(`Component is not a instance of the required type ${expectedTypes.toString()}`);
+    // Expects node function which returns result
+    _callNodeFunction (node, functionName, ...parameters) {
+        try {
+          return node[functionName](...parameters);
+        } catch (error) {
+          this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
+        }
+    }
+
+  // Expects node function which does NOT return result
+    _callNodeAction (node, functionName, ...parameters) {
+        try {
+          node[functionName](...parameters);
+        } catch (error) {
+          this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
+        }
+    }
+
+    throwIfNotInstanceOf (element, ...expectedTypes) {
+        if (!expectedTypes.some(instanceType => element instanceof instanceType)) {
+          throw new TypeError(`Component is not a instance of the required type ${expectedTypes.toString()}`);
         }
     }
 

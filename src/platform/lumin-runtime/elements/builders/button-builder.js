@@ -33,9 +33,9 @@ export class ButtonBuilder extends TextContainerBuilder {
             const width = this.getPropertyValue('width', 0.0, properties);
             const roundness = this.getPropertyValue('roundness', 1.0, properties);
 
-            element = ui.UiButton.Create(prism, text, width, height, roundness);
+            element = this._createNode(ui.UiButton, 'Create', prism, text, width, height, roundness);
         } else {
-            element = ui.UiButton.CreateEclipseButton(prism, this.getEclipseButtonParams(properties));
+            element = this._createNode(ui.UiButton, 'CreateEclipseButton', prism, this.getEclipseButtonParams(properties));
         }
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'width', 'height', 'roundness']);
