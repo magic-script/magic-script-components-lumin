@@ -23,7 +23,7 @@ export class ListViewBuilder extends UiNodeBuilder {
     this._propertyDescriptors['defaultItemPadding'] = new ArrayProperty('defaultItemPadding', 'setDefaultItemPadding', true, 'vec4');
     this._propertyDescriptors['orientation'] = new EnumProperty('orientation', 'setOrientation', false, Orientation, 'Orientation');
 
-    // ScrollBar
+    // ScrollBar - set by the platform-factory
 
     this._propertyDescriptors['scrollBarVisibility'] = new EnumProperty('scrollBarVisibility', 'setScrollBarVisibilityMode', false, ScrollBarVisibility, 'ScrollBarVisibility');
     this._propertyDescriptors['scrollingEnabled'] = new PrimitiveTypeProperty('scrollingEnabled', 'setScrollingEnabled', true, 'boolean');
@@ -57,7 +57,7 @@ export class ListViewBuilder extends UiNodeBuilder {
     const width = this.getPropertyValue('width', 0, properties);
     const height = this.getPropertyValue('height', 0, properties);
 
-    const element = ui.UiListView.Create(prism, width, height);
+    const element = this._createNode(ui.UiListView, 'Create', prism, width, height);
 
     const unapplied = this.excludeProperties(properties, ['width', 'height']);
 
@@ -73,29 +73,31 @@ export class ListViewBuilder extends UiNodeBuilder {
   }
 
   setCursorEdgeScrollMode (element, oldProperties, newProperties) {
-    element.setCursorEdgeScrollMode(CursorEdgeScrollMode[newProperties.cursorEdgeScrollMode]);
+    this._callNodeAction(element, 'setCursorEdgeScrollMode', CursorEdgeScrollMode[newProperties.cursorEdgeScrollMode]);
   }
 
   setDefaultItemAlignment (element, oldProperties, newProperties) {
-    element.setDefaultItemAlignment(Alignment[newProperties.defaultItemAlignment]);
+    this._callNodeAction(element, 'setDefaultItemAlignment', Alignment[newProperties.defaultItemAlignment]);
   }
 
   setOrientation (element, oldProperties, newProperties) {
-    element.setOrientation(Orientation[newProperties.orientation]);
+    this._callNodeAction(element, 'setOrientation', Orientation[newProperties.orientation]);
   }
 
   setScrollBarVisibilityMode (element, oldProperties, newProperties) {
-    element.setScrollBarVisibilityMode(ScrollBarVisibility[newProperties.scrollBarVisibility]);
+    this._callNodeAction(element, 'setScrollBarVisibilityMode', ScrollBarVisibility[newProperties.scrollBarVisibility]);
   }
 
   setItemAlignment (element, oldProperties, newProperties) {
-    const { index, alignment } = newProperties.itemAlignment;
-    element.setItemAlignment(index, Alignment[alignment]);
+    newProperties.itemAlignment.forEach(({ index, alignment }) =>
+      this._callNodeAction(element, 'setItemAlignment', index, Alignment[alignment])
+    );
   }
 
   setItemPadding (element, oldProperties, newProperties) {
-    const { index, padding } = newProperties.itemPadding;
-    element.setItemPadding(index, padding);
+    newProperties.itemPadding.forEach(({ index, padding }) =>
+      this._callNodeAction(element, 'setItemPadding', index, padding)
+    );
   }
 
   _validateSize (properties) {
@@ -108,14 +110,14 @@ export class ListViewBuilder extends UiNodeBuilder {
 
     if (width || height) {
       if (width === undefined) {
-        width = element.getSize()[0];
+        width = this._callNodeFunction(element, 'getSize')[0];
       }
 
       if (height === undefined) {
-        height = element.getSize()[1];
+        height = this._callNodeFunction(element, 'getSize')[1];
       }
 
-      element.setSize([width, height]);
+      this._callNodeAction(element, 'setSize', [width, height]);
     }
   }
 

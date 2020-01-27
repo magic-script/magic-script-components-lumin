@@ -37,13 +37,13 @@ export class ImageBuilder extends UiNodeBuilder {
 
     let element;
     if (typeof icon === 'string') {
-      element = ui.UiImage.Create(prism, SystemIcons[icon], height);
+      element = this._createNode(ui.UiImage, 'Create', prism, SystemIcons[icon], height);
     } else if (resourceId) {
-      element = ui.UiImage.Create(prism, resourceId, width, height, useFrame);
+      element = this._createNode(ui.UiImage, 'Create', prism, resourceId, width, height, useFrame);
     } else if (filePath) {
-      element = ui.UiImage.Create(prism, filePath, width, height, absolutePath, useFrame);
+      element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
     } else if (color) {
-      element = ui.UiImage.Create(prism, BigInt(0), width, height, useFrame);
+      element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
     }
 
     const unapplied = this.excludeProperties(properties, ['icon', 'filePath', 'resourceId', 'height', 'width']);
@@ -86,21 +86,21 @@ export class ImageBuilder extends UiNodeBuilder {
 
     if (width || height) {
       if (width === undefined) {
-        width = element.getSize()[0];
+        width = this._callNodeFunction(element, 'getSize')[0];
       }
 
       if (height === undefined) {
-        height = element.getSize()[1];
+        height = this._callNodeFunction(element, 'getSize')[1];
       }
 
-      element.setSize([width, height]);
+      this._callNodeAction(element, 'setSize', [width, height]);
     }
   }
 
   setTexCoords (element, oldProperties, newProperties) {
     const texCoords = newProperties.texCoords;
     texCoords.forEach(coordinate => PropertyDescriptor.throwIfNotArray(coordinate, 'vec2'));
-    element.setTexCoords(texCoords);
+    this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
   _validateFilePath (newProperties) {
@@ -110,17 +110,22 @@ export class ImageBuilder extends UiNodeBuilder {
   _setFilePath (element, oldProperties, newProperties, prism) {
     if (oldProperties.filePath === undefined) {
       if (newProperties.filePath !== undefined) {
-        element.setRenderResource(prism.createTextureResourceId(Desc2d.DEFAULT, newProperties.filePath));
+        this._callNodeAction(element, 'setRenderResource',
+          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
       }
     } else {
       if (newProperties.filePath !== undefined) {
         if (oldProperties.filePath !== newProperties.filePath) {
-          const oldResourceId = element.getRenderResource();
-          element.setRenderResource(prism.createTextureResourceId(Desc2d.DEFAULT, newProperties.filePath));
-          prism.destroyResource(oldResourceId);
+          const oldResourceId = this._callNodeFunction(element, 'getRenderResource');
+
+          this._callNodeAction(element, 'setRenderResource',
+            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+
+            this._callNodeAction(prism, 'destroyResource', oldResourceId);
         }
       } else {
-        prism.destroyResource(element.getRenderResource());
+        this._callNodeAction(prism, 'destroyResource',
+          this._callNodeFunction(element, 'getRenderResource'));
       }
     }
   }

@@ -32,8 +32,8 @@ export class LoadingSpinnerBuilder extends UiNodeBuilder {
         const determinate = this.getPropertyValue('determinate', false, properties);
 
         const element = determinate
-            ? ui.UiLoadingSpinner.CreateDeterminate(prism, height)
-            : ui.UiLoadingSpinner.Create(prism, type, id, path, height);
+            ? this._createNode(ui.UiLoadingSpinner, 'CreateDeterminate', prism, height)
+            : this._createNode(ui.UiLoadingSpinner, 'Create', prism, type, id, path, height);
 
         const unapplied = this.excludeProperties(properties, ['type', 'resourceId', 'resourcePath', 'height']);
 

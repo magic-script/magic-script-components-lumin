@@ -49,16 +49,17 @@ export class ModelBuilder extends RenderBuilder {
 
         let textureIds;
         if (Array.isArray(texturePaths)) {
-            textureIds = texturePaths.map(path => prism.createTextureResourceId(Desc2d.DEFAULT, path));
+            textureIds = texturePaths.map(path =>
+                this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, path));
         }
 
         if (materialPath !== undefined) {
-            prism.createMaterialResourceId(materialPath);
+            this._callNodeAction(prism, 'createMaterialResourceId', materialPath);
         }
 
         const importScale = this.getPropertyValue('importScale', 1.0, properties);
-        const modelId = prism.createModelResourceId(modelPath, importScale);
-        const element = prism.createModelNode(modelId);
+        const modelId = this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale);
+        const element = this._callNodeFunction(prism, 'createModelNode', modelId);
 
         this._setDefaultTexture(element, textureIds, properties)
 
@@ -112,7 +113,7 @@ export class ModelBuilder extends RenderBuilder {
             return;
         }
 
-        element.setTexture(defaultMaterialName, TextureType[defaultTextureSlot], textureIds[defaultTextureIndex]);
+        this._callNodeAction(element, 'setTexture', defaultMaterialName, TextureType[defaultTextureSlot], textureIds[defaultTextureIndex]);
     }
 
     setTexture(element, oldProperties, newProperties) {
@@ -139,7 +140,7 @@ export class ModelBuilder extends RenderBuilder {
             return;
         }
 
-        element.setTexture(materialName, TextureType[textureSlot], textureId)
+        this._callNodeAction(element, 'setTexture', materialName, TextureType[textureSlot], textureId)
     }
 
     setAnimation(element, oldProperties, newProperties) {
@@ -147,7 +148,7 @@ export class ModelBuilder extends RenderBuilder {
             let { resourceId, name, paused, loops } = newProperties.animation;
 
             if (resourceId === undefined) {
-                resourceId = element.getModelResource();
+                resourceId = this._callNodeFunction(element, 'getModelResource');
             }
 
             if (paused === undefined) {
@@ -162,7 +163,7 @@ export class ModelBuilder extends RenderBuilder {
                 throw new TypeError(`Animation Name has not been provided.`);
             }
 
-            element.playAnimation(resourceId, name, paused, loops);
+            this._callNodeAction(element, 'playAnimation', resourceId, name, paused, loops);
         }
     }
 

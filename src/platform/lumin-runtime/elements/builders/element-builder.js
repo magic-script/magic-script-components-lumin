@@ -76,7 +76,9 @@ export class ElementBuilder {
     // Expects to execute 'Create' or `CreateXXX' static function which returns node object
     _createNode (classReference, constructorName, prism, ...parameters) {
         try {
-          return classReference[constructorName](prism, ...parameters);
+          return Array.isArray(parameters) && (parameters.length > 0)
+            ? classReference[constructorName](prism, ...parameters)
+            : classReference[constructorName](prism);
         } catch (error) {
           this._throwNativeCallError(error, this._composeFunctionSignature(constructorName, ...parameters));
         }
@@ -85,16 +87,22 @@ export class ElementBuilder {
     // Expects node function which returns result
     _callNodeFunction (node, functionName, ...parameters) {
         try {
-          return node[functionName](...parameters);
+          return Array.isArray(parameters) && (parameters.length > 0)
+            ? node[functionName](...parameters)
+            : node[functionName]();
         } catch (error) {
           this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
         }
     }
 
-  // Expects node function which does NOT return result
+    // Expects node function which does NOT return result
     _callNodeAction (node, functionName, ...parameters) {
         try {
-          node[functionName](...parameters);
+            if (Array.isArray(parameters) && (parameters.length > 0)) {
+                node[functionName](...parameters);
+            } else {
+                node[functionName]();
+            }
         } catch (error) {
           this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
         }
