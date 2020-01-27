@@ -1,6 +1,6 @@
 {
   "name": "magic-script-components-lumin",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "MagicScript Components renderer for Lumin Runtime platform",
   "module": "index.js",
   "files": [
