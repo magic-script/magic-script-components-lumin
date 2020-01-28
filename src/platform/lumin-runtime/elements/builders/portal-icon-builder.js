@@ -45,7 +45,7 @@ export class PortalIconBuilder extends TextContainerBuilder {
             ? ui.PortalIconSize.kSmall
             : PortalIconSize[iconSize];
 
-        const element = ui.UiPortalIcon.Create(prism, text, iconSize);
+        const element = this._createNode(ui.UiPortalIcon, 'Create', prism, text, iconSize);
 
         const unapplied = this.excludeProperties(properties, ['children', 'text']);
 
