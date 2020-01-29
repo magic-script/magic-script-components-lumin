@@ -25,8 +25,8 @@ export class TabBuilder extends TextContainerBuilder {
         }
 
         const element = type === undefined
-            ? ui.UiTab.Create(prism, text)
-            : ui.UiTab.CreateEclipseTab(prism, text, EclipseLabelType[type]);
+            ? this._createNode(ui.UiTab, 'Create', prism, text)
+            : this._createNode(ui.UiTab, 'CreateEclipseTab', prism, text, EclipseLabelType[type]);
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'type']);
 
@@ -34,11 +34,6 @@ export class TabBuilder extends TextContainerBuilder {
 
         return element;
     }
-
-    // update(element, oldProperties, newProperties) {
-    //     // this.throwIfNotInstanceOf(element, ui.UiButton);
-    //     super.update(element, oldProperties, newProperties);
-    // }
 
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);

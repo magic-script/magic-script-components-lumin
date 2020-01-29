@@ -11,8 +11,6 @@ export class RectLayoutBuilder extends LayoutBuilder {
     constructor(){
         super();
 
-        // Content ?
-
         this._propertyDescriptors['contentAlignment'] = new EnumProperty('contentAlignment', 'setContentAlignment', true, Alignment, 'Alignment');
         this._propertyDescriptors['padding'] = new ArrayProperty('padding', 'setPadding', true, 'vec4');
     }
@@ -21,7 +19,7 @@ export class RectLayoutBuilder extends LayoutBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiRectLayout.Create(prism);
+        const element = this._createNode(ui.UiRectLayout, 'Create', prism);
 
         this.update(element, undefined, properties);
 

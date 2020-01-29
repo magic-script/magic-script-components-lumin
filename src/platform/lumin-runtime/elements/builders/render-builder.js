@@ -59,7 +59,7 @@ export class RenderBuilder extends TransformBuilder {
 
             if (on !== undefined) {
                 const renderStateIndex = builder.getPropertyValue('renderStateIndex', BigInt(-1), newProperties[propertyName]);
-                element[setFunction](on, renderStateIndex);
+                builder._callNodeAction(element, setFunction, on, renderStateIndex);
             }
         }
     }

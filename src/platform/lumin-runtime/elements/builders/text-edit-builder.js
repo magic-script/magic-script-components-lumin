@@ -76,7 +76,7 @@ export class TextEditBuilder extends TextContainerBuilder {
 
         const { width, height } = properties;
 
-        const element = ui.UiTextEdit.Create(prism, text, width, height);
+        const element = this._createNode(ui.UiTextEdit, 'Create', prism, text, width, height);
 
         this._setFont2dResource(prism, element, properties);
 
@@ -88,7 +88,6 @@ export class TextEditBuilder extends TextContainerBuilder {
     }
 
     update(element, oldProperties, newProperties) {
-        // this.throwIfNotInstanceOf(element, ui.UiText);
         super.update(element, oldProperties, newProperties);
 
         this._validateFont(newProperties);
@@ -110,7 +109,7 @@ export class TextEditBuilder extends TextContainerBuilder {
         const charLimit = newProperties.charLimit;
 
         if (charLimit !== undefined && typeof charLimit === 'number') {
-            element.setCharacterLimit(BigInt(charLimit));
+            this._callNodeAction(element, 'setCharacterLimit', BigInt(charLimit));
         }
     }
 
@@ -124,7 +123,7 @@ export class TextEditBuilder extends TextContainerBuilder {
             const tracking = this.getPropertyValue('tracking', 50, fontParameters);
             const allCaps = this.getPropertyValue('allCaps', false, fontParameters);
 
-            element.setFontParameters(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+            this._callNodeAction(element, 'setFontParameters', new ui.FontParams(style, weight, fontSize, tracking, allCaps));
         }
     }
 
@@ -141,9 +140,9 @@ export class TextEditBuilder extends TextContainerBuilder {
             const minAlpha = this.getPropertyValue('minAlpha', 0.15, fontDescription);
 
             const fontDesc = new Font2dDesc(advanceDirection, flowDirection, tileSize, quality, minAlpha);
-            const font2dResourceId = prism.createFont2dResourceId(fontDesc, filePath, absolutePath);
+            const font2dResourceId = this._callNodeFunction(prismm, 'createFont2dResourceId', fontDesc, filePath, absolutePath);
 
-            element.setFont(font2dResourceId);
+            this._callNodeAction(element, 'setFont', font2dResourceId);
         }
     }
 
@@ -184,7 +183,7 @@ export class TextEditBuilder extends TextContainerBuilder {
             const fontStyle = FontStyle[style];
             const fontWeight = weight ? FontWeight[weight] : FontWeight['regular'];
 
-            element.setFont(fontStyle, fontWeight);
+            this._callNodeAction(element, 'setFont', fontStyle, fontWeight);
         }
     }
 
@@ -207,12 +206,12 @@ export class TextEditBuilder extends TextContainerBuilder {
             }
 
             if (selectedEnd === undefined) {
-                const text = component.getText();
+                const text = this._callNodeFunction(element, 'getText');
                 selectedEnd = text ? text.length : 0;
             }
 
             if (selectedBegin <= selectedEnd) {
-                element.setSelectedText(selectedBegin, selectedEnd);
+                this._callNodeAction(element, 'setSelectedText', selectedBegin, selectedEnd);
             }
         }
     }

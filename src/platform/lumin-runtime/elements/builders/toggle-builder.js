@@ -38,7 +38,7 @@ export class ToggleBuilder extends TextContainerBuilder {
 
         const height = this.getPropertyValue('height', 0.0, properties);
 
-        const element = ui.UiToggle.Create(prism, text, type, height);
+        const element = this._createNode(ui.UiToggle, 'Create', prism, text, type, height);
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'type', 'height']);
 

@@ -47,9 +47,9 @@ export class TransformBuilder extends ElementBuilder {
 
     const localTransform = this.getPropertyValue('localTransform', defaultTransform, properties);
 
-    const element = prism.createTransformNode(localTransform);
+    const element = this._createNode(prism, 'createTransformNode', localTransform);
 
-    this.defineCustomProperties(element);
+    this._addCustomProperties(element);
 
     const unapplied = this.excludeProperties(properties, ['localTransform']);
 
@@ -58,7 +58,7 @@ export class TransformBuilder extends ElementBuilder {
     return element;
   }
 
-  defineCustomProperties (element) {
+  _addCustomProperties (element) {
     // Attach 'offset' property
     // the property is used when TransformNode is used by another node as content/model
     Object.defineProperty(element, 'offset', {

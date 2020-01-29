@@ -38,7 +38,7 @@ export class TimePickerBuilder extends UiNodeBuilder {
             defaultTime = TimeFormatConverter[DEFAULT_TIME_FORMAT].toTime(defaultTime);
         }
 
-        const element = ui.UiTimePicker.Create(prism, label, Side[labelSide], DEFAULT_TIME_FORMAT, defaultTime);
+        const element = this._createNode(ui.UiTimePicker, 'Create', prism, label, Side[labelSide], DEFAULT_TIME_FORMAT, defaultTime);
 
         const unapplied = this.excludeProperties(properties, ['label', 'labelSide', 'defaultTime']);
 
@@ -65,7 +65,7 @@ export class TimePickerBuilder extends UiNodeBuilder {
 
     setTime(element, oldProperties, newProperties) {
         const time = TimeFormatConverter[DEFAULT_TIME_FORMAT].toTime(newProperties.time);
-        element.setTime(time);
+        this._callNodeAction(element, 'setTime', time);
     }
 
     extraTypeScript() {
