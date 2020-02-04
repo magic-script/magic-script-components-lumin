@@ -299,33 +299,72 @@ export class PlatformFactory extends NativeFactory {
     if (parent instanceof ui.UiScrollView) {
       // ScrollBar: child is <UiScrollBar, orientation>
       if (child instanceof ui.UiScrollBar) {
-        parent.setScrollBar(child);
+        executor.callNativeAction(parent, 'setScrollBar', child.Orientation, null);
       }
       // ScrollContent: child is <TransformNode, vec3>
     } else if (parent instanceof ui.UiListView) {
       // ScrollBar: child is UiSCrollBar
       // ListViewItem: use addItem instead of addChild
+      if (child instanceof ui.UiListViewItem) {
+        const itemCount = executor.callNativeFunction(parent, `getItemCount`);
+
+        for (let index = 0; index < itemCount; index++) {
+          const item = executor.callNativeFunction(parent, 'getItem', index);
+          const itemId = executor.callNativeFunction(item, 'getNodeId');
+          const childId = executor.callNativeFunction(child, 'getNodeId');
+          if ( itemId === childId ) {
+            const orphan = executor.callNativeFunction(parent, 'removeItem', index);
+            const prism = this._app.getPrism(orphan.getPrismId());
+            executor.callNativeAction(prism, 'deleteNode', orphan);
+          }
+        }
+      }
     } else if (parent instanceof ui.UiSlider) {
-      // SliderModel: child is <Node, vec3>
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setSliderModel', null);
+      }
     } else if (parent instanceof ui.UiRectLayout) {
-      // Content: child is TransformNode
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setContent', child);
+      }
     } else if (parent instanceof ui.UiDropDownList) {
       // ButtonModel: child is <Node, vec3>
       // List: child is array of DropDownListItem(s)
       // ListFont: Font2dResource(fontDesc, fontFile, a_absolutePath)
       // fontDesc = Font2dDesc(advanceDir, flowDir, tileSize, quality, minAlpha)
     } else if (parent instanceof ui.UiDialog) {
-      // DialogContent: child is TransformNode
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setDialogContent', null);
+        // executor.callNativeAction(parent, 'init');
+      }
     } else if (parent instanceof ui.UiToggle) {
-      // ToggleModel: child is <Node, vec3>
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setToggleModel', null);
+      }
     } else if (parent instanceof ui.UiPanel) {
-      // EdgeTransition: child is <side, UiPanel>
+      if (child instanceof ui.UiPanel) {
+        if (child.side !== undefined) {
+          // LRT is not checking for nullptr yet !
+          // executor.callNativeAction(parent, 'setEdgeTransition', child.side, null);
+        }
+      } else {
+        executor.callNativeAction(parent, 'removeChild', child);
+      }
     } else if (parent instanceof ui.UiPortalIcon) {
-      // BackgroundModel: child is <Node, vec3>
-      // IconModel: : child is <Node, vec3>
+      if (child instanceof ModelNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setIconModel', null, child.offset);
+      } else if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setBackgroundModel', null, child.offset);
+      }
     } else if (parent instanceof ui.UiPageView) {
       if (child instanceof TransformNode) {
-        parent.removePage(child);
+        executor.callNativeAction(parent, 'removePage', child);
       }
     }
   }
