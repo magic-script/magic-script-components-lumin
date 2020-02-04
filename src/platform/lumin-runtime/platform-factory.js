@@ -366,18 +366,11 @@ export class PlatformFactory extends NativeFactory {
       if (child instanceof TransformNode) {
         executor.callNativeAction(parent, 'removePage', child);
       }
+    } else {
+      executor.callNativeAction(parent, 'removeChild', child);
+      const prism = this._app.getPrism(child.getPrismId());
+      executor.callNativeAction(prism, 'deleteNode', child);
     }
-  }
-
-  // TODO(tcuadra): Expose listView.removeItem(ListViewItem) overload
-  //                to avoid the need to perform this lookup
-  _getListViewIndex (listView, item) {
-    for (let i = 0; i < listView.getItemCount(); i++) {
-      if (item === listView.getItem(i)) {
-        return i;
-      }
-    }
-    return -1;
   }
 
   removeChildElement (parent, child) {
@@ -392,12 +385,8 @@ export class PlatformFactory extends NativeFactory {
       } else if (this.isController(parent)) {
         executor.callNativeAction(parent.getRoot(), 'removeChild', child);
         executor.callNativeAction(parent.getPrism(), 'deleteNode', child);
-      } else if (parent instanceof ui.UiListView) {
-        executor.callNativeAction(parent, 'removeItem', this._getListViewIndex(parent, child));
       } else {
-        executor.callNativeAction(parent, 'removeChild', child);
-        const prism = this._app.getPrism(child.getPrismId());
-        executor.callNativeAction(prism, 'deleteNode', child);
+        this._removeChildNodeToParentNode(parent, child);
       }
     }
   }
