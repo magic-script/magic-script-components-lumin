@@ -3,6 +3,8 @@
 import { LandscapeApp, ui } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
 
+import executor from './utilities/executor.js'
+
 export class MxsLandscapeApp extends LandscapeApp {
     // The 0.5 value is the number of seconds to call `updateLoop` in an interval if
     // there are no other events waking the event loop.
@@ -22,11 +24,11 @@ export class MxsLandscapeApp extends LandscapeApp {
     for (let size of this._prismSize) {
         // TODO: MxsPrismController(this._app.volume);
         // Each controller is responsible for one prism (volume)
-        const controller = new AppPrismController(this._app);
+        const controller = executor.callNativeConstructor(AppPrismController, this._app);
         this._prismControllers.push(controller);
 
-        const prism = this.requestNewPrism(size);
-        prism.setPrismController(controller);
+        const prism = executor.callNativeFunction(this, 'requestNewPrism', size);
+        executor.callNativeAction(prism, 'setPrismController', controller);
     }
   }
 

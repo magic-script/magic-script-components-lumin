@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import log, { MessageSeverity } from '../../../../util/logger.js';
+import executor from '../../utilities/executor.js'
 
 export class ElementBuilder {
     constructor() {
@@ -63,49 +64,19 @@ export class ElementBuilder {
         }
     }
 
-    _composeFunctionSignature (name, ...parameters) {
-        return parameters !== undefined
-          ? `${name}(${parameters.map(parameter => JSON.stringify(parameter)).join(', ')})`
-          : '';
-    }
-
-    _throwNativeCallError (error, signature) {
-        throw new Error(`[Native.${signature}]:\n${error.name} - ${error.message}\n${error.stack}`);
-    }
-
     // Expects to execute 'Create' or `CreateXXX' static function which returns node object
     _createNode (classReference, constructorName, prism, ...parameters) {
-        try {
-          return Array.isArray(parameters) && (parameters.length > 0)
-            ? classReference[constructorName](prism, ...parameters)
-            : classReference[constructorName](prism);
-        } catch (error) {
-          this._throwNativeCallError(error, this._composeFunctionSignature(constructorName, ...parameters));
-        }
+        return executor.createNode(classReference, constructorName, prism, ...parameters);
     }
 
     // Expects node function which returns result
     _callNodeFunction (node, functionName, ...parameters) {
-        try {
-          return Array.isArray(parameters) && (parameters.length > 0)
-            ? node[functionName](...parameters)
-            : node[functionName]();
-        } catch (error) {
-          this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
-        }
+        return executor.callNativeFunction(node, functionName, ...parameters);
     }
 
     // Expects node function which does NOT return result
     _callNodeAction (node, functionName, ...parameters) {
-        try {
-            if (Array.isArray(parameters) && (parameters.length > 0)) {
-                node[functionName](...parameters);
-            } else {
-                node[functionName]();
-            }
-        } catch (error) {
-          this._throwNativeCallError(error, this._composeFunctionSignature(functionName, ...parameters));
-        }
+        executor.callNativeAction(node, functionName, ...parameters);
     }
 
     throwIfNotInstanceOf (element, ...expectedTypes) {
