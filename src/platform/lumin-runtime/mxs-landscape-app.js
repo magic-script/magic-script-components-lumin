@@ -22,13 +22,28 @@ export class MxsLandscapeApp extends LandscapeApp {
 
   onAppStart(arg) {
     for (let size of this._prismSize) {
-        // TODO: MxsPrismController(this._app.volume);
-        // Each controller is responsible for one prism (volume)
-        const controller = executor.callNativeConstructor(AppPrismController, this._app);
+      // TODO: MxsPrismController(this._app.volume);
+      // Each controller is responsible for one prism (volume)
+      let controller;
+      try {
+        controller = new AppPrismController(this._app);
         this._prismControllers.push(controller);
+      } catch (error) {
+        throw new Error(`Creating AppPrismController failed: ${error.name} - ${error.message}\n${error.stack}`);
+      }
 
-        const prism = executor.callNativeFunction(this, 'requestNewPrism', size);
-        executor.callNativeAction(prism, 'setPrismController', controller);
+      let prism;
+      try {
+        prism = this.requestNewPrism(size);
+      } catch (error) {
+        throw new Error(`Creating Prism failed: ${error.name} - ${error.message}\n${error.stack}`);
+      }
+
+      try {
+        prism.setPrismController(controller);
+      } catch (error) {
+        throw new Error(`Setting Prism controller failed: ${error.name} - ${error.message}\n${error.stack}`);
+      }
     }
   }
 

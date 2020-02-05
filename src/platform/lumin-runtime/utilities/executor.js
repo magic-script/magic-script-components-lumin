@@ -53,7 +53,7 @@ const executor = {
               ? new constructorFunction(...parameters)
               : new constructorFunction();
         } catch (error) {
-            throwNativeCallError(error, composeFunctionSignature(constructorFunction, ...parameters));
+            throwNativeCallError(error, composeFunctionSignature(constructorFunction.name, ...parameters));
         }
     }
 }
