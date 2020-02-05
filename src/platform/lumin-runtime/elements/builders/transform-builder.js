@@ -2,6 +2,7 @@
 import { ui } from 'lumin';
 
 import { ElementBuilder } from './element-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
@@ -9,7 +10,7 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { Alignment } from '../../types/alignment.js';
 import { CursorHoverState } from '../../types/cursor-hover-state.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 export class TransformBuilder extends ElementBuilder {
   constructor () {

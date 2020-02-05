@@ -1,15 +1,17 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
 import { ui } from 'lumin';
-import { Side } from '../../types/side.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
+
 import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import { Side } from '../../types/side.js';
 import { TimeFormatConverter } from '../../types/time-format.js';
-import { validator } from '../../utilities/validator.js';
+
+import validator from '../../utilities/validator.js';
 
 const DEFAULT_TIME_FORMAT = 'hh:mm:ss';
 

@@ -20,7 +20,7 @@ import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 export class TextEditBuilder extends TextContainerBuilder {
     constructor(){

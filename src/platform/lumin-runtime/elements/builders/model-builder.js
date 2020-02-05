@@ -8,7 +8,8 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { PropertyDescriptor } from '../properties/property-descriptor.js'
 
 import { TextureType } from '../../types/texture-type.js';
-import { validator } from '../../utilities/validator.js';
+
+import validator from '../../utilities/validator.js';
 import log, { MessageSeverity } from '../../../../util/logger.js';
 
 export class ModelBuilder extends RenderBuilder {

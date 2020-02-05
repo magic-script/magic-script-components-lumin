@@ -5,12 +5,13 @@ import { ui } from 'lumin';
 import { UiNodeBuilder } from './ui-node-builder.js';
 
 import { ArrayProperty } from '../properties/array-property.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import { LoadingSpinnerType } from '../../types/loading-spinner-type.js';
 
-import { validator } from '../../utilities/validator.js';
-import { EnumProperty } from '../properties/enum-property.js';
+import validator from '../../utilities/validator.js';
+
 
 export class LoadingSpinnerBuilder extends UiNodeBuilder {
     constructor(){

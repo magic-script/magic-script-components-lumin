@@ -3,13 +3,15 @@
 import { ui } from 'lumin';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { TextChildrenProperty } from '../properties/text-children-property.js';
 
 import { EclipseLabelType } from '../../types/eclipse-label-type.js';
 
-import { validator } from '../../utilities/validator.js';
-import { EnumProperty } from '../properties/enum-property.js';
+import validator from '../../utilities/validator.js';
+
 
 export class TabBuilder extends TextContainerBuilder {
 

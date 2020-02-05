@@ -1,17 +1,19 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
 import { ui } from 'lumin';
-import { LabelDisplayMode } from '../../types/label-display-mode.js';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { TextChildrenProperty } from '../properties/text-children-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
+import { LabelDisplayMode } from '../../types/label-display-mode.js';
 import { PortalIconSize } from '../../types/portal-icon-size.js';
-import { validator } from '../../utilities/validator.js';
+
+import validator from '../../utilities/validator.js';
 
 export class PortalIconBuilder extends TextContainerBuilder {
     constructor(){

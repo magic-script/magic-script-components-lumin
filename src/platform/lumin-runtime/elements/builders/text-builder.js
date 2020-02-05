@@ -9,13 +9,14 @@ import { HorizontalTextAlignment } from '../../types/horizontal-text-alignment.j
 import { FontStyle, FontWeight } from '../../types/font-style.js';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 const DEFAULT_FONT_STYLE = FontStyle['normal'];
 const DEFAULT_FONT_WEIGHT = FontWeight['regular'];

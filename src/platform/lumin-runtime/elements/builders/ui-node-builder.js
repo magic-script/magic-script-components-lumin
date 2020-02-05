@@ -3,6 +3,7 @@
 import { ui } from 'lumin';
 
 import { TransformBuilder } from './transform-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
@@ -15,7 +16,7 @@ import { FocusRequest } from '../../types/focus-request.js';
 import { RenderingLayer } from '../../types/rendering-layer.js';
 import { SoundEvent } from '../../types/sound-event.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 export class UiNodeBuilder extends TransformBuilder {
     constructor(){
