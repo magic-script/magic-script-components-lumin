@@ -185,7 +185,7 @@ export class AudioBuilder extends TransformBuilder {
     }
 
     setSpatialSoundDistance(element, oldProperties, newProperties) {
-        newProperties.setSpatialSoundDistance
+        newProperties.spatialSoundDistance
             .forEach(({ channel, minDistance, maxDistance, rolloffFactor }) => {
                 const distanceProperties = this._getSpatialSoundDistanceProperties(minDistance, maxDistance, rolloffFactor);
 
