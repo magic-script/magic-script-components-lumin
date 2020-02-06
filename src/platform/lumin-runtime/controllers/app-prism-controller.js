@@ -17,7 +17,7 @@ import { UiEventData } from '../types/event-data/ui-event-data.js';
 import { VideoEventData } from '../types/event-data/video-event-data.js';
 
 export class AppPrismController extends PrismController {
-  constructor (appComponent) {
+  constructor (appComponent, prismConfiguration) {
     super();
     this._app = appComponent;
     this._containers = new WeakMap();

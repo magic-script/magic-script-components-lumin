@@ -10,7 +10,7 @@ export class MxsLandscapeApp extends LandscapeApp {
         super(timeDelta);
 
         this._app = appComponent;
-        this._prismSize = [appComponent.props.volumeSize];
+        this._prisms = [appComponent.props.volumes];
         this._prismControllers = [];
     }
 
@@ -19,14 +19,14 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   onAppStart(arg) {
-    for (let size of this._prismSize) {
+    for (let prism of this._prisms) {
         // TODO: MxsPrismController(this._app.volume);
         // Each controller is responsible for one prism (volume)
-        const controller = new AppPrismController(this._app);
+        const controller = new AppPrismController(this._app, prism);
         this._prismControllers.push(controller);
 
-        const prism = this.requestNewPrism(size);
-        prism.setPrismController(controller);
+        this.requestNewPrism(prism.size)
+          .setPrismController(controller);
     }
   }
 
