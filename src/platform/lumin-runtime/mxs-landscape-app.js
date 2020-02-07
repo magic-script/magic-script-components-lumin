@@ -72,6 +72,8 @@ export class MxsLandscapeApp extends LandscapeApp {
     const prism = this.requestNewPrism(props.size)
     this._prisms.push(prism);
 
+    this.positionPrismRelativeToCamera(props.position);
+
     prism.setPrismController(controller);
     return prism;
   }
