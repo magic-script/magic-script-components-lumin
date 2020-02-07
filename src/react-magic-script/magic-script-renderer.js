@@ -164,12 +164,7 @@ function shouldDeprioritizeSubtree(type, props) {
 //  type: string,
 //  props: Props
 function shouldSetTextContent(type, props) {
-  // Brian Vaughn:
-  //  Always returning false simplifies the createInstance() implementation,
-  //  But creates an additional child Fiber for raw text children.
-  //  No additional native views are created though.
-
-  return false;
+  return type === 'prism';
 }
 
 // Function: appendChild

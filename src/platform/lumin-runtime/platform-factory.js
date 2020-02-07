@@ -63,6 +63,10 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.createElement expects "name" to be string');
     }
 
+    if (name === 'prism') {
+      return this._app.addPrism(...args);
+    }
+
     let element;
     if (this._mapping.elements[name] !== undefined) {
       element = this._createElement(name, container, ...args);
