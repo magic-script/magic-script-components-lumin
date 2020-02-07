@@ -217,9 +217,9 @@ export class PlatformFactory extends NativeFactory {
     } else if (parent instanceof ui.UiDropDownList) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.ButtonModel(child, child.offset);
+          parent.setButtonModel(child, child.offset);
         } else {
-          parent.ButtonModel(child);
+          parent.setButtonModel(child);
         }
       }
       if (child instanceof ui.DropDownListItem) {
