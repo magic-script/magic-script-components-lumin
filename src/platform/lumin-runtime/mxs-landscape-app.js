@@ -20,17 +20,12 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   onAppStart(arg) {
-    // for (let prism of this._prisms) {
-    //     // TODO: MxsPrismController(this._app.volume);
-    //     // Each controller is responsible for one prism (volume)
-    //     const controller = new AppPrismController(this._app, prism);
-    //     this._prismControllers.push(controller);
+    const container = {
+      controller: {
+        getRoot: () => ({ addChild: (child) => console.log('App container - adding child (scene)') })
+      }
+    };
 
-    //     this.requestNewPrism(prism.size)
-    //       .setPrismController(controller);
-    // }
-
-    const container = {};
     ReactMagicScript.render(this._app, container);
   }
 
@@ -69,7 +64,7 @@ export class MxsLandscapeApp extends LandscapeApp {
     const controller = new AppPrismController(props);
     this._prismControllers.push(controller);
 
-    const prism = this.requestNewPrism(props.size)
+    const prism = this.requestNewPrism(props.size);
     this._prisms.push(prism);
 
     this.positionPrismRelativeToCamera(prism, props.position);

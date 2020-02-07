@@ -64,11 +64,29 @@ export class PlatformFactory extends NativeFactory {
     }
 
     if (name === 'scene') {
-      return {};
+      const scene = { prisms: [] };
+
+      Object.defineProperty(scene, 'addChild$Universal', {
+        enumerable: true,
+        writable: false,
+        configurable: false,
+        value: (child) => scene.prisms.push(child)
+      });
+
+      return scene;
     }
 
     if (name === 'prism') {
-      return this._app.addPrism(...args);
+      const prism = this._app.addPrism(...args);
+
+      Object.defineProperty(prism, 'addChild$Universal', {
+        enumerable: true,
+        writable: false,
+        configurable: false,
+        value: (child) => console.log('Prism is not supposed to add children !')
+      });
+
+      return prism;
     }
 
     let element;

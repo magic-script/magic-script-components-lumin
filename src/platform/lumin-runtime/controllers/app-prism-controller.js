@@ -77,7 +77,7 @@ export class AppPrismController extends PrismController {
     this.getRoot().setName(rootNodeName);
 
     try {
-      ReactMagicScript.render(this._prismProps, this.getContainer());
+      ReactMagicScript.render(this._prismProps.children, this.getContainer());
     } catch (error) {
       log(`${error.name} - ${error.message}\n${error.stack}`, MessageSeverity.exception);
       throw error;
