@@ -17,9 +17,9 @@ import { UiEventData } from '../types/event-data/ui-event-data.js';
 import { VideoEventData } from '../types/event-data/video-event-data.js';
 
 export class AppPrismController extends PrismController {
-  constructor (prismComponent, prismProps) {
+  constructor (prismProps) {
     super();
-    this._prismComponent = prismComponent;
+    this._prismProps = prismProps;
     this._containers = new WeakMap();
 
     this._eventHandlers = {
@@ -73,11 +73,11 @@ export class AppPrismController extends PrismController {
   }
 
   onAttachPrism (prism) {
-    const rootNodeName = this.getRootNodeName(this._prismComponent.props.name);
+    const rootNodeName = this.getRootNodeName(this._prismProps.name);
     this.getRoot().setName(rootNodeName);
 
     try {
-      ReactMagicScript.render(this._prismComponent, this.getContainer());
+      ReactMagicScript.render(this._prismProps, this.getContainer());
     } catch (error) {
       log(`${error.name} - ${error.message}\n${error.stack}`, MessageSeverity.exception);
       throw error;
