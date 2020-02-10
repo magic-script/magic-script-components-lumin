@@ -43,7 +43,7 @@ export class PageViewBuilder extends UiNodeBuilder {
     const height = this.getPropertyValue('height', 0, properties);
     const width = this.getPropertyValue('width', 0, properties);
 
-    const element = ui.UiPageView.Create(prism, width, height);
+    const element = this._createNode(ui.UiPageView, 'Create', prism, width, height);
 
     const unapplied = this.excludeProperties(properties, ['height', 'width']);
 
@@ -53,7 +53,6 @@ export class PageViewBuilder extends UiNodeBuilder {
   }
 
   update (element, oldProperties, newProperties) {
-    // this.throwIfNotInstanceOf(element, ui.UiImage);
     super.update(element, oldProperties, newProperties);
 
     this._validateSize(newProperties);
@@ -67,13 +66,13 @@ export class PageViewBuilder extends UiNodeBuilder {
   }
 
   setPageAlignment (element, oldProperties, newProperties) {
-    const { index, alignment } = newProperties.pageAlignment;
-    element.setPageAlignment(index, alignment);
+    newProperties.pageAlignment.forEach(({ index, alignment }) =>
+      this._callNodeAction(element, 'setPageAlignment', index, alignment));
   }
 
   setPagePadding (element, oldProperties, newProperties) {
-    const { index, padding } = newProperties.pagePadding;
-    element.setPagePadding(index, padding);
+    newProperties.pagePadding.forEach(({ index, padding }) =>
+      this._callNodeAction(element, 'setPagePadding', index, padding));
   }
 
   _validateSize (properties) {
@@ -86,14 +85,14 @@ export class PageViewBuilder extends UiNodeBuilder {
 
     if (width || height) {
       if (width === undefined) {
-        width = element.getSize()[0];
+        width = this._callNodeFunction(element, 'getSize')[0];
       }
 
       if (height === undefined) {
-        height = element.getSize()[1];
+        height = this._callNodeFunction(element, 'getSize')[1];
       }
 
-      element.setSize([width, height]);
+      this._callNodeFunction(element, 'setSize', [width, height]);
     }
   }
 

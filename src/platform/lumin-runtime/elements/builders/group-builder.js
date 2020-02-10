@@ -8,7 +8,7 @@ export class GroupBuilder extends UiNodeBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiGroup.Create(prism);
+        const element = this._createNode(ui.UiGroup, 'Create', prism);
 
         this.update(element, undefined, properties);
 

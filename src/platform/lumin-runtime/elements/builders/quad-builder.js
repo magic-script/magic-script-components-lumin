@@ -26,8 +26,8 @@ export class QuadBuilder extends RenderBuilder {
         const renderResourceId = properties.renderResourceId;
 
         const element = renderResourceId === undefined
-            ? prism.createQuadNode()
-            : prism.createQuadNode(renderResourceId);
+            ? this._createNode(prism, 'createQuadNode')
+            : this._createNode(prism, 'createQuadNode', renderResourceId);
 
         const unapplied = this.excludeProperties(properties, ['renderResourceId']);
 
@@ -37,7 +37,6 @@ export class QuadBuilder extends RenderBuilder {
     }
 
     update(element, oldProperties, newProperties) {
-        // this.throwIfNotInstanceOf(element, QuadNode);
         super.update(element, oldProperties, newProperties);
 
         this._validateSubTexture(newProperties);
@@ -65,14 +64,14 @@ export class QuadBuilder extends RenderBuilder {
         const subTexture = properties.subTexture
 
         if (subTexture !== undefined) {
-            element.setSubTexture(subTexture);
+            this._callNodeAction(element, 'setSubTexture', subTexture);
         }
     }
 
     setTexCoords(element, oldProperties, newProperties) {
         const texCoords = newProperties.texCoords;
         texCoords.forEach( coordinate => PropertyDescriptor.throwIfNotArray(coordinate, 'vec2') );
-        element.setTexCoords(texCoords);
+        this._callNodeAction(element, 'setTexCoords', texCoords);
     }
 
     extraTypeScript() {

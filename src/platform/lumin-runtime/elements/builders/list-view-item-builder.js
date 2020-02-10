@@ -22,8 +22,16 @@ export class ListViewItemBuilder extends UiNodeBuilder {
   create (prism, properties) {
     this.throwIfInvalidPrism(prism);
 
-    const element = ui.UiListViewItem.Create(prism);
+    const element = this._createNode(ui.UiListViewItem, 'Create', prism);
 
+    this._addCustomProperties(element);
+
+    this.update(element, undefined, properties);
+
+    return element;
+  }
+
+  _addCustomProperties (element) {
     Object.defineProperty(element, 'Padding', {
       enumerable: true,
       writable: true,
@@ -37,10 +45,6 @@ export class ListViewItemBuilder extends UiNodeBuilder {
       configurable: false,
       value: ui.Alignment.CENTER_CENTER
     });
-
-    this.update(element, undefined, properties);
-
-    return element;
   }
 
   setPadding (element, oldProperties, newProperties) {

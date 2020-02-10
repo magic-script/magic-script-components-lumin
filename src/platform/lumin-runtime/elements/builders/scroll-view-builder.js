@@ -22,9 +22,6 @@ export class ScrollViewBuilder extends UiNodeBuilder {
         this._propertyDescriptors['scrollSpeed'] = new PrimitiveTypeProperty('scrollSpeed', 'setScrollSpeed', true, 'number');
         this._propertyDescriptors['scrollValue'] = new PrimitiveTypeProperty('scrollValue', 'setScrollValue', true, 'number');
 
-        // ScrollBar
-        // ScrollContent
-
         // ScrollBounds
         const scrollBoundsProperties = [
             new ArrayProperty('min', undefined, undefined, 'vec3'),
@@ -37,7 +34,7 @@ export class ScrollViewBuilder extends UiNodeBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiScrollView.Create(prism);
+        const element = this._createNode(ui.UiScrollView, 'Create', prism);
 
         this.update(element, undefined, properties);
 
@@ -48,7 +45,7 @@ export class ScrollViewBuilder extends UiNodeBuilder {
         const { min, max } = newProperties.scrollBounds;
 
         if ( min !== undefined && max !== undefined ) {
-            element.setScrollBounds(new math.AABB(min, max));
+            this._callNodeAction(element, 'setScrollBounds', new math.AABB(min, max));
         }
     }
 }

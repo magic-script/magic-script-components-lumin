@@ -26,7 +26,7 @@ export class WebViewBuilder extends UiNodeBuilder {
 
     const { width, height } = properties;
 
-    const element = ui.UiWebView.Create(prism, [width, height]);
+    const element = this._createNode(ui.UiWebView, 'Create', prism, [width, height]);
 
     const unapplied = this.excludeProperties(properties, ['width', 'height']);
 
@@ -50,11 +50,11 @@ export class WebViewBuilder extends UiNodeBuilder {
     }
 
     if (WebViewAction[action] === WebViewAction.back) {
-      element.goBack();
+      this._callNodeAction(element, 'goBack');
     } else if (WebViewAction[action] === WebViewAction.forward) {
-      element.goForward();
+      this._callNodeAction(element, 'goForward');
     } else if (WebViewAction[action] === WebViewAction.reload) {
-      element.reload();
+      this._callNodeAction(element, 'reload');
     }
   }
 
@@ -63,7 +63,7 @@ export class WebViewBuilder extends UiNodeBuilder {
 
     if (Array.isArray(distances)) {
       if (distances.every(distance => typeof distance === 'number')) {
-        element.scrollBy(distances[0], distances[1]);
+        this._callNodeAction(element, 'scrollBy', distances[0], distances[1]);
       } else {
         throw new TypeError('WebView scrollBy property should be an array of numbers: [xPixels, yPixels]');
       }

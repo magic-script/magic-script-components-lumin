@@ -43,7 +43,7 @@ function validate(value, enumSet) {
     return typeof value === 'string' && enumSet[value] !== undefined;
 }
 
-export const validator = {
+const validator = {
     validatePrism: prism => prism instanceof Prism,
 
     validateAdvanceDirection: value => validate(value, AdvanceDirection),
@@ -84,3 +84,5 @@ export const validator = {
     validateViewMode: value => validate(value, ViewMode),
     validateWebViewAction: value => validate(value, WebViewAction)
 }
+
+export default validator;

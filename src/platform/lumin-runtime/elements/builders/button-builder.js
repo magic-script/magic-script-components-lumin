@@ -10,7 +10,8 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import { EclipseButtonType } from '../../types/eclipse-button-type.js';
 import { SystemIcons } from '../../types/system-icons.js';
 import { Side } from '../../types/side.js';
-import { validator } from '../../utilities/validator.js';
+
+import validator from '../../utilities/validator.js';
 
 export class ButtonBuilder extends TextContainerBuilder {
     constructor(){
@@ -33,9 +34,9 @@ export class ButtonBuilder extends TextContainerBuilder {
             const width = this.getPropertyValue('width', 0.0, properties);
             const roundness = this.getPropertyValue('roundness', 1.0, properties);
 
-            element = ui.UiButton.Create(prism, text, width, height, roundness);
+            element = this._createNode(ui.UiButton, 'Create', prism, text, width, height, roundness);
         } else {
-            element = ui.UiButton.CreateEclipseButton(prism, this.getEclipseButtonParams(properties));
+            element = this._createNode(ui.UiButton, 'CreateEclipseButton', prism, this.getEclipseButtonParams(properties));
         }
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'width', 'height', 'roundness']);
@@ -66,43 +67,43 @@ export class ButtonBuilder extends TextContainerBuilder {
         return text === undefined ? this._getText(children) : text;
     }
 
-    getEclipseButtonParams(properties) {
+    getEclipseButtonParams (properties) {
         const text = this.getText(properties.children, properties.text);
         const { type, iconPath, labelSide, height, iconType } = properties;
 
         // 1. EclipseButtonParams(type, iconType, text, labelSide, height)
         if (type !== undefined && text !== undefined && labelSide !== undefined && height !== undefined && iconType !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], SystemIcons[iconType], text, Side[labelSide], height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], SystemIcons[iconType], text, Side[labelSide], height);
         }
 
         // 2. EclipseButtonParams(type, iconPath, text, labelSide, height)
         if (type !== undefined && iconPath !== undefined && text !== undefined && labelSide !== undefined && height !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], iconPath, text, Side[labelSide], height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], iconPath, text, Side[labelSide], height);
         }
 
         // 3. EclipseButtonParams(type, iconPath, text, height)
         if (type !== undefined && iconPath !== undefined && text !== undefined && height !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], iconPath, text, height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], iconPath, text, height);
         }
 
         // 4. EclipseButtonParams(type, iconPath, height)
         if (type !== undefined && iconPath !== undefined && height !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], iconPath, height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], iconPath, height);
         }
 
         // 5. EclipseButtonParams(type, text, height)
         if (type !== undefined && text !== undefined && height !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], text, height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], text, height);
         }
 
         // 6. EclipseButtonParams(type, iconType, height)
         if (type !== undefined && iconType !== undefined && height !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type], SystemIcons[iconType], height);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type], SystemIcons[iconType], height);
         }
 
         // 7. EclipseButtonParams(type)
         if (type !== undefined) {
-            return new ui.EclipseButtonParams(EclipseButtonType[type]);
+            return executor.callNativeConstructor(ui.EclipseButtonParams, EclipseButtonType[type]);
         }
 
         throw new TypeError('Cannot create button with provided parameters');

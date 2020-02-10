@@ -14,7 +14,7 @@ export class CircleConfirmationBuilder extends UiNodeBuilder {
 
         const radius = this.getPropertyValue('radius', 0.0, properties);
 
-        const element = ui.UiCircleConfirmation.Create(prism, radius);
+        const element = this._createNode(ui.UiCircleConfirmation, 'Create', prism, radius);
 
         const unapplied = this.excludeProperties(properties, ['radius']);
 

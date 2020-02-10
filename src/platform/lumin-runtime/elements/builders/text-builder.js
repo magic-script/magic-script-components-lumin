@@ -9,13 +9,14 @@ import { HorizontalTextAlignment } from '../../types/horizontal-text-alignment.j
 import { FontStyle, FontWeight } from '../../types/font-style.js';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 const DEFAULT_FONT_STYLE = FontStyle['normal'];
 const DEFAULT_FONT_WEIGHT = FontWeight['regular'];
@@ -65,7 +66,7 @@ export class TextBuilder extends TextContainerBuilder {
         const fontStyle  = style  === undefined ? DEFAULT_FONT_STYLE  : FontStyle[style];
         const fontWeight = weight === undefined ? DEFAULT_FONT_WEIGHT : FontWeight[weight];
 
-        const element = ui.UiText.Create(prism, text, fontStyle, fontWeight);
+        const element = this._createNode(ui.UiText, 'Create', prism, text, fontStyle, fontWeight);
 
         this._setFont2dResource(prism, element, properties);
 
@@ -75,15 +76,6 @@ export class TextBuilder extends TextContainerBuilder {
 
         return element;
     }
-
-    // update(element, oldProperties, newProperties) {
-    //     // this.throwIfNotInstanceOf(element, ui.UiText);
-    //     super.update(element, oldProperties, newProperties);
-    // }
-
-    // validate(element, oldProperties, newProperties) {
-    //     super.validate(element, oldProperties, newProperties);
-    // }
 
     _setFont2dResource(prism, element, properties) {
         const { fontDescription, filePath } = properties;
@@ -98,9 +90,9 @@ export class TextBuilder extends TextContainerBuilder {
             const minAlpha = this.getPropertyValue('minAlpha', 0.15, fontDescription);
 
             const fontDesc = new glyph.Font2dDesc(advanceDirection, flowDirection, tileSize, quality, minAlpha);
-            const font2dResourceId = prism.createFont2dResourceId(fontDesc, filePath, absolutePath);
+            const font2dResourceId = this._callNodeFunction(prism, 'createFont2dResourceId', fontDesc, filePath, absolutePath);
 
-            element.setFont(font2dResourceId);
+            this._callNodeAction(element, 'setFont', font2dResourceId);
         }
     }
 
@@ -131,7 +123,7 @@ export class TextBuilder extends TextContainerBuilder {
             const fontStyle = FontStyle[style];
             const fontWeight = weight ? FontWeight[weight] : DEFAULT_FONT_WEIGHT;
 
-            element.setFont(fontStyle, fontWeight);
+            this._callNodeAction(element, 'setFont', fontStyle, fontWeight);
         }
     }
 
@@ -142,7 +134,7 @@ export class TextBuilder extends TextContainerBuilder {
             wrap = true;
         }
 
-        element.setBoundsSize(boundsSize, wrap);
+        this._callNodeAction(element, 'setBoundsSize', boundsSize, wrap);
     }
 
     setFontParameters(element, oldProperties, newProperties) {
@@ -155,7 +147,7 @@ export class TextBuilder extends TextContainerBuilder {
             const tracking = this.getPropertyValue('tracking', 50, fontParameters);
             const allCaps = this.getPropertyValue('allCaps', false, fontParameters);
 
-            element.setFontParameters(new ui.FontParams(style, weight, fontSize, tracking, allCaps));
+            this._callNodeAction(element, 'setFontParameters', new ui.FontParams(style, weight, fontSize, tracking, allCaps));
         }
     }
 
