@@ -20,11 +20,12 @@ import { HandGestureKeypointName } from '../types/hand-gesture-keypoint-name.js'
 import { LabelDisplayMode } from '../types/label-display-mode.js';
 import { LightType } from '../types/light-type.js';
 import { LoadingSpinnerType } from '../types/loading-spinner-type.js';
-import { RenderingLayer } from '../types/rendering-layer.js';
 import { PanelEdgeConstraintLevel } from '../types/panel-edge-constraint-level.js'
 import { PanelCursorTransitionType } from '../types/panel-cursor-transition-type.js';
 import { PortalIconSize } from '../types/portal-icon-size.js';
 import { Quality } from '../types/quality.js';
+import { RenderingLayer } from '../types/rendering-layer.js';
+import { ResourceType } from '../types/resource-type.js';
 import { ScrollBarVisibility } from '../types/scroll-bar-visibility.js';
 import { ScrollDirection } from '../types/scroll-direction.js';
 import { ShaderType } from '../types/shader-type.js';
@@ -70,6 +71,7 @@ const validator = {
     validatePortalIconSize: value => validate(value, PortalIconSize),
     validateQuality: value => validate(value, Quality),
     validateRenderingLayer: value => validate(value, RenderingLayer),
+    validateResourceType: value => validate(value, ResourceType),
     validateScrollBarVisibility: value => validate(value, ScrollBarVisibility),
     validateScrollDirection: value => validate(value, ScrollDirection),
     validateShaderType: value => validate(value, ShaderType),
