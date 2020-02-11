@@ -30,6 +30,57 @@ export class QuadBuilder extends RenderBuilder {
         ];
 
         this._propertyDescriptors['renderResource'] = new ClassProperty('renderResource', 'setRenderResource', false, renderResourceProperties);
+
+        this._addRenderResourceParamters();
+    }
+
+    _addRenderResourceParamters() {
+        this._resourceParamter = {
+            'Animation': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
+                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
+            },
+            'AnimationBlendSetup': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
+                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
+            },
+            'AnimationSet': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
+                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
+            },
+            'Material': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                localScopeOnly: new PrimitiveTypeProperty('localScopeOnly', undefined, undefined, 'boolean')
+            },
+            'Model': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
+                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),
+                importScale: new PrimitiveTypeProperty('importScale', undefined, undefined, 'number')
+            },
+            'Mtl': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean')
+            },
+            'TexturePack': {
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                directory: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),
+                params: new PrimitiveTypeProperty('params', undefined, undefined, 'boolean')
+            },
+            'Texture': {
+                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
+                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
+                tex2dDesc: new PrimitiveTypeProperty('tex2dDesc', undefined, undefined, 'boolean'),
+            }
+        };
     }
 
     create(prism, properties) {
@@ -76,16 +127,6 @@ export class QuadBuilder extends RenderBuilder {
     }
 
     _validateRenderResource(properties) {
-// createAnimationBlendSetupResourceId  (a_fileName, a_absolutePathopt, a_basePathopt)
-// createAnimationResourceId            (a_fileName, a_absolutePathopt, a_basePathopt)
-// createAnimationSetResourceId         (a_fileName, a_absolutePathopt, a_basePathopt)
-// createInstancedModelResourceId       (a_fileName, a_absolutePathopt, a_basePathopt, a_maxInstances)
-// createMaterialResourceId             (a_fileName, a_absolutePathopt,                a_localScopeOnlyopt)
-// createModelResourceId                (a_fileName, a_absolutePathopt, a_basePathopt, a_importScale)
-// createObjMtlResourceId               (a_fileName, a_absolutePathopt)
-// createParticlePackageResourceId      (a_fileName, a_absolutePathopt)
-// createTexturePackResourceId          (            a_absolutePathopt, directory, params)
-// createTextureResourceId              (            a_absolutePathopt, tex2dDesc, imageFile, )
 
 
     }
