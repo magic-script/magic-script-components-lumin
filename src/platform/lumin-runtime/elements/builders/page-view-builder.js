@@ -67,7 +67,7 @@ export class PageViewBuilder extends UiNodeBuilder {
 
   setPageAlignment (element, oldProperties, newProperties) {
     newProperties.pageAlignment.forEach(({ index, alignment }) =>
-      this._callNodeAction(element, 'setPageAlignment', index, alignment));
+      this._callNodeAction(element, 'setPageAlignment', index, Alignment[alignment]));
   }
 
   setPagePadding (element, oldProperties, newProperties) {
