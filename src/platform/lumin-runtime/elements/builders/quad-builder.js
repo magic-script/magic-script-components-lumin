@@ -36,50 +36,50 @@ export class QuadBuilder extends RenderBuilder {
 
     _addRenderResourceParamters() {
         this._resourceParamter = {
-            'Animation': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
-                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
-            },
-            'AnimationBlendSetup': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
-                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
-            },
-            'AnimationSet': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
-                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string')
-            },
-            'Material': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                localScopeOnly: new PrimitiveTypeProperty('localScopeOnly', undefined, undefined, 'boolean')
-            },
-            'Model': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                descriptor: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
-                basePath: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),
-                importScale: new PrimitiveTypeProperty('importScale', undefined, undefined, 'number')
-            },
-            'Mtl': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean')
-            },
-            'TexturePack': {
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                directory: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),
-                params: new PrimitiveTypeProperty('params', undefined, undefined, 'boolean')
-            },
-            'Texture': {
-                fileName: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-                absolutePath: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-                tex2dDesc: new PrimitiveTypeProperty('tex2dDesc', undefined, undefined, 'boolean'),
-            }
+            'Animation': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
+                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
+            ],
+            'AnimationBlendSetup': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
+                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
+            ],
+            'AnimationSet': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
+                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
+            ],
+            'Material': [
+                { name: 'fileName',       property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),        optional: false },
+                { name: 'absolutePath',   property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),   optional: true  },
+                { name: 'localScopeOnly', property: new PrimitiveTypeProperty('localScopeOnly', undefined, undefined, 'boolean'), optional: true  }
+            ],
+            'Model': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
+                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  },
+                { name: 'importScale',  property: new PrimitiveTypeProperty('importScale', undefined, undefined, 'number'),   optional: true  }
+            ],
+            'Mtl': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),          optional: false },
+                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  }
+            ],
+            'TexturePack': [
+                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: false },
+                { name: 'directory',     property: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),       optional: true  },
+                { name: 'params',     property: new PrimitiveTypeProperty('params', undefined, undefined, 'boolean'),             optional: true  }
+            ],
+            'Texture': [
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),          optional: false },
+                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+                { name: 'tex2dDesc',     property: new PrimitiveTypeProperty('tex2dDesc', undefined, undefined, 'boolean'),       optional: true  }
+            ]
         };
     }
 
