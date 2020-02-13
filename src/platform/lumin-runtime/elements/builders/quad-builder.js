@@ -8,7 +8,10 @@ import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import { Filter } from '../../types/filter-type.js';
 import { ViewMode } from '../../types/view-mode.js';
+import { Wrap } from '../../types/wrap-type.js';
+import { ResourceType } from '../../types/resource-type.js';
 
 export class QuadBuilder extends RenderBuilder {
     constructor(){
@@ -18,68 +21,82 @@ export class QuadBuilder extends RenderBuilder {
         this._propertyDescriptors['viewMode'] = new EnumProperty('viewMode', 'setViewMode', true, ViewMode, 'ViewMode');
         this._propertyDescriptors['size'] = new ArrayProperty('size', 'setSize', true, 'vec2');
 
-        // renderResource
-        const renderResourceProperties = [
-            new EnumProperty('resourceType', undefined, undefined, ResourceType, 'ResourceType'),
-            new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),
-            new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),
-            new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),
-            new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),
-            new ArrayProperty('min', undefined, undefined, 'vec3'),
-            new ArrayProperty('max', undefined, undefined, 'vec3')
-        ];
-
-        this._propertyDescriptors['renderResource'] = new ClassProperty('renderResource', 'setRenderResource', false, renderResourceProperties);
-
-        this._addRenderResourceParamters();
+        this._defineRenderResourceParamters();
     }
 
-    _addRenderResourceParamters() {
-        this._resourceParamter = {
-            'Animation': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
-                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
-                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
-                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
-            ],
-            'AnimationBlendSetup': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
-                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
-                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
-                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
-            ],
-            'AnimationSet': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
-                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
-                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
-                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
-            ],
+    _defineRenderResourceParamters() {
+        const texturePackParamsProperties = [
+            new PrimitiveTypeProperty('allowMipmaps', undefined, undefined, 'boolean'),
+            new EnumProperty('magFilter', undefined, undefined, Filter, 'Filter'),
+            new EnumProperty('minFilter', undefined, undefined, Filter, 'Filter'),
+            new EnumProperty('mipMapFilter', undefined, undefined, Filter, 'Filter'),
+            new PrimitiveTypeProperty('numMipmaps', undefined, undefined, 'number')
+        ];
+
+        const desc2dParamsProperties = [
+            new PrimitiveTypeProperty('lodBias', undefined, undefined, 'number'),
+            new EnumProperty('magFilter', undefined, undefined, Filter, 'Filter'),
+            new PrimitiveTypeProperty('maxAnisotropy', undefined, undefined, 'number'),
+            new PrimitiveTypeProperty('maxMipLevel', undefined, undefined, 'number'),
+            new EnumProperty('minFilter', undefined, undefined, Filter, 'Filter'),
+            new EnumProperty('mipMapFilter', undefined, undefined, Filter, 'Filter'),
+            new EnumProperty('uCoordWrap', undefined, undefined, Wrap, 'Wrap'),
+            new EnumProperty('vCoordWrap', undefined, undefined, Wrap, 'Wrap')
+        ]
+
+        const textureTex2dDescProperties = [
+            new PrimitiveTypeProperty('allowMipmaps', undefined, undefined, 'boolean'),
+            new PrimitiveTypeProperty('numMipmaps', undefined, undefined, 'number'),
+            new PrimitiveTypeProperty('upscaleToRGB', undefined, undefined, 'boolean'),
+            new ClassProperty('params', undefined, undefined, desc2dParamsProperties)
+        ];
+
+        const animationProperties = [
+            { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+            { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
+            { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
+            { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  }
+        ];
+
+        this._renderResourceParamters = {
+            'Animation': animationProperties,
+            'AnimationBlendSetup': animationProperties,
+            'AnimationSet': animationProperties,
             'Material': [
                 { name: 'fileName',       property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),        optional: false },
                 { name: 'absolutePath',   property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),   optional: true  },
                 { name: 'localScopeOnly', property: new PrimitiveTypeProperty('localScopeOnly', undefined, undefined, 'boolean'), optional: true  }
             ],
             'Model': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
-                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
-                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),    optional: true  },
-                { name: 'basePath',     property: new PrimitiveTypeProperty('basePath', undefined, undefined, 'string'),      optional: true  },
-                { name: 'importScale',  property: new PrimitiveTypeProperty('importScale', undefined, undefined, 'number'),   optional: true  }
+                ...animationProperties,
+                { name: 'importScale',  property: new PrimitiveTypeProperty('importScale', undefined, undefined, 'number'),   optional: false  }
             ],
             'Mtl': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),          optional: false },
-                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  }
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),      optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  }
             ],
             'TexturePack': [
-                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: false },
-                { name: 'directory',     property: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),       optional: true  },
-                { name: 'params',     property: new PrimitiveTypeProperty('params', undefined, undefined, 'boolean'),             optional: true  }
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),     optional: true  },
+                { name: 'directory',    property: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),        optional: false },
+                { name: 'params',       property: new ClassProperty('params', undefined, undefined, texturePackParamsProperties), optional: false }
             ],
             'Texture': [
-                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),          optional: false },
-                { name: 'absolutePath',     property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true  },
-                { name: 'tex2dDesc',     property: new PrimitiveTypeProperty('tex2dDesc', undefined, undefined, 'boolean'),       optional: true  }
+                { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),            optional: false },
+                { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),       optional: true  },
+                { name: 'descriptor',   property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'),          optional: true  },
+                { name: 'tex2dDesc',    property: new ClassProperty('tex2dDesc', undefined, undefined, textureTex2dDescProperties), optional: false }
             ]
+        };
+
+        this._renderResourceCreators = {
+            'Animation': () => {},
+            'AnimationBlendSetup': () => {},
+            'AnimationSet': () => {},
+            'Material': () => {},
+            'Model': () => {},
+            'Mtl': () => {},
+            'TexturePack': () => {},
+            'Texture': () => {}
         };
     }
 
@@ -126,12 +143,28 @@ export class QuadBuilder extends RenderBuilder {
         }
     }
 
-    _validateRenderResource(properties) {
+    _validateResourceParameters(configuration, value) {
+        if (value === undefined && !configuration.optional) {
+            throw new Error(`Quad parameter renderResource[${configuration.name}] is required`);
+        }
 
-
+        configuration.property.validate(value);
     }
 
-    _createRenderResource(newProperties) {
+    _validateRenderResource(properties) {
+        if (properties.renderResource === undefined) {
+            throw new Error('Quad parameter renderResource is undefined');
+        }
+
+        const resourceTypeProperty = new EnumProperty('resourceType', undefined, undefined, ResourceType, 'ResourceType');
+        resourceTypeProperty.validate(properties.renderResource.resourceType);
+
+        this._renderResourceParamters[properties.renderResource.resourceType]
+            .forEach(parameter => this._validateResourceParameters(parameter, properties.renderResource[parameter.name]));
+    }
+
+    _createRenderResource(value) {
+        return this._renderResourceCreators[value.resourceType](value);
     }
 
     _setSubTexture(element, properties) {
