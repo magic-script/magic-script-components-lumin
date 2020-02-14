@@ -1,5 +1,7 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
+import { multipack, utils, Desc2d } from 'lumin'
+
 import { RenderBuilder } from './render-builder.js';
 
 import { ArrayProperty } from '../properties/array-property.js';
@@ -22,9 +24,10 @@ export class QuadBuilder extends RenderBuilder {
         this._propertyDescriptors['size'] = new ArrayProperty('size', 'setSize', true, 'vec2');
 
         this._defineRenderResourceParamters();
+        this._defineRenderResourceConstructors();
     }
 
-    _defineRenderResourceParamters() {
+    _defineRenderResourceParamters () {
         const texturePackParamsProperties = [
             new PrimitiveTypeProperty('allowMipmaps', undefined, undefined, 'boolean'),
             new EnumProperty('magFilter', undefined, undefined, Filter, 'Filter'),
@@ -78,7 +81,7 @@ export class QuadBuilder extends RenderBuilder {
             'TexturePack': [
                 { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'),     optional: true  },
                 { name: 'directory',    property: new PrimitiveTypeProperty('directory', undefined, undefined, 'boolean'),        optional: false },
-                { name: 'params',       property: new ClassProperty('params', undefined, undefined, texturePackParamsProperties), optional: false }
+                { name: 'params',       property: new ClassProperty('params', undefined, undefined, texturePackParamsProperties), optional: true }
             ],
             'Texture': [
                 { name: 'fileName',     property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'),            optional: false },
@@ -87,16 +90,18 @@ export class QuadBuilder extends RenderBuilder {
                 { name: 'tex2dDesc',    property: new ClassProperty('tex2dDesc', undefined, undefined, textureTex2dDescProperties), optional: false }
             ]
         };
+    }
 
-        this._renderResourceCreators = {
-            'Animation': () => {},
-            'AnimationBlendSetup': () => {},
-            'AnimationSet': () => {},
-            'Material': () => {},
-            'Model': () => {},
-            'Mtl': () => {},
-            'TexturePack': () => {},
-            'Texture': () => {}
+    _defineRenderResourceConstructors () {
+        this._renderResourceConstructors = {
+            'Animation': this._createAnimation,
+            'AnimationBlendSetup': this._createAnimationBlendSetup,
+            'AnimationSet': this._createAnimationSet,
+            'Material': this._createMaterial,
+            'Model': this._createModel,
+            'Mtl': this._createMtl,
+            'TexturePack': this._createTexturePack,
+            'Texture': this._createTexture
         };
     }
 
@@ -161,6 +166,91 @@ export class QuadBuilder extends RenderBuilder {
 
         this._renderResourceParamters[properties.renderResource.resourceType]
             .forEach(parameter => this._validateResourceParameters(parameter, properties.renderResource[parameter.name]));
+    }
+
+    _createAnimation (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const descriptor = this.getPropertyValue('descriptor', -1, properties);
+        const basePath = this.getPropertyValue('basePath', null, properties);
+        return prism.createAnimationResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    }
+
+    _createAnimationBlendSetup (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const descriptor = this.getPropertyValue('descriptor', -1, properties);
+        const basePath = this.getPropertyValue('basePath', null, properties);
+        return prism.createAnimationBlendSetupResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    }
+    _createAnimationSet (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const descriptor = this.getPropertyValue('descriptor', -1, properties);
+        const basePath = this.getPropertyValue('basePath', null, properties);
+        return prism.createAnimationSetResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    }
+    _createMaterial (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const localScopeOnly = this.getPropertyValue('localScopeOnly', false, properties);
+        return prism.createMaterialResourceId(properties.fileName, localScopeOnly, absolutePath);
+    }
+    _createModel (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const descriptor = this.getPropertyValue('descriptor', -1, properties);
+        const basePath = this.getPropertyValue('basePath', null, properties);
+        const importScale = this.getPropertyValue('importScale', 1, properties);
+        return prism.createModelResourceId(properties.fileName, importScale, absolutePath, descriptor, basePath);
+    }
+    _createMtl (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        return prism.createObjMtlResourceId(properties.fileName, absolutePath);
+    }
+    _createTexturePack (prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+
+        let params;
+        if (properties.params === undefined) {
+            params = new multipack.Params.DEFAULT;
+        } else {
+            params = new multipack.Params();
+            params.allowMipmaps = properties.params.allowMipmaps;
+            params.magFilter = Filter[properties.params.magFilter];
+            params.minFilter = Filter[properties.params.minFilter];
+            params.mipMapFilter = Filter[properties.params.mipMapFilter];
+            params.numMipmaps = this.getPropertyValue('numMipmaps', 0, properties.params);
+        }
+
+        return prism.createTexturePackResourceId(properties.directory, params, absolutePath);
+    }
+    _createTexture(prism, properties) {
+        const absolutePath = this.getPropertyValue('absolutePath', false, properties);
+        const descriptor = this.getPropertyValue('descriptor', -1, properties);
+
+        let tex2dDesc;
+        if (properties.tex2dDesc === undefined) {
+            tex2dDesc = Desc2d.DEFAULT;
+        } else {
+            tex2dDesc.allowMipmaps = properties.tex2dDesc.allowMipmaps;
+            tex2dDesc.numMipmaps = properties.tex2dDesc.numMipmaps;
+            tex2dDesc.upscaleToRGB = properties.tex2dDesc.upscaleToRGB;
+
+            let params2d;
+            if (properties.tex2dDesc.params === undefined) {
+                params2d = utils.Params2d.DEFAULT;
+            } else {
+                params2d = new utils.Params2d();
+                params2d.lodBias = properties.tex2dDesc.params.lodBias;
+                params2d.magFilter = Filter[properties.tex2dDesc.params.magFilter];
+                params2d.maxAnisotropy = properties.tex2dDesc.params.maxAnisotropy;
+                params2d.maxMipLevel = properties.tex2dDesc.params.maxMipLevel;
+                params2d.minFilter = Filter[properties.tex2dDesc.params.minFilter];
+                params2d.mipMapFilter = Filter[properties.tex2dDesc.params.mipMapFilter];
+                params2d.uCoordWrap = Wrap[properties.tex2dDesc.params.uCoordWrap];
+                params2d.vCoordWrap = Wrap[properties.tex2dDesc.params.vCoordWrap];
+            }
+
+            tex2dDesc.params = params2d;
+        }
+
+        return prism.createTextureResourceId(tex2dDesc, properties.fileName, absolutePath, descriptor);
     }
 
     _createRenderResource(value) {
