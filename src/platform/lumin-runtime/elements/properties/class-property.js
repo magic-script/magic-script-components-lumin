@@ -16,7 +16,7 @@ export class ClassProperty extends PropertyDescriptor {
     validate (value) {
       if (Array.isArray(value)) {
         value.forEach(item => this._validate(item));
-      } else {
+      } else if (this.hasValue(value)) {
         this._validate(value);
       }
 
