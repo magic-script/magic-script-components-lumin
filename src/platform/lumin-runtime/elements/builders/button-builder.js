@@ -11,6 +11,7 @@ import { EclipseButtonType } from '../../types/eclipse-button-type.js';
 import { SystemIcons } from '../../types/system-icons.js';
 import { Side } from '../../types/side.js';
 
+import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
 
 export class ButtonBuilder extends TextContainerBuilder {
