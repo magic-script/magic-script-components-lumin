@@ -87,7 +87,7 @@ export class QuadBuilder extends RenderBuilder {
         { name: 'fileName', property: new PrimitiveTypeProperty('fileName', undefined, undefined, 'string'), optional: false },
         { name: 'absolutePath', property: new PrimitiveTypeProperty('absolutePath', undefined, undefined, 'boolean'), optional: true },
         { name: 'descriptor', property: new PrimitiveTypeProperty('descriptor', undefined, undefined, 'number'), optional: true },
-        { name: 'tex2dDesc', property: new ClassProperty('tex2dDesc', undefined, undefined, textureTex2dDescProperties), optional: false }
+        { name: 'tex2dDesc', property: new ClassProperty('tex2dDesc', undefined, undefined, textureTex2dDescProperties), optional: true }
       ]
     };
   }
