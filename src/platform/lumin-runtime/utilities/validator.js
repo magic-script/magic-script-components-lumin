@@ -11,6 +11,7 @@ import { DateFormat } from '../types/date-format.js';
 import { DialogType } from '../types/dialog-type.js';
 import { EclipseButtonType } from '../types/eclipse-button-type.js';
 import { EclipseLabelType } from '../types/eclipse-label-type.js';
+import { Filter } from '../types/filter-type.js';
 import { FlowDirection } from '../types/flow-direction.js';
 import { FocusRequest } from '../types/focus-request.js';
 import { FontStyle, FontWeight } from '../types/font-style.js';
@@ -20,11 +21,12 @@ import { HandGestureKeypointName } from '../types/hand-gesture-keypoint-name.js'
 import { LabelDisplayMode } from '../types/label-display-mode.js';
 import { LightType } from '../types/light-type.js';
 import { LoadingSpinnerType } from '../types/loading-spinner-type.js';
-import { RenderingLayer } from '../types/rendering-layer.js';
 import { PanelEdgeConstraintLevel } from '../types/panel-edge-constraint-level.js'
 import { PanelCursorTransitionType } from '../types/panel-cursor-transition-type.js';
 import { PortalIconSize } from '../types/portal-icon-size.js';
 import { Quality } from '../types/quality.js';
+import { RenderingLayer } from '../types/rendering-layer.js';
+import { ResourceType } from '../types/resource-type.js';
 import { ScrollBarVisibility } from '../types/scroll-bar-visibility.js';
 import { ScrollDirection } from '../types/scroll-direction.js';
 import { ShaderType } from '../types/shader-type.js';
@@ -38,6 +40,7 @@ import { ToggleType } from '../types/toggle-type.js';
 import { VideoAction } from '../types/video-action.js';
 import { ViewMode } from '../types/view-mode.js';
 import { WebViewAction } from '../types/web-view-action.js';
+import { Wrap } from '../types/wrap-type.js';
 
 function validate(value, enumSet) {
     return typeof value === 'string' && enumSet[value] !== undefined;
@@ -55,6 +58,7 @@ const validator = {
     validateDialogType: value => validate(value, DialogType),
     validateEclipseButtonType: value => validate(value, EclipseButtonType),
     validateEclipseLabelType: value => validate(value, EclipseLabelType),
+    validateFilter: value => validate(value, Filter),
     validateFlowDirection: value => validate(value, FlowDirection),
     validateFocusRequest: value => validate(value, FocusRequest),
     validateFontStyle: value => validate(value, FontStyle),
@@ -70,6 +74,7 @@ const validator = {
     validatePortalIconSize: value => validate(value, PortalIconSize),
     validateQuality: value => validate(value, Quality),
     validateRenderingLayer: value => validate(value, RenderingLayer),
+    validateResourceType: value => validate(value, ResourceType),
     validateScrollBarVisibility: value => validate(value, ScrollBarVisibility),
     validateScrollDirection: value => validate(value, ScrollDirection),
     validateShaderType: value => validate(value, ShaderType),
@@ -82,7 +87,8 @@ const validator = {
     validateToggleType: value => validate(value, ToggleType),
     validateVideoAction: value => validate(value, VideoAction),
     validateViewMode: value => validate(value, ViewMode),
-    validateWebViewAction: value => validate(value, WebViewAction)
+    validateWebViewAction: value => validate(value, WebViewAction),
+    validateWrap: value => validate(value, Wrap)
 }
 
 export default validator;
