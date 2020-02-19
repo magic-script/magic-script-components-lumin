@@ -50,6 +50,21 @@ class ColorProperty extends PropertyDescriptor {
   static _isRGBAVec4Format (value) {
     return typeof value === 'object' && value.type === RGBAVec4;
   }
+
+  tsType() {
+    return 'color';
+  }
+
+  tsDependentTypes() {
+    return {
+      color: 'string | number | vec4 | color_hsl | color_lch | color_cmyk | color_rgba',
+      color_hsl: '{ h: number, s: number, l: number }',
+      color_lch: '{ l: number, c: number, h: number }',
+      color_cmyk: '{ c: number, m: number, y: number, k: number }',
+      color_rgba: '{ r: number, g: number, b: number, a: number, type?: string }'
+    };
+  }
+
 }
 
 export { ColorProperty };
