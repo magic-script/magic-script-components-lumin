@@ -170,36 +170,36 @@ export class QuadBuilder extends RenderBuilder {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return prism.createAnimationResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    return this._createNode(prism, 'createAnimationResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
 
   _createAnimationBlendSetup (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return prism.createAnimationBlendSetupResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    return this._createNode(prism, 'createAnimationBlendSetupResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
   _createAnimationSet (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return prism.createAnimationSetResourceId(properties.fileName, absolutePath, descriptor, basePath);
+    return this._createNode(prism, 'createAnimationSetResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
   _createMaterial (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const localScopeOnly = this.getPropertyValue('localScopeOnly', false, properties);
-    return prism.createMaterialResourceId(properties.fileName, localScopeOnly, absolutePath);
+    return this._createNode(prism, 'createMaterialResourceId', properties.fileName, localScopeOnly, absolutePath);
   }
   _createModel (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
     const importScale = this.getPropertyValue('importScale', 1, properties);
-    return prism.createModelResourceId(properties.fileName, importScale, absolutePath, descriptor, basePath);
+    return this._createNode(prism, 'createModelResourceId', properties.fileName, importScale, absolutePath, descriptor, basePath);
   }
   _createMtl (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
-    return prism.createObjMtlResourceId(properties.fileName, absolutePath);
+    return this._createNode(prism, 'createObjMtlResourceId', properties.fileName, absolutePath);
   }
   _createTexturePack (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
@@ -216,7 +216,7 @@ export class QuadBuilder extends RenderBuilder {
       params.numMipmaps = this.getPropertyValue('numMipmaps', 0, properties.params);
     }
 
-    return prism.createTexturePackResourceId(properties.directory, params, absolutePath);
+    return this._createNode(prism, 'createTexturePackResourceId', properties.directory, params, absolutePath);
   }
   _createTexture (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
@@ -248,7 +248,7 @@ export class QuadBuilder extends RenderBuilder {
       tex2dDesc.params = params2d;
     }
 
-    return prism.createTextureResourceId(tex2dDesc, properties.fileName, absolutePath, descriptor);
+    return this._createNode(prism, 'createTextureResourceId', tex2dDesc, properties.fileName, absolutePath, descriptor);
   }
 
   _createRenderResource (prism, value) {
