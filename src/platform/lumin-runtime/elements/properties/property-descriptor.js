@@ -6,7 +6,7 @@ const ArrayLengthByType = {
     'vec3': 3,
     'vec4': 4,
     'quat': 4,
-    'mat4': 4
+    'mat4': 16
 }
 
 export class PropertyDescriptor {
@@ -84,8 +84,7 @@ export class PropertyDescriptor {
             }
 
             if (   this.hasValue(arrayType)
-                && value.length !== ArrayLengthByType[arrayType]
-                && value.length !== 16) {
+                && value.length !== ArrayLengthByType[arrayType]) {
                 throw new TypeError(`Parameter ${JSON.stringify(value)} should be ${arrayType} value`);
             }
         }
