@@ -15,6 +15,8 @@ import { ViewMode } from '../../types/view-mode.js';
 import { Wrap } from '../../types/wrap-type.js';
 import { ResourceType } from '../../types/resource-type.js';
 
+import executor from '../../utilities/executor.js'
+
 export class QuadBuilder extends RenderBuilder {
   constructor () {
     super();
@@ -170,36 +172,36 @@ export class QuadBuilder extends RenderBuilder {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return this._createNode(prism, 'createAnimationResourceId', properties.fileName, absolutePath, descriptor, basePath);
+    return executor.callNativeFunction(prism, 'createAnimationResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
 
   _createAnimationBlendSetup (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return this._createNode(prism, 'createAnimationBlendSetupResourceId', properties.fileName, absolutePath, descriptor, basePath);
+    return executor.callNativeFunction(prism, 'createAnimationBlendSetupResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
   _createAnimationSet (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
-    return this._createNode(prism, 'createAnimationSetResourceId', properties.fileName, absolutePath, descriptor, basePath);
+    return executor.callNativeFunction(prism, 'createAnimationSetResourceId', properties.fileName, absolutePath, descriptor, basePath);
   }
   _createMaterial (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const localScopeOnly = this.getPropertyValue('localScopeOnly', false, properties);
-    return this._createNode(prism, 'createMaterialResourceId', properties.fileName, localScopeOnly, absolutePath);
+    return executor.callNativeFunction(prism, 'createMaterialResourceId', properties.fileName, localScopeOnly, absolutePath);
   }
   _createModel (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
     const descriptor = this.getPropertyValue('descriptor', -1, properties);
     const basePath = this.getPropertyValue('basePath', null, properties);
     const importScale = this.getPropertyValue('importScale', 1, properties);
-    return this._createNode(prism, 'createModelResourceId', properties.fileName, importScale, absolutePath, descriptor, basePath);
+    return executor.callNativeFunction(prism, 'createModelResourceId', properties.fileName, importScale, absolutePath, descriptor, basePath);
   }
   _createMtl (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
-    return this._createNode(prism, 'createObjMtlResourceId', properties.fileName, absolutePath);
+    return executor.callNativeFunction(prism, 'createObjMtlResourceId', properties.fileName, absolutePath);
   }
   _createTexturePack (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
@@ -216,7 +218,7 @@ export class QuadBuilder extends RenderBuilder {
       params.numMipmaps = this.getPropertyValue('numMipmaps', 0, properties.params);
     }
 
-    return this._createNode(prism, 'createTexturePackResourceId', properties.directory, params, absolutePath);
+    return executor.callNativeFunction(prism, 'createTexturePackResourceId', properties.directory, params, absolutePath);
   }
   _createTexture (prism, properties) {
     const absolutePath = this.getPropertyValue('absolutePath', false, properties);
@@ -248,7 +250,7 @@ export class QuadBuilder extends RenderBuilder {
       tex2dDesc.params = params2d;
     }
 
-    return this._createNode(prism, 'createTextureResourceId', tex2dDesc, properties.fileName, absolutePath, descriptor);
+    return executor.callNativeFunction(prism, 'createTextureResourceId', tex2dDesc, properties.fileName, absolutePath, descriptor);
   }
 
   _createRenderResource (prism, value) {
