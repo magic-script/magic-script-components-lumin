@@ -11,6 +11,8 @@ import { ControllerEvents } from './types/controller-events.js';
 
 import executor from './utilities/executor.js';
 
+import { logWarning } from '../../util/logger.js';
+
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
     super(componentMapping);
@@ -19,12 +21,43 @@ export class PlatformFactory extends NativeFactory {
     this.elementBuilders = {};
     this.controllerBuilders = {};
 
+    // { prismId: { nodeId: { eventName: callbackId } }
+    //
+    // example:
+    // PrismId = 1, ChildNodeId = 1, EventName = `onActivate`
+    // callbackIdObject = onActivateSub(callback)
+    //
+    // {
+    //    1: {
+    //      1: { onActivate: callbackIdObject }
+    //    }
+    // }
+    this._eventCallbackData = {};
+
     // Storing the app in order to get access to nodes prism
     this._app;
   }
 
   isController (element) {
     return element instanceof MxsPrismController;
+  }
+
+  _setCallbackData (prismId, nodeId, callbackId, eventName) {
+    if (this._eventCallbackData[prismId] === undefined) {
+      this._eventCallbackData[prismId] = {};
+    }
+
+    if (this._eventCallbackData[prismId][nodeId] === undefined) {
+      this._eventCallbackData[prismId][nodeId] = {};
+    }
+
+    this._eventCallbackData[prismId][nodeId][eventName] = callbackId;
+  }
+
+  _getCallbackData (prismId, nodeId) {
+    return this._eventCallbackData[prismId] === undefined
+      ? undefined
+      : this._eventCallbackData[prismId][nodeId];
   }
 
   setComponentEvents (element, properties, controller) {
@@ -38,7 +71,11 @@ export class PlatformFactory extends NativeFactory {
       if (eventDescriptor !== undefined) {
         if (typeof pair.handler === 'function') {
           try {
-            element[eventDescriptor.subName]((eventData) => pair.handler(new eventDescriptor.dataType(eventData)));
+            const callbackId = element[eventDescriptor.subName]((eventData) =>
+              pair.handler(new eventDescriptor.dataType(eventData))
+            );
+
+            this._setCallbackData(element.getPrismId(), element.getNodeId(), callbackId, eventDescriptor.subName.slice(0, -3));
           } catch (error) {
             throw new Error(`Tyring to subscribe handler ${pair.name} to ${eventDescriptor.subName} failed, error: ${error.message}`);
           }
@@ -367,6 +404,16 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent, 'removePage', child);
       }
     } else {
+      // Unsibscribe from the events
+      const callbackData = this._getCallbackData(child.getPrismId(), child.getNodeId());
+      if (callbackData !== undefined) {
+        for (const eventName in callbackData) {
+          if (!executor.callNativeFunction(child, `${eventName}Unsub`, callbackData[eventName])) {
+            logWarning(`Node ${child.getNodeId()} failed to unsubscribe from ${eventName} event`);
+          }
+        }
+      }
+
       executor.callNativeAction(parent, 'removeChild', child);
       const prism = this._app.getPrism(child.getPrismId());
       executor.callNativeAction(prism, 'deleteNode', child);
