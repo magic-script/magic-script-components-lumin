@@ -165,4 +165,15 @@ export class PrismBuilder extends ElementBuilder {
   setOnDestroyHandler (prism, oldProperties, newProperties) {
       executor.callNativeFunction(prism, 'onDestroyEventSub', newProperties.onDestroy);
   }
+
+  extraTypeScript() {
+    return  '    onDestroy?: () => void;\n' +
+    '    anchorUuid?: string;\n' +
+    '    size?: vec3;\n' +
+    '    position?: vec3;\n' +
+    '    positionRelativeToCamera?: boolean;\n' +
+    '    orientation?: quat;\n' +
+    '    orientationRelativeToCamera?: boolean;\n' +
+    '    debug?: boolean;\n';
+  }
 }

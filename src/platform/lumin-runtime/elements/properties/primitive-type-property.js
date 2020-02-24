@@ -15,6 +15,6 @@ export class PrimitiveTypeProperty extends PropertyDescriptor {
     }
 
     tsType() {
-        return this._typeName;;
+        return this._typeName === 'function' ? undefined : this._typeName;
     }
 }
