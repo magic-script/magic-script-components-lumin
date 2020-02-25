@@ -35,8 +35,8 @@ const UPDATE_SIGNAL = {};
 //  rootContainerInstance: Container,
 //  hostContext: HostContext,
 //  internalInstanceHandle: Object
-function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-  return mxs._nativeFactory.createElement(type, rootContainerInstance, props);
+async function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
+  return await mxs._nativeFactory.createElement(type, rootContainerInstance, props);
 }
 
 // Function: This function is used to create separate text nodes if the target allows only creating text in separate text nodes

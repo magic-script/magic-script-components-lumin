@@ -10,6 +10,8 @@ import { UiNodeEvents } from './types/ui-node-events.js';
 import { ControllerEvents } from './types/controller-events.js';
 
 import executor from './utilities/executor.js';
+import saveResource from '../../util/download.js';
+
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
@@ -60,7 +62,7 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
-  createElement (name, container, ...args) {
+  async createElement (name, container, ...args) {
     if (typeof name !== 'string') {
       throw new Error('PlatformFactory.createElement expects "name" to be string');
     }
@@ -75,7 +77,7 @@ export class PlatformFactory extends NativeFactory {
         value: undefined
       });
     } else if (this._mapping.controllers[name] !== undefined) {
-      element = this._createController(name, container, ...args);
+      element = await this._createController(name, container, ...args);
     } else {
       throw new Error(`Unknown tag: ${name}`);
     }
@@ -114,10 +116,12 @@ export class PlatformFactory extends NativeFactory {
     return element;
   }
 
-  _createElement (name, container, ...args) {
+  async _createElement (name, container, ...args) {
     if (this.elementBuilders[name] === undefined) {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
+
+    await this._downloadAssets(args);
 
     const prism = container.controller.getPrism();
     const element = this.elementBuilders[name].create(prism, ...args);
@@ -134,6 +138,13 @@ export class PlatformFactory extends NativeFactory {
     }
 
     return this.controllerBuilders[name].create(...args);
+  }
+
+  async _downloadAssets (argsArray) {
+    const properties = argsArray[0];
+
+    properties.filePath = await saveResource(properties.filePath, this._app.getWritablePath());
+    properties.modelPath = await saveResource(properties.modelPath, this._app.getWritablePath());
   }
 
   updateElement (name, ...args) {
