@@ -10,6 +10,7 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import validator from '../../utilities/validator.js';
+import { isUrl } from '../../../../util/download.js';
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -41,7 +42,21 @@ export class ImageBuilder extends UiNodeBuilder {
     } else if (resourceId) {
       element = this._createNode(ui.UiImage, 'Create', prism, resourceId, width, height, useFrame);
     } else if (filePath) {
-      element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      if (isUrl(filePath)) {
+        // Create transperant image
+        element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
+        element.setColor([0.1, 0.1, 0.1, 0.1]);
+        // show spinner while downloading.
+        const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
+        const [w, h] = spinner.getSize();
+        const [x, y, z] = spinner.getLocalPosition();
+        spinner.setLocalPosition([x - (w / 2), y - (h / 2), z]);
+        element.addChild(spinner);
+
+        // Initiate image download
+      } else {
+        element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      }
     } else if (color) {
       element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
     }

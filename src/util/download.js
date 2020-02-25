@@ -1,6 +1,10 @@
 import { logWarning } from './logger.js';
 
-const REGEX_URL = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+const REGEX_URL = /^(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/;
+
+export function isUrl(url) {
+  return REGEX_URL.exec(url) !== null;
+}
 
 export async function download (urlAddress, writablePath) {
     // Validate input parameters
@@ -24,7 +28,7 @@ export async function download (urlAddress, writablePath) {
     const name = parts[parts.length - 1];
     const fullPath = writablePath + name;
     response = await fetch("file://" + full_name, { method: "PUT", body: response.body });
-  
+
     if (!response.ok) {
         throw new Error(`Saving ${name} failed, status =  ${response.status}`);
     }
