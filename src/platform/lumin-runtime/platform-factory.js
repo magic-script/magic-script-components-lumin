@@ -122,7 +122,8 @@ export class PlatformFactory extends NativeFactory {
     }
 
     // await this._downloadAssets(args);
-    args[0].writablePath = this._app.getWritablePath();
+    // args[0].writablePath = this._app.getWritablePath();
+    args[0] = { ...args[0], writablePath: this._app.getWritablePath() };
 
     const prism = container.controller.getPrism();
     const element = this.elementBuilders[name].create(prism, ...args);

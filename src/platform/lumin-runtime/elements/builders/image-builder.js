@@ -10,7 +10,7 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import validator from '../../utilities/validator.js';
-import { isUrl } from '../../../../util/download.js';
+import saveResource, { isUrl } from '../../../../util/download.js';
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -54,6 +54,7 @@ export class ImageBuilder extends UiNodeBuilder {
         element.addChild(spinner);
 
         // Initiate image download
+        this._fetchImage(filePath, properties.writablePath, element, prism);
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
       }
@@ -143,6 +144,11 @@ export class ImageBuilder extends UiNodeBuilder {
           this._callNodeFunction(element, 'getRenderResource'));
       }
     }
+  }
+
+  async _fetchImage (url, path, element, prism) {
+    const filePath = await saveResource(url, path);
+    this._setFilePath(element, undefined, { filePath }, prism);
   }
 
   extraTypeScript() {
