@@ -116,7 +116,7 @@ export class PlatformFactory extends NativeFactory {
     return element;
   }
 
-  async _createElement (name, container, ...args) {
+  _createElement (name, container, ...args) {
     if (this.elementBuilders[name] === undefined) {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
