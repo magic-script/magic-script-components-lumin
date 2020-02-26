@@ -148,7 +148,7 @@ export class ImageBuilder extends UiNodeBuilder {
 
   async _fetchImage (url, path, element, prism) {
     const filePath = await saveResource(url, path);
-    this._setFilePath(element, undefined, { filePath }, prism);
+    this._setFilePath(element, {}, { filePath }, prism);
   }
 
   extraTypeScript() {
