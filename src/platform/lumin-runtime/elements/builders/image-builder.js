@@ -126,16 +126,18 @@ export class ImageBuilder extends UiNodeBuilder {
   _setFilePath (element, oldProperties, newProperties, prism) {
     if (oldProperties.filePath === undefined) {
       if (newProperties.filePath !== undefined) {
+        const absolutePath = newProperties.absolutePath === true;
         this._callNodeAction(element, 'setRenderResource',
-          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
       }
     } else {
       if (newProperties.filePath !== undefined) {
         if (oldProperties.filePath !== newProperties.filePath) {
           const oldResourceId = this._callNodeFunction(element, 'getRenderResource');
+          const absolutePath = newProperties.absolutePath === true;
 
           this._callNodeAction(element, 'setRenderResource',
-            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
 
             this._callNodeAction(prism, 'destroyResource', oldResourceId);
         }
@@ -148,7 +150,7 @@ export class ImageBuilder extends UiNodeBuilder {
 
   async _fetchImage (url, path, element, prism) {
     const filePath = await saveResource(url, path);
-    this._setFilePath(element, {}, { filePath }, prism);
+    this._setFilePath(element, {}, { filePath: filePath, absolutePath: true }, prism);
   }
 
   extraTypeScript() {
