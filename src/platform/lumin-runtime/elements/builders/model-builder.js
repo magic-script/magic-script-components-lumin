@@ -63,7 +63,7 @@ export class ModelBuilder extends RenderBuilder {
         let element;
         if (isUrl(modelPath)) {
             element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
-            this._downloadResource(url, properties.writablePath, element, prism);
+            this._downloadResource(url, properties.writablePath, element, prism, importScale);
         } else {
             element = this._callNodeFunction(prism, 'createModelNode',
                 this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
@@ -184,7 +184,7 @@ export class ModelBuilder extends RenderBuilder {
         return spinner;
       }
 
-      async _downloadResource (url, path, element, prism) {
+      async _downloadResource (url, path, element, prism, importScale) {
         // Set color mask
         element.setColor([0.1, 0.1, 0.1, 0.1]);
 
