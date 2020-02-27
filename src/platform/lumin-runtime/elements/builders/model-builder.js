@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { Desc2d } from 'lumin';
+import { Desc2d, INVALID_RESOURCE_ID } from 'lumin';
 
 import { RenderBuilder } from './render-builder.js';
 
@@ -11,6 +11,7 @@ import { TextureType } from '../../types/texture-type.js';
 
 import validator from '../../utilities/validator.js';
 import log, { MessageSeverity } from '../../../../util/logger.js';
+import saveResource, { isUrl } from '../../../../util/download.js';
 
 export class ModelBuilder extends RenderBuilder {
     constructor() {
@@ -59,8 +60,14 @@ export class ModelBuilder extends RenderBuilder {
         }
 
         const importScale = this.getPropertyValue('importScale', 1.0, properties);
-        const modelId = this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale);
-        const element = this._callNodeFunction(prism, 'createModelNode', modelId);
+        let element;
+        if (isUrl(modelPath)) {
+            element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
+            this._downloadResource(url, properties.writablePath, element, prism);
+        } else {
+            element = this._callNodeFunction(prism, 'createModelNode',
+                this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
+        }
 
         this._setDefaultTexture(element, textureIds, properties)
 
@@ -166,6 +173,36 @@ export class ModelBuilder extends RenderBuilder {
 
             this._callNodeAction(element, 'playAnimation', resourceId, name, paused, loops);
         }
+    }
+
+    _createSpinner (prism) {
+        const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
+        const [w, h] = spinner.getSize();
+        const [x, y, z] = spinner.getLocalPosition();
+
+        spinner.setLocalPosition([x - (w / 2), y - (h / 2), z]);
+        return spinner;
+      }
+
+      async _downloadResource (url, path, element, prism) {
+        // Set color mask
+        element.setColor([0.1, 0.1, 0.1, 0.1]);
+
+        // Add downloading spinner
+        const spinner = this._createSpinner(prism);
+        element.addChild(spinner);
+
+        // Fetch the remote image
+        const filePath = await saveResource(url, path);
+        const modelId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale);
+        element.setModelResource(modelId);
+
+        // Remove color mask
+        element.setColor([1, 1, 1, 1]);
+
+        // Delete spinner
+        element.removeChild(spinner);
+        prism.deleteNode(spinner);
     }
 
     extraTypeScript() {

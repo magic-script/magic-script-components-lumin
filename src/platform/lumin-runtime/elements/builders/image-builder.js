@@ -45,7 +45,7 @@ export class ImageBuilder extends UiNodeBuilder {
       if (isUrl(filePath)) {
         // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
-        this._downloadImage(filePath, properties.writablePath, element, prism);
+        this._downloadResource(filePath, properties.writablePath, element, prism);
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
       }
@@ -148,7 +148,7 @@ export class ImageBuilder extends UiNodeBuilder {
     return spinner;
   }
 
-  async _downloadImage (url, path, element, prism) {
+  async _downloadResource (url, path, element, prism) {
     // Set color mask
     element.setColor([0.1, 0.1, 0.1, 0.1]);
 
