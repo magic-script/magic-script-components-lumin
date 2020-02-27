@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { Desc2d, INVALID_RESOURCE_ID } from 'lumin';
+import { Desc2d, INVALID_RESOURCE_ID, ui } from 'lumin';
 
 import { RenderBuilder } from './render-builder.js';
 
@@ -194,7 +194,7 @@ export class ModelBuilder extends RenderBuilder {
 
         // Fetch the remote image
         const filePath = await saveResource(url, path);
-        const modelId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale);
+        const modelId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
         element.setModelResource(modelId);
 
         // Remove color mask
