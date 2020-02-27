@@ -43,18 +43,9 @@ export class ImageBuilder extends UiNodeBuilder {
       element = this._createNode(ui.UiImage, 'Create', prism, resourceId, width, height, useFrame);
     } else if (filePath) {
       if (isUrl(filePath)) {
-        // Create transperant image
+        // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
-        // element.setColor([0.1, 0.1, 0.1, 0.1]);
-        // show spinner while downloading.
-        const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
-        const [w, h] = spinner.getSize();
-        const [x, y, z] = spinner.getLocalPosition();
-        spinner.setLocalPosition([x - (w / 2), y - (h / 2), z]);
-        element.addChild(spinner);
-
-        // Initiate image download
-        this._fetchImage(filePath, properties.writablePath, element, prism);
+        this._downloadImage(filePath, properties.writablePath, element, prism);
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
       }
@@ -148,9 +139,33 @@ export class ImageBuilder extends UiNodeBuilder {
     }
   }
 
-  async _fetchImage (url, path, element, prism) {
+  _createSpinner (prism) {
+    const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
+    const [w, h] = spinner.getSize();
+    const [x, y, z] = spinner.getLocalPosition();
+
+    spinner.setLocalPosition([x - (w / 2), y - (h / 2), z]);
+    return spinner;
+  }
+
+  async _downloadImage (url, path, element, prism) {
+    // Set color mask
+    element.setColor([0.1, 0.1, 0.1, 0.1]);
+
+    // Add downloading spinner
+    const spinner = this._createSpinner(prism);
+    element.addChild(spinner);
+
+    // Fetch the remote image
     const filePath = await saveResource(url, path);
     this._setFilePath(element, {}, { filePath: filePath, absolutePath: true }, prism);
+
+    // Remove color mask
+    element.setColor([1, 1, 1, 1]);
+
+    // Delete spinner
+    element.removeChild(spinner);
+    prism.deleteNode(spinner);
   }
 
   extraTypeScript() {

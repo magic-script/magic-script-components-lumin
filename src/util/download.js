@@ -1,10 +1,9 @@
 import { logWarning } from './logger.js';
 
-// const REGEX_URL = /^(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])+([^A-Z0-9]+[\w\.]+)/;
-const REGEX_URL = /^(http(s?):)([\/|.|\w|\s\:\#|-])*\.(?:jpg|gif|png)/;
+const REGEX_URL = /^(http(s?):)([\/|.|\w|\s\:\#|-])*\.(?:jpg|gif|png|fbx|glb)/;
 
 export function isUrl(url) {
-  return REGEX_URL.exec(url) !== null;
+  return REGEX_URL.test(url);
 }
 
 export async function download (urlAddress, writablePath) {
