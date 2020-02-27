@@ -45,7 +45,7 @@ export class ImageBuilder extends UiNodeBuilder {
       if (isUrl(filePath)) {
         // Create transperant image
         element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
-        element.setColor([0.1, 0.1, 0.1, 0.1]);
+        // element.setColor([0.1, 0.1, 0.1, 0.1]);
         // show spinner while downloading.
         const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
         const [w, h] = spinner.getSize();
