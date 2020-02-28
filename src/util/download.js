@@ -18,7 +18,13 @@ export async function download (urlAddress, writablePath) {
     }
 
     // Download the asset
-    let response = await fetch(result[0]);
+    let response;
+    try {
+        response = await fetch(result[0]);
+    } catch (error) {
+        throw new Error(`Fetching form ${result[0]} failed, error: ${error.message}`);
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP error, status = ${response.status}`);
     }
@@ -27,7 +33,11 @@ export async function download (urlAddress, writablePath) {
     const parts = result[0].split('/')
     const name = parts[parts.length - 1];
     const fullPath = writablePath + name;
-    response = await fetch(`file://${fullPath}`, { method: 'PUT', body: response.body });
+    try {
+        response = await fetch(`file://${fullPath}`, { method: 'PUT', body: response.body });
+    } catch (error) {
+        throw new Error(`Saving file to file://${fullPath} failed, error: ${error.message}`);
+    }
 
     if (!response.ok) {
         throw new Error(`Saving ${name} failed, status =  ${response.status}`);

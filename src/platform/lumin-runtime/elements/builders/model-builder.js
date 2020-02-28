@@ -184,28 +184,44 @@ export class ModelBuilder extends RenderBuilder {
         return spinner;
       }
 
-      async _downloadResource (url, path, element, prism, importScale) {
+      _addMaskAndSpinner (element, prism) {
         // Set color mask
-        this._callNodeAction(element, 'setColor'[0.1, 0.1, 0.1, 0.1]);
+        this._callNodeAction(element, 'setColor', [0.1, 0.1, 0.1, 0.1]);
 
         // Add downloading spinner
         const spinner = this._createSpinner(prism);
         this._callNodeAction(element, 'addChild', spinner);
+      }
+
+      _removeMaskAndSpinner (element, prism, spinner) {
+        // Remove color mask
+        this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
+
+        // Delete spinner
+        this._callNodeAction(element, 'removeChild', spinner);
+        this._callNodeAction(prism, 'deleteNode', spinner);
+      }
+
+      async _downloadResource (url, path, element, prism, importScale) {
+        this._addMaskAndSpinner(element, prism);
 
         // Fetch the remote image
-        const filePath = await saveResource(url, path);
+        let filePath;
+        try {
+          filePath = await saveResource(url, path);
+        } catch (error) {
+          logError(error.message);
+          this._removeMaskAndSpinner(element, prism, spinner);
+          return;
+        }
+
         const resourceId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
+
         if (resourceId === INVALID_RESOURCE_ID) {
-            logError(`Failed to load resource from: ${url}`);
+          logError(`Failed to load resource from: ${url}`);
         } else {
-            this._callNodeAction(element, 'setModelResource', resourceId);
-
-            // Remove color mask
-            this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
-
-            // Delete spinner
-            this._callNodeAction(element, 'removeChild', spinner);
-            this._callNodeAction(prism, 'deleteNode', spinner);
+          this._callNodeAction(element, 'setModelResource', resourceId);
+          this._removeMaskAndSpinner(element, prism, spinner);
         }
     }
 

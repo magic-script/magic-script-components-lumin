@@ -10,8 +10,6 @@ import { UiNodeEvents } from './types/ui-node-events.js';
 import { ControllerEvents } from './types/controller-events.js';
 
 import executor from './utilities/executor.js';
-import saveResource from '../../util/download.js';
-
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
