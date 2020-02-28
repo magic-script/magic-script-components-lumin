@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ui, Desc2d } from 'lumin';
+import { ui, Desc2d, INVALID_RESOURCE_ID } from 'lumin';
 import { SystemIcons } from '../../types/system-icons.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
@@ -9,7 +9,10 @@ import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import { logError } from '../../../../util/logger.js';
+import saveResource, { isUrl } from '../../../../util/download.js';
 import validator from '../../utilities/validator.js';
+
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -41,9 +44,15 @@ export class ImageBuilder extends UiNodeBuilder {
     } else if (resourceId) {
       element = this._createNode(ui.UiImage, 'Create', prism, resourceId, width, height, useFrame);
     } else if (filePath) {
-      element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      if (isUrl(filePath)) {
+        // Create placeholder image
+        element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
+        this._downloadResource(filePath, properties.writablePath, element, prism);
+      } else {
+        element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      }
     } else if (color) {
-      element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
+      element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
     }
 
     const unapplied = this.excludeProperties(properties, ['icon', 'filePath', 'resourceId', 'height', 'width']);
@@ -110,16 +119,18 @@ export class ImageBuilder extends UiNodeBuilder {
   _setFilePath (element, oldProperties, newProperties, prism) {
     if (oldProperties.filePath === undefined) {
       if (newProperties.filePath !== undefined) {
+        const absolutePath = newProperties.absolutePath === true;
         this._callNodeAction(element, 'setRenderResource',
-          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
       }
     } else {
       if (newProperties.filePath !== undefined) {
         if (oldProperties.filePath !== newProperties.filePath) {
           const oldResourceId = this._callNodeFunction(element, 'getRenderResource');
+          const absolutePath = newProperties.absolutePath === true;
 
           this._callNodeAction(element, 'setRenderResource',
-            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
 
             this._callNodeAction(prism, 'destroyResource', oldResourceId);
         }
@@ -127,6 +138,67 @@ export class ImageBuilder extends UiNodeBuilder {
         this._callNodeAction(prism, 'destroyResource',
           this._callNodeFunction(element, 'getRenderResource'));
       }
+    }
+  }
+
+  _createSpinner (prism) {
+    const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
+    const [w, h] = this._callNodeFunction(spinner, 'getSize');
+    const [x, y, z] = this._callNodeFunction(spinner, 'getLocalPosition');
+
+    this._callNodeAction(spinner, 'setLocalPosition', [x - (w / 2), y - (h / 2), z]);
+    return spinner;
+  }
+
+  _addMaskAndSpinner (element, prism) {
+    // Set color mask
+    this._callNodeAction(element, 'setColor', [0.1, 0.1, 0.1, 0.1]);
+
+    // Add downloading spinner
+    const spinner = this._createSpinner(prism);
+    this._callNodeAction(element, 'addChild', spinner);
+
+    return spinner;
+  }
+
+  _removeMaskAndSpinner (element, prism, spinner) {
+    // Remove color mask
+    this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
+
+    // Delete spinner
+    this._callNodeAction(element, 'removeChild', spinner);
+    this._callNodeAction(prism, 'deleteNode', spinner);
+  }
+
+  _doesElementExist (element, prism) {
+    const nodeId = this._callNodeFunction(element, 'getNodeId');
+    return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
+  }
+
+  async _downloadResource (url, path, element, prism) {
+    const spinner = this._addMaskAndSpinner(element, prism);
+
+    // Fetch the remote image
+    let filePath;
+    try {
+      filePath = await saveResource(url, path);
+    } catch (error) {
+      logError(error.message);
+      this._removeMaskAndSpinner(element, prism, spinner);
+      return;
+    }
+
+    const resourceId = this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, filePath, true);
+
+    if (resourceId === INVALID_RESOURCE_ID) {
+      logError(`Failed to load resource from: ${url}`);
+      return;
+    }
+
+    // Verify that the node is still part of the scene graph after asset download is complete
+    if (this._doesElementExist(element, prism)) {
+      this._callNodeAction(element, 'setRenderResource', resourceId);
+      this._removeMaskAndSpinner(element, prism, spinner);
     }
   }
 

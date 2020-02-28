@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { Desc2d } from 'lumin';
+import { Desc2d, INVALID_RESOURCE_ID, ui } from 'lumin';
 
 import { RenderBuilder } from './render-builder.js';
 
@@ -10,7 +10,8 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js'
 import { TextureType } from '../../types/texture-type.js';
 
 import validator from '../../utilities/validator.js';
-import log, { MessageSeverity } from '../../../../util/logger.js';
+import { logError } from '../../../../util/logger.js';
+import saveResource, { isUrl } from '../../../../util/download.js';
 
 export class ModelBuilder extends RenderBuilder {
     constructor() {
@@ -59,8 +60,14 @@ export class ModelBuilder extends RenderBuilder {
         }
 
         const importScale = this.getPropertyValue('importScale', 1.0, properties);
-        const modelId = this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale);
-        const element = this._callNodeFunction(prism, 'createModelNode', modelId);
+        let element;
+        if (isUrl(modelPath)) {
+            element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
+            this._downloadResource(modelPath, properties.writablePath, element, prism, importScale);
+        } else {
+            element = this._callNodeFunction(prism, 'createModelNode',
+                this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
+        }
 
         this._setDefaultTexture(element, textureIds, properties)
 
@@ -98,19 +105,19 @@ export class ModelBuilder extends RenderBuilder {
 
         const defaultTextureIndex = properties.defaultTextureIndex;
         if ( defaultTextureIndex >= textureIds.length ) {
-            log(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`, MessageSeverity.error);
+            logError(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`);
             return;
         }
 
         const defaultTextureSlot = properties.defaultTextureSlot;
         if ( !validator.validateTextureType(defaultTextureSlot) ) {
-            log(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`, MessageSeverity.error);
+            logError(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`);
             return;
         }
 
         const defaultMaterialName = properties.defaultMaterialName;
         if ( defaultMaterialName === undefined) {
-            log('Value for defaultMaterialName attribute was not provided', MessageSeverity.error);
+            logError('Value for defaultMaterialName attribute was not provided');
             return;
         }
 
@@ -127,17 +134,17 @@ export class ModelBuilder extends RenderBuilder {
         const { materialName, textureSlot, textureId } = texture;
 
         if (materialName === undefined) {
-            log('Model.texture.materialName is required', MessageSeverity.error);
+            logError('Model.texture.materialName is required');
             return;
         }
 
         if (textureSlot === undefined) {
-            log('Model.texture.textureSlot is required', MessageSeverity.error);
+            logError('Model.texture.textureSlot is required');
             return;
         }
 
         if ( textureId === undefined) {
-            log('Model.texture.textureId is required', MessageSeverity.error);
+            logError('Model.texture.textureId is required');
             return;
         }
 
@@ -165,6 +172,67 @@ export class ModelBuilder extends RenderBuilder {
             }
 
             this._callNodeAction(element, 'playAnimation', resourceId, name, paused, loops);
+        }
+    }
+
+    _createSpinner (prism) {
+        const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
+        const [w, h] = this._callNodeFunction(spinner, 'getSize');
+        const [x, y, z] = this._callNodeFunction(spinner, 'getLocalPosition');
+
+        this._callNodeAction(spinner, 'setLocalPosition', [x - (w / 2), y - (h / 2), z]);
+        return spinner;
+      }
+
+      _addMaskAndSpinner (element, prism) {
+        // Set color mask
+        this._callNodeAction(element, 'setColor', [0.1, 0.1, 0.1, 0.1]);
+
+        // Add downloading spinner
+        const spinner = this._createSpinner(prism);
+        this._callNodeAction(element, 'addChild', spinner);
+
+        return spinner;
+      }
+
+      _removeMaskAndSpinner (element, prism, spinner) {
+        // Remove color mask
+        this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
+
+        // Delete spinner
+        this._callNodeAction(element, 'removeChild', spinner);
+        this._callNodeAction(prism, 'deleteNode', spinner);
+      }
+
+      _doesElementExist (element, prism) {
+        const nodeId = this._callNodeFunction(element, 'getNodeId');
+        return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
+      }
+
+      async _downloadResource (url, path, element, prism, importScale) {
+        const spinner = this._addMaskAndSpinner(element, prism);
+
+        // Fetch the remote image
+        let filePath;
+        try {
+          filePath = await saveResource(url, path);
+        } catch (error) {
+          logError(error.message);
+          this._removeMaskAndSpinner(element, prism, spinner);
+          return;
+        }
+
+        const resourceId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
+
+        if (resourceId === INVALID_RESOURCE_ID) {
+          logError(`Failed to load resource from: ${url}`);
+          return
+        }
+
+        // Verify that the node is still part of the scene graph after asset download is complete
+        if (this._doesElementExist(element, prism)) {
+          this._callNodeAction(element, 'setModelResource', resourceId);
+          this._removeMaskAndSpinner(element, prism, spinner);
         }
     }
 
