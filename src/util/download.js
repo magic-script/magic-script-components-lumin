@@ -1,6 +1,6 @@
 import { logWarning } from './logger.js';
 
-const REGEX_URL = /^(http(s?):)([\/|.|\w|\s\:\#\~|-])*/;
+const REGEX_URL = /^(http(s?):\/\/.*)/;
 
 export function isUrl(url) {
   return REGEX_URL.test(url);

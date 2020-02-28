@@ -202,6 +202,11 @@ export class ModelBuilder extends RenderBuilder {
         this._callNodeAction(prism, 'deleteNode', spinner);
       }
 
+      _doesElementExist (element, prism) {
+        const nodeId = this._callNodeFunction(element, 'getNodeId');
+        return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
+      }
+
       async _downloadResource (url, path, element, prism, importScale) {
         this._addMaskAndSpinner(element, prism);
 
@@ -219,7 +224,11 @@ export class ModelBuilder extends RenderBuilder {
 
         if (resourceId === INVALID_RESOURCE_ID) {
           logError(`Failed to load resource from: ${url}`);
-        } else {
+          return
+        }
+
+        // Verify that the node is still part of the scene graph after asset download is complete
+        if (this._doesElementExist(element, prism)) {
           this._callNodeAction(element, 'setModelResource', resourceId);
           this._removeMaskAndSpinner(element, prism, spinner);
         }
