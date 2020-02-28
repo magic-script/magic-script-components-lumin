@@ -1,6 +1,6 @@
 import { logWarning } from './logger.js';
 
-const REGEX_URL = /^(http(s?):)([\/|.|\w|\s\:\#|-])*\.(?:jpg|gif|png|fbx|glb)/;
+const REGEX_URL = /^(http(s?):)([\/|.|\w|\s\:\#\~|-])*/;
 
 export function isUrl(url) {
   return REGEX_URL.test(url);
@@ -8,7 +8,7 @@ export function isUrl(url) {
 
 export async function download (urlAddress, writablePath) {
     // Validate input parameters
-    if (writablePath === undefined || writablePath === undefined || writablePath === '') {
+    if (writablePath === null || writablePath === undefined || writablePath === '') {
         throw new TypeError('Invalid writable path');
     }
 

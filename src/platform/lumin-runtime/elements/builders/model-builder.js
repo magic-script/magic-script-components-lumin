@@ -10,7 +10,7 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js'
 import { TextureType } from '../../types/texture-type.js';
 
 import validator from '../../utilities/validator.js';
-import log, { MessageSeverity } from '../../../../util/logger.js';
+import { logError } from '../../../../util/logger.js';
 import saveResource, { isUrl } from '../../../../util/download.js';
 
 export class ModelBuilder extends RenderBuilder {
@@ -105,19 +105,19 @@ export class ModelBuilder extends RenderBuilder {
 
         const defaultTextureIndex = properties.defaultTextureIndex;
         if ( defaultTextureIndex >= textureIds.length ) {
-            log(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`, MessageSeverity.error);
+            logError(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`);
             return;
         }
 
         const defaultTextureSlot = properties.defaultTextureSlot;
         if ( !validator.validateTextureType(defaultTextureSlot) ) {
-            log(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`, MessageSeverity.error);
+            logError(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`);
             return;
         }
 
         const defaultMaterialName = properties.defaultMaterialName;
         if ( defaultMaterialName === undefined) {
-            log('Value for defaultMaterialName attribute was not provided', MessageSeverity.error);
+            logError('Value for defaultMaterialName attribute was not provided');
             return;
         }
 
@@ -134,17 +134,17 @@ export class ModelBuilder extends RenderBuilder {
         const { materialName, textureSlot, textureId } = texture;
 
         if (materialName === undefined) {
-            log('Model.texture.materialName is required', MessageSeverity.error);
+            logError('Model.texture.materialName is required');
             return;
         }
 
         if (textureSlot === undefined) {
-            log('Model.texture.textureSlot is required', MessageSeverity.error);
+            logError('Model.texture.textureSlot is required');
             return;
         }
 
         if ( textureId === undefined) {
-            log('Model.texture.textureId is required', MessageSeverity.error);
+            logError('Model.texture.textureId is required');
             return;
         }
 
@@ -177,32 +177,36 @@ export class ModelBuilder extends RenderBuilder {
 
     _createSpinner (prism) {
         const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
-        const [w, h] = spinner.getSize();
-        const [x, y, z] = spinner.getLocalPosition();
+        const [w, h] = this._callNodeFunction(spinner, 'getSize');
+        const [x, y, z] = this._callNodeFunction(spinner, 'getLocalPosition');
 
-        spinner.setLocalPosition([x - (w / 2), y - (h / 2), z]);
+        this._callNodeAction(spinner, 'setLocalPosition', [x - (w / 2), y - (h / 2), z]);
         return spinner;
       }
 
       async _downloadResource (url, path, element, prism, importScale) {
         // Set color mask
-        element.setColor([0.1, 0.1, 0.1, 0.1]);
+        this._callNodeAction(element, 'setColor'[0.1, 0.1, 0.1, 0.1]);
 
         // Add downloading spinner
         const spinner = this._createSpinner(prism);
-        element.addChild(spinner);
+        this._callNodeAction(element, 'addChild', spinner);
 
         // Fetch the remote image
         const filePath = await saveResource(url, path);
-        const modelId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
-        element.setModelResource(modelId);
+        const resourceId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
+        if (resourceId === INVALID_RESOURCE_ID) {
+            logError(`Failed to load resource from: ${url}`);
+        } else {
+            this._callNodeAction(element, 'setModelResource', resourceId);
 
-        // Remove color mask
-        element.setColor([1, 1, 1, 1]);
+            // Remove color mask
+            this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
 
-        // Delete spinner
-        element.removeChild(spinner);
-        prism.deleteNode(spinner);
+            // Delete spinner
+            this._callNodeAction(element, 'removeChild', spinner);
+            this._callNodeAction(prism, 'deleteNode', spinner);
+        }
     }
 
     extraTypeScript() {

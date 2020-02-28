@@ -121,8 +121,6 @@ export class PlatformFactory extends NativeFactory {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
 
-    // await this._downloadAssets(args);
-    // args[0].writablePath = this._app.getWritablePath();
     args[0] = { ...args[0], writablePath: this._app.getWritablePath() };
 
     const prism = container.controller.getPrism();
@@ -141,13 +139,6 @@ export class PlatformFactory extends NativeFactory {
 
     return this.controllerBuilders[name].create(...args);
   }
-
-  // async _downloadAssets (argsArray) {
-  //   const properties = argsArray[0];
-
-  //   properties.filePath = await saveResource(properties.filePath, this._app.getWritablePath());
-  //   properties.modelPath = await saveResource(properties.modelPath, this._app.getWritablePath());
-  // }
 
   updateElement (name, ...args) {
     if (typeof name !== 'string') {
