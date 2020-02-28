@@ -191,6 +191,8 @@ export class ModelBuilder extends RenderBuilder {
         // Add downloading spinner
         const spinner = this._createSpinner(prism);
         this._callNodeAction(element, 'addChild', spinner);
+
+        return spinner;
       }
 
       _removeMaskAndSpinner (element, prism, spinner) {
@@ -208,7 +210,7 @@ export class ModelBuilder extends RenderBuilder {
       }
 
       async _downloadResource (url, path, element, prism, importScale) {
-        this._addMaskAndSpinner(element, prism);
+        const spinner = this._addMaskAndSpinner(element, prism);
 
         // Fetch the remote image
         let filePath;

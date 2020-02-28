@@ -157,6 +157,8 @@ export class ImageBuilder extends UiNodeBuilder {
     // Add downloading spinner
     const spinner = this._createSpinner(prism);
     this._callNodeAction(element, 'addChild', spinner);
+
+    return spinner;
   }
 
   _removeMaskAndSpinner (element, prism, spinner) {
@@ -174,7 +176,7 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   async _downloadResource (url, path, element, prism) {
-    this._addMaskAndSpinner(element, prism);
+    const spinner = this._addMaskAndSpinner(element, prism);
 
     // Fetch the remote image
     let filePath;
