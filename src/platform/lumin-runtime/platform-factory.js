@@ -297,7 +297,7 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
-  _removeChildNodeToParentNode (parent, child) {
+  _removeChildNodeFromParentNode (parent, child) {
     if (parent instanceof ui.UiScrollView) {
       // ScrollBar: child is <UiScrollBar, orientation>
       if (child instanceof ui.UiScrollBar) {
@@ -394,7 +394,7 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent.getRoot(), 'removeChild', child);
         executor.callNativeAction(parent.getPrism(), 'deleteNode', child);
       } else {
-        this._removeChildNodeToParentNode(parent, child);
+        this._removeChildNodeFromParentNode(parent, child);
       }
     }
   }
