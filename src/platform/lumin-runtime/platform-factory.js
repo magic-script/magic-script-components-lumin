@@ -331,6 +331,12 @@ export class PlatformFactory extends NativeFactory {
         // LRT is not checking for nullptr yet !
         // executor.callNativeAction(parent, 'setContent', child);
       }
+    } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
+      if (child instanceof TransformNode) {
+        executor.callNativeFunction(parent, 'removeItem', child);
+        const prism = this._app.getPrism(child.getPrismId());
+        executor.callNativeAction(prism, 'deleteNode', child);
+      }
     } else if (parent instanceof ui.UiDropDownList) {
       // ButtonModel: child is <Node, vec3>
       // List: child is array of DropDownListItem(s)
