@@ -297,7 +297,7 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
-  _removeChildNodeToParentNode (parent, child) {
+  _removeChildNodeFromParentNode (parent, child) {
     if (parent instanceof ui.UiScrollView) {
       // ScrollBar: child is <UiScrollBar, orientation>
       if (child instanceof ui.UiScrollBar) {
@@ -330,6 +330,12 @@ export class PlatformFactory extends NativeFactory {
       if (child instanceof TransformNode) {
         // LRT is not checking for nullptr yet !
         // executor.callNativeAction(parent, 'setContent', child);
+      }
+    } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
+      if (child instanceof TransformNode) {
+        executor.callNativeFunction(parent, 'removeItem', child);
+        const prism = this._app.getPrism(child.getPrismId());
+        executor.callNativeAction(prism, 'deleteNode', child);
       }
     } else if (parent instanceof ui.UiDropDownList) {
       // ButtonModel: child is <Node, vec3>
@@ -388,7 +394,7 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent.getRoot(), 'removeChild', child);
         executor.callNativeAction(parent.getPrism(), 'deleteNode', child);
       } else {
-        this._removeChildNodeToParentNode(parent, child);
+        this._removeChildNodeFromParentNode(parent, child);
       }
     }
   }
