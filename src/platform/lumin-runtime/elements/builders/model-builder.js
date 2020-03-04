@@ -63,7 +63,7 @@ export class ModelBuilder extends RenderBuilder {
         let element;
         if (isUrl(modelPath)) {
             element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
-            this._downloadResource(modelPath, properties.writablePath, element, prism, importScale);
+            this._downloadResource(modelPath, properties, element, prism, importScale);
         } else {
             element = this._callNodeFunction(prism, 'createModelNode',
                 this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
@@ -195,9 +195,10 @@ export class ModelBuilder extends RenderBuilder {
         return spinner;
       }
 
-      _removeMaskAndSpinner (element, prism, spinner) {
+      _removeMaskAndSpinner (element, prism, spinner, properties) {
         // Remove color mask
-        this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
+        const color = this.getPropertyValue('color', [1, 1, 1, 1], properties);
+        this._callNodeAction(element, 'setColor', color);
 
         // Delete spinner
         this._callNodeAction(element, 'removeChild', spinner);
@@ -209,16 +210,16 @@ export class ModelBuilder extends RenderBuilder {
         return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
       }
 
-      async _downloadResource (url, path, element, prism, importScale) {
+      async _downloadResource (url, properties, element, prism, importScale) {
         const spinner = this._addMaskAndSpinner(element, prism);
 
         // Fetch the remote image
         let filePath;
         try {
-          filePath = await saveResource(url, path);
+          filePath = await saveResource(url, properties.writablePath);
         } catch (error) {
           logError(error.message);
-          this._removeMaskAndSpinner(element, prism, spinner);
+          this._removeMaskAndSpinner(element, prism, spinner, properties);
           return;
         }
 
@@ -232,7 +233,7 @@ export class ModelBuilder extends RenderBuilder {
         // Verify that the node is still part of the scene graph after asset download is complete
         if (this._doesElementExist(element, prism)) {
           this._callNodeAction(element, 'setModelResource', resourceId);
-          this._removeMaskAndSpinner(element, prism, spinner);
+          this._removeMaskAndSpinner(element, prism, spinner, properties);
         }
     }
 
