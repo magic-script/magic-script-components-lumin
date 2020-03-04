@@ -47,7 +47,7 @@ export class ImageBuilder extends UiNodeBuilder {
       if (isUrl(filePath)) {
         // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
-        this._downloadResource(filePath, properties.writablePath, element, prism);
+        this._downloadResource(filePath, properties, element, prism);
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
       }
@@ -161,9 +161,10 @@ export class ImageBuilder extends UiNodeBuilder {
     return spinner;
   }
 
-  _removeMaskAndSpinner (element, prism, spinner) {
+  _removeMaskAndSpinner (element, prism, spinner, properties) {
     // Remove color mask
-    this._callNodeAction(element, 'setColor', [1, 1, 1, 1]);
+    const color = this.getPropertyValue('color', [1, 1, 1, 1], properties);
+    this._callNodeAction(element, 'setColor', color);
 
     // Delete spinner
     this._callNodeAction(element, 'removeChild', spinner);
@@ -175,16 +176,16 @@ export class ImageBuilder extends UiNodeBuilder {
     return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
   }
 
-  async _downloadResource (url, path, element, prism) {
+  async _downloadResource (url, properties, element, prism) {
     const spinner = this._addMaskAndSpinner(element, prism);
 
     // Fetch the remote image
     let filePath;
     try {
-      filePath = await saveResource(url, path);
+      filePath = await saveResource(url, properties.writablePath);
     } catch (error) {
       logError(error.message);
-      this._removeMaskAndSpinner(element, prism, spinner);
+      this._removeMaskAndSpinner(element, prism, spinner, properties);
       return;
     }
 
@@ -198,7 +199,7 @@ export class ImageBuilder extends UiNodeBuilder {
     // Verify that the node is still part of the scene graph after asset download is complete
     if (this._doesElementExist(element, prism)) {
       this._callNodeAction(element, 'setRenderResource', resourceId);
-      this._removeMaskAndSpinner(element, prism, spinner);
+      this._removeMaskAndSpinner(element, prism, spinner, properties);
     }
   }
 
