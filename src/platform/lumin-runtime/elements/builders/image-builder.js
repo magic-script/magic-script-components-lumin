@@ -14,6 +14,9 @@ import { logError } from '../../../../util/logger.js';
 import saveResource, { isUrl } from '../../../../util/download.js';
 import validator from '../../utilities/validator.js';
 
+import { getSize } from 'magic-script-polyfills/src/size.js';
+import { readfileSync } from 'magic-script-polyfills/src/fs-sync.js';
+
 /**
  * @exports ImageContentMode
  * @description Represents content mode of image.
@@ -23,6 +26,10 @@ const ImageContentMode = {
   aspectFit: 'aspectFit',
   stretch: 'stretch'
 }
+
+// const REGEX_URL = /^(http(s?):\/\/.*)/;
+// const REGEX_FILE_PATH = new RegExp('^(/)?([^/\0]+(/)?)+$');
+const REGEX_LOCAL_PATH = /^(\/)?([^\/\0]+(\/)?)+$/;
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -125,7 +132,7 @@ export class ImageBuilder extends UiNodeBuilder {
     this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
-  getTexCoords (dimension, size, mode) {
+  _getTexCoords (dimension, size, mode) {
     let offset = { u: 0, v: 0 };
 
     if (mode === ImageContentMode.aspectFill || 
@@ -148,12 +155,29 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   setContentMode (element, oldProperties, newProperties) {
-    const contentMode = newProperties.contentMode;
-    const width = newProperties.width;
-    const height = newProperties.height;
-    const size = { width, height };
-    const dimensions = { width, height };//data.getSize(); ???
-    const texCoords = this.getTexCoords(dimensions, size, contentMode);
+    if (!REGEX_LOCAL_PATH.test(newProperties.filePath)) {
+      return;
+    }
+
+    let meta;
+    try {
+      meta = getSize(readfileSync(newProperties.filePath, 'r', 0o644));
+    } catch (error) {
+      logError(error.message);
+    }
+
+    if (meta) {
+      this._setContentMode(element, oldProperties, newProperties, meta);
+    } else {
+      this._callNodeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
+    }
+  }
+
+  _setContentMode (element, oldProperties, newProperties, meta) {
+    const contentMode = this.getPropertyValue('contentMode', ImageContentMode.aspectFill, newProperties);
+    const size = { width: newProperties.width, height: newProperties.height };
+    const dimensions = { width: meta.width, height: meta.height };
+    const texCoords = this._getTexCoords(dimensions, size, contentMode);
     this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
