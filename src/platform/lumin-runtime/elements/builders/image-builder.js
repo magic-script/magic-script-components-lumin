@@ -6,6 +6,7 @@ import { SystemIcons } from '../../types/system-icons.js';
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
 import { ColorProperty } from '../properties/color-property.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
@@ -13,6 +14,15 @@ import { logError } from '../../../../util/logger.js';
 import saveResource, { isUrl } from '../../../../util/download.js';
 import validator from '../../utilities/validator.js';
 
+/**
+ * @exports ImageContentMode
+ * @description Represents content mode of image.
+ */ 
+const ImageContentMode = {
+  aspectFill: 'aspectFill',
+  aspectFit: 'aspectFit',
+  stretch: 'stretch'
+}
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -26,6 +36,9 @@ export class ImageBuilder extends UiNodeBuilder {
     // Expects Id
     this._propertyDescriptors['imageFrameResource'] = new PrimitiveTypeProperty('imageFrameResource', 'setImageFrameResource', true, 'number');
     this._propertyDescriptors['renderResource'] = new PrimitiveTypeProperty('renderResource', 'setRenderResource', true, 'number');
+
+    // Custom props
+    this._propertyDescriptors['contentMode'] = new EnumProperty('contentMode', 'setContentMode', false, ImageContentMode, 'ImageContentMode');
   }
 
   create (prism, properties) {
@@ -109,6 +122,38 @@ export class ImageBuilder extends UiNodeBuilder {
   setTexCoords (element, oldProperties, newProperties) {
     const texCoords = newProperties.texCoords;
     texCoords.forEach(coordinate => PropertyDescriptor.throwIfNotArray(coordinate, 'vec2'));
+    this._callNodeAction(element, 'setTexCoords', texCoords);
+  }
+
+  getTexCoords (dimension, size, mode) {
+    let offset = { u: 0, v: 0 };
+
+    if (mode === ImageContentMode.aspectFill || 
+        mode === ImageContentMode.aspectFit) {
+      const factors = { h: size.width / dimension.width, v: size.height / dimension.height };
+      const factor = (mode === ImageContentMode.aspectFill) ? Math.max(factors.h, factors.v) : Math.min(factors.h, factors.v);
+      const target = { width: factor * dimension.width, height: factor * dimension.height };
+      offset.u = 0.5 * (1.0 - (size.width / target.width));
+      offset.v = 0.5 * (1.0 - (size.height / target.height));
+    } else if (mode === ImageContentMode.stretch) {
+      offset.u = 0;
+      offset.v = 0;
+    }
+
+    const u0 = 0 + offset.u;
+    const u1 = 1 - offset.u;
+    const v0 = 0 + offset.v;
+    const v1 = 1 - offset.v;
+    return [[u0, v1], [u1,v1], [u1,v0], [u0,v0]];
+  }
+
+  setContentMode (element, oldProperties, newProperties) {
+    const contentMode = newProperties.contentMode;
+    const width = newProperties.width;
+    const height = newProperties.height;
+    const size = { width, height };
+    const dimensions = { width, height };//data.getSize(); ???
+    const texCoords = this.getTexCoords(dimensions, size, contentMode);
     this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
