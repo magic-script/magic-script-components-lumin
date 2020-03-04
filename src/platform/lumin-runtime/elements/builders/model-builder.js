@@ -63,7 +63,7 @@ export class ModelBuilder extends RenderBuilder {
         let element;
         if (isUrl(modelPath)) {
             element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
-            this._downloadResource(modelPath, properties.writablePath, element, prism, importScale);
+            this._downloadResource(modelPath, properties, element, prism, importScale);
         } else {
             element = this._callNodeFunction(prism, 'createModelNode',
                 this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
