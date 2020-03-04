@@ -67,7 +67,6 @@ export class ModelBuilder extends RenderBuilder {
         if (isUrl(modelPath)) {
             // Create placeholder model
             element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
-            // this._downloadResource(modelPath, properties, element, prism, importScale);
             loadRemoteResource(modelPath, properties, element, prism, 'setModelResource',
               (localPath) => executor.callNativeFunction(prism, 'createModelResourceId', localPath, importScale, true));
         } else {

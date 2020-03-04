@@ -48,7 +48,6 @@ export class ImageBuilder extends UiNodeBuilder {
       if (isUrl(filePath)) {
         // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
-        // this._downloadResource(filePath, properties, element, prism);
         loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
           (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true));
       } else {
