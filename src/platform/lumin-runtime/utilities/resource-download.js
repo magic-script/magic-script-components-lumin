@@ -51,7 +51,7 @@ export default async function loadRemoteResource (url, properties, element, pris
     // Fetch the remote image
     let filePath;
     try {
-      filePath = await saveResource(url, properties);
+      filePath = await saveResource(url);
     } catch (error) {
       logError(error.message);
       removeMaskAndSpinner(element, prism, spinner, properties);
@@ -62,6 +62,7 @@ export default async function loadRemoteResource (url, properties, element, pris
 
     if (resourceId === INVALID_RESOURCE_ID) {
       logError(`Failed to load resource from: ${url}`);
+      removeMaskAndSpinner(element, prism, spinner, properties);
       return;
     }
 

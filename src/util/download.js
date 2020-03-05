@@ -6,13 +6,13 @@ export function isUrl(url) {
     return REGEX_URL.test(url);
 }
 
-export async function saveResource (remotePath, localPath) {
+export async function saveResource (remotePath) {
     if (!isUrl(remotePath)) {
         logWarning(`Remote path ${remotePath} is not a valid URL.`);
         return remotePath;
     }
 
-    return await download(remotePath, localPath);
+    return await download(remotePath);
 }
 
 export default async function download (urlAddress) {
