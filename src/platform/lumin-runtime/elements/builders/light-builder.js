@@ -34,7 +34,7 @@ export class LightBuilder extends TransformBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = prism.createLightNode();
+        const element = this._callNodeFunction(prism, 'createLightNode');
 
         this.update(element, undefined, properties);
 
@@ -45,7 +45,7 @@ export class LightBuilder extends TransformBuilder {
         const { on, offset } = newProperties;
 
         if ( on != undefined && offset !== undefined ) {
-            element.setUseHeadPose(on, offset);
+            this._callNodeAction(element, 'setUseHeadPose', on, offset);
         }
     }
 }

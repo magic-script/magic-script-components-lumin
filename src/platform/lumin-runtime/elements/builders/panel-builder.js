@@ -53,8 +53,7 @@ export class PanelBuilder extends UiNodeBuilder {
   create (prism, properties) {
     this.throwIfInvalidPrism(prism);
 
-    // const element = MxsPanel.Create(prism);
-    const element = ui.UiPanel.Create(prism);
+    const element = this._createNode(ui.UiPanel, 'Create', prism);
 
     Object.defineProperty(element, 'side', {
       enumerable: true,
@@ -72,7 +71,7 @@ export class PanelBuilder extends UiNodeBuilder {
     const { side, constraintMagnitude } = newProperties.edgeConstraint;
 
     if (side !== undefined && constraintMagnitude !== undefined) {
-      element.setEdgeConstraint(Side[side], constraintMagnitude);
+      this._callNodeAction(element, 'setEdgeConstraint', Side[side], constraintMagnitude);
     }
   }
 
@@ -80,7 +79,7 @@ export class PanelBuilder extends UiNodeBuilder {
     const { side, level } = newProperties.edgeConstraintLevel;
 
     if (side !== undefined && level !== undefined) {
-      element.setEdgeConstraintLevel(Side[side], PanelEdgeConstraintLevel[level]);
+      this._callNodeAction(element, 'setEdgeConstraintLevel', Side[side], PanelEdgeConstraintLevel[level]);
     }
   }
 
@@ -90,7 +89,7 @@ export class PanelBuilder extends UiNodeBuilder {
     if (size !== undefined && roundness !== undefined) {
       const offset = this.getPropertyValue('offset', [0, 0, 0], newProperties.panelShape);
       const panelShape = new ui.BoundaryShape(size, roundness, offset);
-      element.setPanelShape(panelShape);
+      this._callNodeAction(element, 'setPanelShape', panelShape);
     }
   }
 

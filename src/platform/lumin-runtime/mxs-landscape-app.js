@@ -4,6 +4,8 @@ import { LandscapeApp, ui } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
+import executor from './utilities/executor.js'
+
 export class MxsLandscapeApp extends LandscapeApp {
     // The 0.5 value is the number of seconds to call `updateLoop` in an interval if
     // there are no other events waking the event loop.

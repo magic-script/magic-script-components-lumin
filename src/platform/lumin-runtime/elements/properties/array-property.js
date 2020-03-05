@@ -30,7 +30,10 @@ export class ArrayProperty extends PropertyDescriptor {
             vec3: '[number, number, number]',
             vec4: '[number, number, number, number]',
             quat: 'vec4',
-            mat4: '[vec4, vec4, vec4, vec4]'
+            mat4: '[number, number, number, number, ' +
+                   'number, number, number, number, ' +
+                   'number, number, number, number, ' +
+                   'number, number, number, number]'
         }
     }
 }

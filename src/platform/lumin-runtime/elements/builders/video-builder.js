@@ -39,16 +39,16 @@ export class VideoBuilder extends QuadBuilder {
             ? luminViewMode.kFullArea
             : ViewMode[viewMode];
 
-        const element = prism.createVideoNode(width, height);
+        const element = this._callNodeFunction(prism, 'createVideoNode', width, height);
 
         if (videoPath !== undefined) {
-            element.setVideoPath(videoPath);
+            this._callNodeAction(element, 'setVideoPath', videoPath);
         } else {
-            element.setVideoUri(videoUri);
+            this._callNodeAction(element, 'setVideoUri', videoUri);
         }
 
-        element.setViewMode(viewMode);
-        element.setVolume(volume);
+        this._callNodeAction(element, 'setViewMode', viewMode);
+        this._callNodeAction(element, 'setVolume', volume);
 
         const unapplied = this.excludeProperties(properties, ['width', 'height', 'volume', 'viewMode', 'videoPath']);
         this.update(element, undefined, unapplied);
@@ -67,7 +67,7 @@ export class VideoBuilder extends QuadBuilder {
         return;
       }
 
-      element[setter](newValue);
+      this._callNodeAction(element, setter, newValue);
     }
 
     setVideoPath (element, oldProperties, newProperties) {
@@ -86,11 +86,11 @@ export class VideoBuilder extends QuadBuilder {
         }
 
         if (VideoAction[action] === VideoAction.start) {
-            element.start();
+            this._callNodeAction(element, 'start');
         } else if (VideoAction[action] === VideoAction.stop) {
-            element.stop();
+            this._callNodeAction(element, 'stop');
         } else if (VideoAction[action] === VideoAction.pause) {
-            element.pause();
+            this._callNodeAction(element, 'pause');
         }
     }
 

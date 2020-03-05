@@ -100,17 +100,17 @@ export class AudioBuilder extends TransformBuilder {
         const dynamicDecode = this.getPropertyValue('dynamicDecode', false, properties);
 
         const resourceId = loadFile
-            ? prism.createLoadedFileAudioResourceId(fileName, absolutePath, descriptor, basePath)
-            : prism.createStreamedFileAudioResourceId(fileName, absolutePath, descriptor, basePath);
+            ? this._callNodeFunction(prism, 'createLoadedFileAudioResourceId', fileName, absolutePath, descriptor, basePath)
+            : this._callNodeFunction(prism, 'createStreamedFileAudioResourceId', fileName, absolutePath, descriptor, basePath);
 
         this._throwIfNoAudioResource(resourceId, `Error ocurred while loading ${fileName} file`);
 
-        const element = prism.createAudioNode();
+        const element = this._callNodeFunction(prism, 'createAudioNode');
 
         if (loadFile) {
-            element.createSoundWithLoadedFile(resourceId, autoDestroy, dynamicDecode);
+            this._callNodeAction(element, 'createSoundWithLoadedFile', resourceId, autoDestroy, dynamicDecode);
         } else {
-            element.createSoundWithStreamedFile(resourceId, autoDestroy);
+            this._callNodeAction(element, 'createSoundWithStreamedFile', resourceId, autoDestroy);
         }
 
         this.update(element, undefined, properties);
@@ -134,7 +134,7 @@ export class AudioBuilder extends TransformBuilder {
         newProperties.spatialSoundDirection
             .forEach(({ channel, channelDirection }) => {
                 if (channel !== undefined && channelDirection !== undefined) {
-                    element.setSpatialSoundDirection(channel, channelDirection);
+                    this._callNodeAction(element, 'setSpatialSoundDirection', channel, channelDirection);
                 };
             });
     }
@@ -163,7 +163,7 @@ export class AudioBuilder extends TransformBuilder {
                 const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
 
                 if ( channel !== undefined && channelSendlevels !== undefined ) {
-                    element.setSpatialSoundDirectSendLevels(channel, channelSendlevels);
+                    this._callNodeAction(element, 'setSpatialSoundDirectSendLevels', channel, channelSendlevels);
                 }
             });
     }
@@ -185,12 +185,12 @@ export class AudioBuilder extends TransformBuilder {
     }
 
     setSpatialSoundDistance(element, oldProperties, newProperties) {
-        newProperties.setSpatialSoundDistance
+        newProperties.spatialSoundDistance
             .forEach(({ channel, minDistance, maxDistance, rolloffFactor }) => {
                 const distanceProperties = this._getSpatialSoundDistanceProperties(minDistance, maxDistance, rolloffFactor);
 
                 if ( channel !== undefined && distanceProperties !== undefined) {
-                    element.setSpatialSoundDistanceProperties(channel, distanceProperties);
+                    this._callNodeAction(element, 'setSpatialSoundDistanceProperties', channel, distanceProperties);
                 }
             });
     }
@@ -199,7 +199,7 @@ export class AudioBuilder extends TransformBuilder {
         newProperties.spatialSoundPosition
             .forEach(({ channel, channelPosition }) => {
                 if (channel !== undefined && channelPosition !== undefined) {
-                    element.setSpatialSoundPosition(channel, channelPosition);
+                    this._callNodeAction(element, 'setSpatialSoundPosition', channel, channelPosition);
                 }
             });
     }
@@ -228,7 +228,7 @@ export class AudioBuilder extends TransformBuilder {
                 const radiationProperties = this._getSpatialSoundRadiationProperties(innerAngle, outerAngle, outerGain, outerGainHf);
 
                 if ( channel !== undefined && radiationProperties !== undefined ) {
-                    element.setSpatialSoundRadiationProperties(channel, radiationProperties);
+                    this._callNodeAction(element, 'setSpatialSoundRadiationProperties', channel, radiationProperties);
                 }
             });
     }
@@ -239,7 +239,7 @@ export class AudioBuilder extends TransformBuilder {
                 const channelSendlevels = this._getSpatialSoundSendLevels(gain, gainHf, gainLf, gainMf);
 
                 if ( channel !== undefined && channelSendlevels !== undefined ) {
-                    element.setSpatialSoundRoomSendLevels(channel, channelSendlevels);
+                    this._callNodeAction(element, 'setSpatialSoundRoomSendLevels', channel, channelSendlevels);
                 }
             });
     }
@@ -258,13 +258,13 @@ export class AudioBuilder extends TransformBuilder {
         }
 
         if (AudioAction[action] === AudioAction.start) {
-            element.startSound();
+            this._callNodeAction(element, 'startSound');
         } else if (AudioAction[action] === AudioAction.stop) {
-            element.stopSound();
+            this._callNodeAction(element, 'stopSound');
         } else if (AudioAction[action] === AudioAction.pause) {
-            element.pauseSound();
+            this._callNodeAction(element, 'pauseSound');
         } else if (AudioAction[action] === AudioAction.resume) {
-            element.resumeSound();
+            this._callNodeAction(element, 'resumeSound');
         }
     }
 

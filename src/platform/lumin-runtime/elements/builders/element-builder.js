@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import log, { MessageSeverity } from '../../../../util/logger.js';
+import executor from '../../utilities/executor.js'
 
 export class ElementBuilder {
     constructor() {
@@ -26,10 +27,10 @@ export class ElementBuilder {
     }
 
     _applyAction(properties, action){
-        for (const name of Object.keys(properties)) {
+        for (const [name, value] of Object.entries(properties)) {
             const descriptor = this._propertyDescriptors[name];
-            if (descriptor !== undefined) {
-                action(properties[name], descriptor);
+            if (value !== undefined && descriptor !== undefined) {
+                action(value, descriptor);
             }
         }
     }
@@ -40,7 +41,7 @@ export class ElementBuilder {
                 try {
                     element[descriptor.SetterName](descriptor.parse(value));
                 } catch (error) {
-                    throw new Error(`[Native.${descriptor.SetterName}]: ${error.name} - ${error.message}\n${error.stack}`);
+                    throw new Error(`[Native.${descriptor.SetterName}(${JSON.stringify(value)})]: ${error.name} - ${error.message}\n${error.stack}`);
                 }
             } else {
                 throw new Error(`${JSON.stringify(element)} does not have method ${descriptor.SetterName}`);
@@ -63,9 +64,24 @@ export class ElementBuilder {
         }
     }
 
-    throwIfNotInstanceOf(element, ...expectedTypes) {
-        if ( !expectedTypes.some(instanceType => element instanceof instanceType)){
-            throw new TypeError(`Component is not a instance of the required type ${expectedTypes.toString()}`);
+    // Expects to execute 'Create' or `CreateXXX' static function which returns node object
+    _createNode (classReference, constructorName, prism, ...parameters) {
+        return executor.createNode(classReference, constructorName, prism, ...parameters);
+    }
+
+    // Expects node function which returns result
+    _callNodeFunction (node, functionName, ...parameters) {
+        return executor.callNativeFunction(node, functionName, ...parameters);
+    }
+
+    // Expects node function which does NOT return result
+    _callNodeAction (node, functionName, ...parameters) {
+        executor.callNativeAction(node, functionName, ...parameters);
+    }
+
+    throwIfNotInstanceOf (element, ...expectedTypes) {
+        if (!expectedTypes.some(instanceType => element instanceof instanceType)) {
+          throw new TypeError(`Component is not a instance of the required type ${expectedTypes.toString()}`);
         }
     }
 
