@@ -2,6 +2,8 @@
 
 import { ImmersiveApp, ModelNode, TransformNode, ui } from 'lumin';
 
+import { setPath } from 'magic-script-polyfills/src/writable-path.js';
+
 import { NativeFactory } from '../../core/native-factory.js';
 import { MxsLandscapeApp } from './mxs-landscape-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
@@ -119,7 +121,8 @@ export class PlatformFactory extends NativeFactory {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
 
-    args[0] = { ...args[0], writablePath: this._app.getWritablePath() };
+    // Set local path for caching fetch-ed files
+    setPath(this._app.getWritablePath());
 
     const prism = container.controller.getPrism();
     const element = this.elementBuilders[name].create(prism, ...args);

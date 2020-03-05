@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { Desc2d, INVALID_RESOURCE_ID, ui } from 'lumin';
+import { Desc2d, INVALID_RESOURCE_ID } from 'lumin';
 
 import { RenderBuilder } from './render-builder.js';
 
@@ -9,9 +9,12 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js'
 
 import { TextureType } from '../../types/texture-type.js';
 
+import loadRemoteResource from '../../utilities/resource-download.js'
+import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
+
 import { logError } from '../../../../util/logger.js';
-import saveResource, { isUrl } from '../../../../util/download.js';
+import { isUrl } from '../../../../util/download.js';
 
 export class ModelBuilder extends RenderBuilder {
     constructor() {
@@ -62,8 +65,10 @@ export class ModelBuilder extends RenderBuilder {
         const importScale = this.getPropertyValue('importScale', 1.0, properties);
         let element;
         if (isUrl(modelPath)) {
+            // Create placeholder model
             element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
-            this._downloadResource(modelPath, properties, element, prism, importScale);
+            loadRemoteResource(modelPath, properties, element, prism, 'setModelResource',
+              (localPath) => executor.callNativeFunction(prism, 'createModelResourceId', localPath, importScale, true));
         } else {
             element = this._callNodeFunction(prism, 'createModelNode',
                 this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
@@ -172,68 +177,6 @@ export class ModelBuilder extends RenderBuilder {
             }
 
             this._callNodeAction(element, 'playAnimation', resourceId, name, paused, loops);
-        }
-    }
-
-    _createSpinner (prism) {
-        const spinner = this._createNode(ui.UiLoadingSpinner, 'Create', prism, ui.LoadingSpinnerType.k2dSpriteAnimation);
-        const [w, h] = this._callNodeFunction(spinner, 'getSize');
-        const [x, y, z] = this._callNodeFunction(spinner, 'getLocalPosition');
-
-        this._callNodeAction(spinner, 'setLocalPosition', [x - (w / 2), y - (h / 2), z]);
-        return spinner;
-      }
-
-      _addMaskAndSpinner (element, prism) {
-        // Set color mask
-        this._callNodeAction(element, 'setColor', [0.1, 0.1, 0.1, 0.1]);
-
-        // Add downloading spinner
-        const spinner = this._createSpinner(prism);
-        this._callNodeAction(element, 'addChild', spinner);
-
-        return spinner;
-      }
-
-      _removeMaskAndSpinner (element, prism, spinner, properties) {
-        // Remove color mask
-        const color = this.getPropertyValue('color', [1, 1, 1, 1], properties);
-        this._callNodeAction(element, 'setColor', color);
-
-        // Delete spinner
-        this._callNodeAction(element, 'removeChild', spinner);
-        this._callNodeAction(prism, 'deleteNode', spinner);
-      }
-
-      _doesElementExist (element, prism) {
-        const nodeId = this._callNodeFunction(element, 'getNodeId');
-        return this._callNodeFunction(prism, 'getNode', nodeId) !== null;
-      }
-
-      async _downloadResource (url, properties, element, prism, importScale) {
-        const spinner = this._addMaskAndSpinner(element, prism);
-
-        // Fetch the remote image
-        let filePath;
-        try {
-          filePath = await saveResource(url, properties.writablePath);
-        } catch (error) {
-          logError(error.message);
-          this._removeMaskAndSpinner(element, prism, spinner, properties);
-          return;
-        }
-
-        const resourceId = this._callNodeFunction(prism, 'createModelResourceId', filePath, importScale, true);
-
-        if (resourceId === INVALID_RESOURCE_ID) {
-          logError(`Failed to load resource from: ${url}`);
-          return
-        }
-
-        // Verify that the node is still part of the scene graph after asset download is complete
-        if (this._doesElementExist(element, prism)) {
-          this._callNodeAction(element, 'setModelResource', resourceId);
-          this._removeMaskAndSpinner(element, prism, spinner, properties);
         }
     }
 
