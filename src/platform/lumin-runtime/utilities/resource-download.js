@@ -7,6 +7,8 @@ import executor from './executor.js';
 import { logError } from '../../../util/logger.js';
 import saveResource from '../../../util/download.js';
 
+import { ColorProperty } from '../elements/properties/color-property.js';
+
 const DOWNLOAD_COLOR_MASK = [0.1, 0.1, 0.1, 0.1];
 const DEFAULT_COLOR_MASK = [1, 1, 1, 1];
 
@@ -32,7 +34,9 @@ function addMaskAndSpinner (element, prism) {
 
 function removeMaskAndSpinner (element, prism, spinner, properties) {
     // Remove color mask
-    const color = properties.color ? properties.color : DEFAULT_COLOR_MASK
+    const color = ColorProperty.validate(properties.color)
+      ? ColorProperty.parse(properties.color)
+      : DEFAULT_COLOR_MASK
     executor.callNativeAction(element, 'setColor', color);
 
     // Delete spinner
