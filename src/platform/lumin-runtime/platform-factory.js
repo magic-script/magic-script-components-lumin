@@ -68,29 +68,11 @@ export class PlatformFactory extends NativeFactory {
     }
 
     if (name === 'scene') {
-      const scene = { prisms: [] };
-
-      Object.defineProperty(scene, 'addChild$Universal', {
-        enumerable: true,
-        writable: false,
-        configurable: false,
-        value: (child) => scene.prisms.push(child)
-      });
-
-      return scene;
+      return this._createScene(name, container, ...args);
     }
 
     if (name === 'prism') {
-      const prism = this._app.addPrism(...args);
-
-      Object.defineProperty(prism, 'addChild$Universal', {
-        enumerable: true,
-        writable: false,
-        configurable: false,
-        value: (child) => console.log('Prism is not supposed to add children !')
-      });
-
-      return prism;
+      return this._createPrism(name, container, ...args);
     }
 
     let element;
@@ -165,6 +147,22 @@ export class PlatformFactory extends NativeFactory {
     }
 
     return this.controllerBuilders[name].create(...args);
+  }
+
+  _createPrism(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create(this._app, ...args);
+  }
+
+  _createScene(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create();
   }
 
   updateElement (name, ...args) {
