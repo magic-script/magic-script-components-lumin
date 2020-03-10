@@ -27,7 +27,7 @@ export class PrismBuilder extends ElementBuilder {
     this._propertyDescriptors['trackHandGesture'] = new PrimitiveTypeProperty('trackHandGesture', 'trackHandGesture', false, 'number');
     this._propertyDescriptors['trackingAutoHapticOnGesture'] = new PrimitiveTypeProperty('trackingAutoHapticOnGesture', 'trackingAutoHapticOnGesture', false, 'number');
 
-    this._propertyDescriptors['onDestroy'] = new EventProperty('onDestroy', 'setOnDestroyHandler', false);
+    this._propertyDescriptors['onDestroy'] = new PrimitiveTypeProperty('onDestroy', 'setOnDestroyHandler', false, 'function');
   }
 
   create(app, properties) {
@@ -42,6 +42,8 @@ export class PrismBuilder extends ElementBuilder {
 
     this._validatePosition(properties)
     this._setPosition(app, prism, properties);
+
+    this.update(prism, undefined, properties);
 
     return prism;
   }
@@ -76,12 +78,6 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
-    const onDestroy = newProperties.onDestroy;
-
-    if (typeof onDestroy === 'function') {
-      executor.callNativeFunction(prism, 'onDestroySub', onDestroy);
-    } else {
-      logWarning('Prism property onDestroy expects function');
-    }
+      executor.callNativeFunction(prism, 'onDestroyEventSub', newProperties.onDestroy);
   }
 }
