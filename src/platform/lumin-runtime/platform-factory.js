@@ -394,7 +394,7 @@ export class PlatformFactory extends NativeFactory {
     if (appType === 'landscape') {
       app = new MxsLandscapeApp(appComponent, 0.5);
     } else if (appType === 'immersive') {
-      app = new ImmersiveApp(0.5);
+      app = new MxsImmersiveApp(appComponent, 0.5);
       app.type = 'immersiveApp';
     } else {
       throw new TypeError(`Invalid argument: Unknown app type: ${appType}`);
