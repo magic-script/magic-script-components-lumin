@@ -63,21 +63,30 @@ export class MxsLandscapeApp extends LandscapeApp {
 
 
   addPrism(properties) {
+    const prismSize = properties.size;
+
+    if (!Array.isArray(prismSize)) {
+      throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
+    }
+
+    const prism = this.requestNewPrism(prismSize);
+    this._prisms.push(prism);
+
     const controller = new AppPrismController(properties);
     this._prismControllers.push(controller);
-
-    const prism = this.requestNewPrism(properties.size);
-    this._prisms.push(prism);
 
     prism.setPrismController(controller);
     return prism;
   }
 
-  updatePrism(props, oldProperties, newProperties) {
+  removePrism(prism) {
+    const controller = prism.getPrismController();
 
-  }
+    this._prismControllers = this._prismControllers.filter( c => c.getName() !== controller.getName());
+    this._prisms = this._prisms.filter( p => p.getPrismId() !== prism.getPrismId());
 
-  deletePrism(prism) {
-
+    controller.deleteSceneGraph();
+    prism.setPrismController(null);
+    this.deletePrism(prism);
   }
 }

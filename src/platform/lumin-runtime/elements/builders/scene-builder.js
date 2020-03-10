@@ -1,18 +1,8 @@
+import { MxsScene } from '../mxs-scene.js';
+
 export class SceneBuilder {
-    constructor() {
-    }
-
     create() {
-        const scene = { prisms: [] };
-
-        Object.defineProperty(scene, 'addChild$Universal', {
-          enumerable: true,
-          writable: false,
-          configurable: false,
-          value: (child) => scene.prisms.push(child)
-        });
-
-        return scene;
+        return new MxsScene();
     }
 
     validate(prism, oldProperties, newProperties) {

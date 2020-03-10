@@ -3,8 +3,8 @@ import { ui } from 'lumin';
 
 import { ElementBuilder } from './element-builder.js';
 
-import { ArrayProperty } from '../properties/array-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
+import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import executor from '../../utilities/executor.js';
 import { logWarning } from '../../../../util/logger.js';
@@ -31,6 +31,8 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   create(app, properties) {
+    this.validate(undefined, undefined, properties);
+
     const prism = app.addPrism(properties);
 
     Object.defineProperty(prism, 'addChild$Universal', {
@@ -40,29 +42,67 @@ export class PrismBuilder extends ElementBuilder {
       value: (child) => console.log('Prism is not supposed to add children !')
     });
 
-    this._validatePosition(properties)
-    this._setPosition(app, prism, properties);
 
-    this.update(prism, undefined, properties);
+    // Filter out 'size' property
+    const { size, ...unapplied } = properties;
+    this.update(prism, undefined, unapplied, app);
 
     return prism;
   }
 
-  _validatePosition (properties) {
-    const { position, positionRelativeToCamera } = properties;
+  validate (prism, oldProperties, newProperties) {
+    super.validate(prism, oldProperties, newProperties)
 
-    ArrayProperty.throwIfNotArray(position);
-    PrimitiveTypeProperty.throwIfNotTypeOf(positionRelativeToCamera, 'boolean');
+    this._validateSize(prism, oldProperties, newProperties);
+    this._validatePosition(prism, oldProperties, newProperties);
+    this._validateOrientation(prism, oldProperties, newProperties);
   }
 
-  _setPosition (app, prism, properties) {
-    const position = this.getPropertyValue('position', [0, 0, -1], properties);
-    const positionRelativeToCamera = this.getPropertyValue('positionRelativeToCamera', true, properties);
+  update (prism, oldProperties, newProperties, app) {
+    super.update(prism, oldProperties, newProperties);
 
-    if (positionRelativeToCamera) {
-      executor.callNativeAction(app, 'positionPrismRelativeToCamera', prism, position);
-    } else {
-      executor.callNativeAction(app, 'positionPrism', prism, position);
+    this._setSize(prism, oldProperties, newProperties, app);
+    this._setPosition(prism, oldProperties, newProperties, app);
+    this._setOrientation(prism, oldProperties, newProperties, app);
+  }
+
+  _validatePosition (prism, oldProperties, newProperties) {
+    PropertyDescriptor.throwIfNotArray(newProperties.position, 'vec3');
+    PrimitiveTypeProperty.throwIfNotTypeOf(newProperties.positionRelativeToCamera, 'boolean');
+  }
+
+  _setPosition (prism, oldProperties, newProperties, app) {
+    if (newProperties.position !== undefined) {
+      if (this.getPropertyValue('positionRelativeToCamera', false, newProperties)) {
+        executor.callNativeAction(app, 'positionPrismRelativeToCamera', prism, newProperties.position);
+      } else {
+        executor.callNativeAction(app, 'positionPrism', prism, newProperties.position);
+      }
+    }
+  }
+
+  _validateOrientation (prism, oldProperties, newProperties) {
+    PropertyDescriptor.throwIfNotArray(newProperties.orientation, 'quat');
+    PrimitiveTypeProperty.throwIfNotTypeOf(newProperties.orientationRelativeToCamera, 'boolean');
+  }
+
+  _setOrientation (prism, oldProperties, newProperties, app) {
+    if (newProperties.orientation !== undefined) {
+      if (this.getPropertyValue('orientationRelativeToCamera', false, newProperties)) {
+        executor.callNativeAction(app, 'orientPrismRelativeToCamera', prism, orientation);
+      } else {
+        executor.callNativeAction(app, 'orientPrism', prism, orientation);
+      }
+    }
+  }
+
+  _validateSize (prism, oldProperties, newProperties) {
+    PropertyDescriptor.throwIfNotArray(newProperties.size, 'vec4');
+  }
+
+  _setSize (prism, oldProperties, newProperties, app) {
+    if (newProperties.size !== undefined) {
+      app.resizePrism(prism, newProperties.size);
     }
   }
 

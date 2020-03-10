@@ -1,17 +1,19 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp, ModelNode, TransformNode, ui } from 'lumin';
+import { ImmersiveApp, ModelNode, TransformNode, Prism, ui } from 'lumin';
 
 import { setPath } from 'magic-script-polyfills/src/writable-path.js';
 
 import { NativeFactory } from '../../core/native-factory.js';
 import { MxsLandscapeApp } from './mxs-landscape-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
+import { MxsScene } from './elements/mxs-scene.js';
 
 import { UiNodeEvents } from './types/ui-node-events.js';
 import { ControllerEvents } from './types/controller-events.js';
 
 import executor from './utilities/executor.js';
+import { logError } from '../../util/logger.js';
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
@@ -170,6 +172,19 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
     }
 
+    if (name === 'scene') {
+      return;
+    }
+
+    if (name === 'prism') {
+      this.elementBuilders[name].update(...args, this._app);
+      return;
+    }
+
+    this._updateElement(name, ...args)
+  }
+
+  _updateElement (name, ...args) {
     const prism = typeof args[0].getPrismId === 'function'
       ? this._app.getPrism(args[0].getPrismId())
       : undefined;
@@ -412,6 +427,15 @@ export class PlatformFactory extends NativeFactory {
     if (typeof child === 'string' || typeof child === 'number') {
       parent.setText('');
     } else {
+      if (parent instanceof MxsScene) {
+        if (child instanceof Prism) {
+          parent.removeChild(child);
+          this._app.removePrism(child);
+        } else {
+          logError('Scene element should have Prism children only!');
+        }
+      }
+
       if (this.isController(child)) {
         if (!this.isController(parent)) {
           throw new Error('Removing controller from non-controller parent');
