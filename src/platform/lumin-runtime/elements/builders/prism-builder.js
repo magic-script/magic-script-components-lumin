@@ -28,7 +28,7 @@ export class PrismBuilder extends ElementBuilder {
     this._propertyDescriptors['onDestroy'] = new PrimitiveTypeProperty('onDestroy', 'setOnDestroyHandler', false, 'function');
   }
 
-  create(app, properties) {
+  create (app, properties) {
     this.validate(undefined, undefined, properties);
 
     const prism = app.addPrism(properties);
@@ -40,7 +40,6 @@ export class PrismBuilder extends ElementBuilder {
       value: (child) => logError('Prism is not supposed to add children !')
     });
 
-
     // Filter out 'size' property
     const { size, ...unapplied } = properties;
     this.update(prism, undefined, unapplied, app);
@@ -49,7 +48,7 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   validate (prism, oldProperties, newProperties) {
-    super.validate(prism, oldProperties, newProperties)
+    super.validate(prism, oldProperties, newProperties);
 
     this._validateSize(prism, oldProperties, newProperties);
     this._validatePosition(prism, oldProperties, newProperties);
@@ -87,15 +86,15 @@ export class PrismBuilder extends ElementBuilder {
   _setOrientation (prism, oldProperties, newProperties, app) {
     if (newProperties.orientation !== undefined) {
       if (this.getPropertyValue('orientationRelativeToCamera', false, newProperties)) {
-        executor.callNativeAction(app, 'orientPrismRelativeToCamera', prism, orientation);
+        executor.callNativeAction(app, 'orientPrismRelativeToCamera', prism, newProperties.orientation);
       } else {
-        executor.callNativeAction(app, 'orientPrism', prism, orientation);
+        executor.callNativeAction(app, 'orientPrism', prism, newProperties.orientation);
       }
     }
   }
 
   _validateSize (prism, oldProperties, newProperties) {
-    PropertyDescriptor.throwIfNotArray(newProperties.size, 'vec4');
+    PropertyDescriptor.throwIfNotArray(newProperties.size, 'vec3');
   }
 
   _setSize (prism, oldProperties, newProperties, app) {
@@ -111,9 +110,9 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   trackingAutoHapticOnGesture (prism, oldProperties, newProperties) {
-      // startTrackingAutoHapticOnGesture
-      // stopTrackingAutoHapticOnGesture
-      logWarning('PrismBuilder.trackingAutoHapticOnGesture has not been implemented yet');
+    // startTrackingAutoHapticOnGesture
+    // stopTrackingAutoHapticOnGesture
+    logWarning('PrismBuilder.trackingAutoHapticOnGesture has not been implemented yet');
   }
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
