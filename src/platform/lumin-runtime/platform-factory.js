@@ -434,6 +434,7 @@ export class PlatformFactory extends NativeFactory {
         } else {
           logError('Scene element should have Prism children only!');
         }
+        return;
       }
 
       if (this.isController(child)) {

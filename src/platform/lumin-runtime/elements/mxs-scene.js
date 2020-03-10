@@ -10,6 +10,6 @@ export class MxsScene {
     }
 
     removeChild (child) {
-        this.prisms = this.prisms.filter( prism => prism.getPrismId() !== child.getPrismId());
+        this.prisms = this.prisms.filter(prism => prism.getPrismId() !== child.getPrismId());
     }
 }
