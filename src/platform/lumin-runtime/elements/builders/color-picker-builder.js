@@ -24,7 +24,7 @@ export class ColorPickerBuilder extends UiNodeBuilder {
         const color  = this.getPropertyValue('color', DEFAULT_COLOR, properties);
         const height = this.getPropertyValue('height', 0, properties);
 
-        const element = ui.UiColorPicker.Create(prism, ColorProperty.parse(color), height);
+        const element = this._createNode(ui.UiColorPicker,'Create', prism, ColorProperty.parse(color), height);
 
         const unapplied = this.excludeProperties(properties, ['color', 'height']);
 

@@ -3,7 +3,8 @@ import { ui } from 'lumin';
 import { TransformNodeEventData } from './transform-node-event-data.js';
 import { FocusRequest } from '../focus-request.js';
 import { SoundEvent } from '../sound-event.js';
-import { extractor } from '../../utilities/extractor.js';
+
+import extractor from '../../utilities/extractor.js';
 
 export class UiEventData extends TransformNodeEventData {
     constructor(nativeEvent) {

@@ -1,5 +1,5 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { Desc2d } from 'lumin';
+import { Desc2d, INVALID_RESOURCE_ID } from 'lumin';
 
 import { RenderBuilder } from './render-builder.js';
 
@@ -8,8 +8,13 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { PropertyDescriptor } from '../properties/property-descriptor.js'
 
 import { TextureType } from '../../types/texture-type.js';
-import { validator } from '../../utilities/validator.js';
-import log, { MessageSeverity } from '../../../../util/logger.js';
+
+import loadRemoteResource from '../../utilities/resource-download.js'
+import executor from '../../utilities/executor.js';
+import validator from '../../utilities/validator.js';
+
+import { logError } from '../../../../util/logger.js';
+import { isUrl } from '../../../../util/download.js';
 
 export class ModelBuilder extends RenderBuilder {
     constructor() {
@@ -49,16 +54,25 @@ export class ModelBuilder extends RenderBuilder {
 
         let textureIds;
         if (Array.isArray(texturePaths)) {
-            textureIds = texturePaths.map(path => prism.createTextureResourceId(Desc2d.DEFAULT, path));
+            textureIds = texturePaths.map(path =>
+                this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, path));
         }
 
         if (materialPath !== undefined) {
-            prism.createMaterialResourceId(materialPath);
+            this._callNodeAction(prism, 'createMaterialResourceId', materialPath);
         }
 
         const importScale = this.getPropertyValue('importScale', 1.0, properties);
-        const modelId = prism.createModelResourceId(modelPath, importScale);
-        const element = prism.createModelNode(modelId);
+        let element;
+        if (isUrl(modelPath)) {
+            // Create placeholder model
+            element = this._callNodeFunction(prism, 'createModelNode', INVALID_RESOURCE_ID);
+            loadRemoteResource(modelPath, properties, element, prism, 'setModelResource',
+              (localPath) => executor.callNativeFunction(prism, 'createModelResourceId', localPath, importScale, true));
+        } else {
+            element = this._callNodeFunction(prism, 'createModelNode',
+                this._callNodeFunction(prism, 'createModelResourceId', modelPath, importScale));
+        }
 
         this._setDefaultTexture(element, textureIds, properties)
 
@@ -96,23 +110,23 @@ export class ModelBuilder extends RenderBuilder {
 
         const defaultTextureIndex = properties.defaultTextureIndex;
         if ( defaultTextureIndex >= textureIds.length ) {
-            log(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`, MessageSeverity.error);
+            logError(`defaultTextureId ${defaultTextureIndex} is out of available texture Ids range`);
             return;
         }
 
         const defaultTextureSlot = properties.defaultTextureSlot;
         if ( !validator.validateTextureType(defaultTextureSlot) ) {
-            log(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`, MessageSeverity.error);
+            logError(`Provided defaultTextureSlot value ${defaultTextureSlot} is not supported`);
             return;
         }
 
         const defaultMaterialName = properties.defaultMaterialName;
         if ( defaultMaterialName === undefined) {
-            log('Value for defaultMaterialName attribute was not provided', MessageSeverity.error);
+            logError('Value for defaultMaterialName attribute was not provided');
             return;
         }
 
-        element.setTexture(defaultMaterialName, TextureType[defaultTextureSlot], textureIds[defaultTextureIndex]);
+        this._callNodeAction(element, 'setTexture', defaultMaterialName, TextureType[defaultTextureSlot], textureIds[defaultTextureIndex]);
     }
 
     setTexture(element, oldProperties, newProperties) {
@@ -125,21 +139,21 @@ export class ModelBuilder extends RenderBuilder {
         const { materialName, textureSlot, textureId } = texture;
 
         if (materialName === undefined) {
-            log('Model.texture.materialName is required', MessageSeverity.error);
+            logError('Model.texture.materialName is required');
             return;
         }
 
         if (textureSlot === undefined) {
-            log('Model.texture.textureSlot is required', MessageSeverity.error);
+            logError('Model.texture.textureSlot is required');
             return;
         }
 
         if ( textureId === undefined) {
-            log('Model.texture.textureId is required', MessageSeverity.error);
+            logError('Model.texture.textureId is required');
             return;
         }
 
-        element.setTexture(materialName, TextureType[textureSlot], textureId)
+        this._callNodeAction(element, 'setTexture', materialName, TextureType[textureSlot], textureId)
     }
 
     setAnimation(element, oldProperties, newProperties) {
@@ -147,7 +161,7 @@ export class ModelBuilder extends RenderBuilder {
             let { resourceId, name, paused, loops } = newProperties.animation;
 
             if (resourceId === undefined) {
-                resourceId = element.getModelResource();
+                resourceId = this._callNodeFunction(element, 'getModelResource');
             }
 
             if (paused === undefined) {
@@ -162,7 +176,7 @@ export class ModelBuilder extends RenderBuilder {
                 throw new TypeError(`Animation Name has not been provided.`);
             }
 
-            element.playAnimation(resourceId, name, paused, loops);
+            this._callNodeAction(element, 'playAnimation', resourceId, name, paused, loops);
         }
     }
 

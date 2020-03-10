@@ -4,7 +4,7 @@ import { SelectionEventData as _SelectionEventData } from 'lumin';
 import { ServerEvent } from './server-event.js';
 import { SelectionEventType } from '../selection-event-type.js';
 
-import { extractor } from '../../utilities/extractor.js';
+import extractor from '../../utilities/extractor.js';
 
 export class SelectionEventData extends ServerEvent {
     constructor(nativeEvent) {

@@ -1,6 +1,7 @@
 import configuration from './src/configuration.js';
 import { generateTypeScript } from './src/util/gen-type-script.js';
 import { PlatformInformation } from './src/platform/lumin-runtime/platform-information.js';
+import { NativePlaneDetector } from './src/platform/lumin-runtime/native-plane-detector.js';
 
 export default {
     _init() {
@@ -19,5 +20,7 @@ export default {
 
     generateTypeScript,
 
-    PlatformInformation
+    PlatformInformation,
+
+    NativePlaneDetector
 }

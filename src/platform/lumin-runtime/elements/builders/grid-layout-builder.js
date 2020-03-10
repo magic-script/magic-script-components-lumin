@@ -38,7 +38,7 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiGridLayout.Create(prism);
+        const element = this._createNode(ui.UiGridLayout, 'Create', prism);
 
         this._addCustomProperties(element);
 
@@ -83,12 +83,12 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           writable: false,
           configurable: false,
           value: (itemIndex) => {
-            if (itemIndex < element.getItemCount()) {
-              const cell = getItemCell(element, element.getItem(itemIndex));
+            if (itemIndex < this._callNodeFunction(element, 'getItemCount')) {
+              const cell = getItemCell(element, this._callNodeFunction(element, 'getItem', itemIndex));
               if (cell !== undefined) {
                 element.itemPadding
                   .filter(({ row, column }) => row === cell.row && cell.column === column)
-                  .forEach(({ row, column, padding }) => element.setItemPadding(row, column, padding));
+                  .forEach(({ row, column, padding }) => this._callNodeAction(element, 'setItemPadding', row, column, padding));
               }
             }
           }
@@ -106,12 +106,12 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
           writable: false,
           configurable: false,
           value: (itemIndex) => {
-            if (itemIndex < element.getItemCount()) {
-              const cell = getItemCell(element, element.getItem(itemIndex));
+            if (itemIndex < this._callNodeFunction(element, 'getItemCount')) {
+              const cell = getItemCell(element, this._callNodeFunction(element, 'getItem', itemIndex));
               if (cell !== undefined) {
                 element.itemAlignment
                   .filter(({ row, column }) => row === cell.row && cell.column === column)
-                  .forEach(({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
+                  .forEach(({ row, column, alignment }) => this._callNodeAction(element, 'setItemAlignment', row, column, Alignment[alignment]));
               }
             }
           }
@@ -120,11 +120,11 @@ export class GridLayoutBuilder extends PositionalLayoutBuilder {
 
     setItemAlignment (element, oldProperties, newProperties) {
       this._setPropertyValue(element, oldProperties, newProperties, 'itemAlignment',
-        ({ row, column, alignment }) => element.setItemAlignment(row, column, Alignment[alignment]));
+        ({ row, column, alignment }) => this._callNodeAction(element, 'setItemAlignment', row, column, Alignment[alignment]));
     }
 
     setItemPadding (element, oldProperties, newProperties) {
       this._setPropertyValue(element, oldProperties, newProperties, 'itemPadding',
-        ({ row, column, padding }) => element.setItemPadding(row, column, padding));
+        ({ row, column, padding }) => this._callNodeAction(element, 'setItemPadding', row, column, padding));
     }
 }

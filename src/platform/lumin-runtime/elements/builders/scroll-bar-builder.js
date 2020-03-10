@@ -27,7 +27,7 @@ export class ScrollBarBuilder extends UiNodeBuilder {
     const width = properties.length;
     const height = this.getPropertyValue('thickness', 0, properties);
 
-    const element = ui.UiScrollBar.Create(prism, width, height);
+    const element = this._createNode(ui.UiScrollBar, 'Create', prism, width, height);
 
     Object.defineProperty(element, 'Orientation', {
       enumerable: true,

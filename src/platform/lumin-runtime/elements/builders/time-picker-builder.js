@@ -1,15 +1,17 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
 import { ui } from 'lumin';
-import { Side } from '../../types/side.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
+
 import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import { Side } from '../../types/side.js';
 import { TimeFormatConverter } from '../../types/time-format.js';
-import { validator } from '../../utilities/validator.js';
+
+import validator from '../../utilities/validator.js';
 
 const DEFAULT_TIME_FORMAT = 'hh:mm:ss';
 
@@ -38,7 +40,7 @@ export class TimePickerBuilder extends UiNodeBuilder {
             defaultTime = TimeFormatConverter[DEFAULT_TIME_FORMAT].toTime(defaultTime);
         }
 
-        const element = ui.UiTimePicker.Create(prism, label, Side[labelSide], DEFAULT_TIME_FORMAT, defaultTime);
+        const element = this._createNode(ui.UiTimePicker, 'Create', prism, label, Side[labelSide], DEFAULT_TIME_FORMAT, defaultTime);
 
         const unapplied = this.excludeProperties(properties, ['label', 'labelSide', 'defaultTime']);
 
@@ -65,7 +67,7 @@ export class TimePickerBuilder extends UiNodeBuilder {
 
     setTime(element, oldProperties, newProperties) {
         const time = TimeFormatConverter[DEFAULT_TIME_FORMAT].toTime(newProperties.time);
-        element.setTime(time);
+        this._callNodeAction(element, 'setTime', time);
     }
 
     extraTypeScript() {

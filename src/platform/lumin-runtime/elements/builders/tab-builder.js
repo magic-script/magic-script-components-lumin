@@ -3,13 +3,15 @@
 import { ui } from 'lumin';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
+import { EnumProperty } from '../properties/enum-property.js';
 import { TextChildrenProperty } from '../properties/text-children-property.js';
 
 import { EclipseLabelType } from '../../types/eclipse-label-type.js';
 
-import { validator } from '../../utilities/validator.js';
-import { EnumProperty } from '../properties/enum-property.js';
+import validator from '../../utilities/validator.js';
+
 
 export class TabBuilder extends TextContainerBuilder {
 
@@ -25,8 +27,8 @@ export class TabBuilder extends TextContainerBuilder {
         }
 
         const element = type === undefined
-            ? ui.UiTab.Create(prism, text)
-            : ui.UiTab.CreateEclipseTab(prism, text, EclipseLabelType[type]);
+            ? this._createNode(ui.UiTab, 'Create', prism, text)
+            : this._createNode(ui.UiTab, 'CreateEclipseTab', prism, text, EclipseLabelType[type]);
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'type']);
 
@@ -34,11 +36,6 @@ export class TabBuilder extends TextContainerBuilder {
 
         return element;
     }
-
-    // update(element, oldProperties, newProperties) {
-    //     // this.throwIfNotInstanceOf(element, ui.UiButton);
-    //     super.update(element, oldProperties, newProperties);
-    // }
 
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);

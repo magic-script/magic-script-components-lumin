@@ -36,7 +36,7 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiLinearLayout.Create(prism);
+        const element = this._createNode(ui.UiLinearLayout, 'Create', prism);
 
         this._addCustomProperties(element);
 
@@ -59,7 +59,7 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
           configurable: false,
           value: (itemIndex) =>
             element.itemPadding.filter(({ index }) => index == itemIndex )
-              .forEach(({ index, padding }) => element.setItemPadding(index, padding))
+              .forEach(({ index, padding }) => this._callNodeAction(element, 'setItemPadding', index, padding))
         });
 
         Object.defineProperty(element, 'itemAlignment', {
@@ -75,17 +75,17 @@ export class LinearLayoutBuilder extends PositionalLayoutBuilder {
           configurable: false,
           value: (itemIndex) =>
             element.itemAlignment.filter(({ index }) => index == itemIndex )
-              .forEach(({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]))
+              .forEach(({ index, alignment }) => this._callNodeAction(element, 'setItemAlignment', index, Alignment[alignment]))
         });
     }
 
     setItemAlignment (element, oldProperties, newProperties) {
       this._setPropertyValue(element, oldProperties, newProperties, 'itemAlignment',
-        ({ index, alignment }) => element.setItemAlignment(index, Alignment[alignment]));
+        ({ index, alignment }) => this._callNodeAction(element, 'setItemAlignment', index, Alignment[alignment]));
     }
 
     setItemPadding (element, oldProperties, newProperties) {
       this._setPropertyValue(element, oldProperties, newProperties, 'itemPadding',
-        ({ index, padding }) => element.setItemPadding(index, padding));
+        ({ index, padding }) => this._callNodeAction(element, 'setItemPadding', index, padding));
     }
 }
