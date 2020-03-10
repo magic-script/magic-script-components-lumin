@@ -83,8 +83,8 @@ export class MxsLandscapeApp extends LandscapeApp {
   removePrism(prism) {
     const controller = prism.getPrismController();
 
-    this._prismControllers = this._prismControllers.filter( c => c.getName() !== controller.getName());
-    this._prisms = this._prisms.filter( p => p.getPrismId() !== prism.getPrismId());
+    this._prismControllers = this._prismControllers.filter(c => c !== controller);
+    this._prisms = this._prisms.filter(p => p.getPrismId() !== prism.getPrismId());
 
     controller.deleteSceneGraph();
     prism.setPrismController(null);
