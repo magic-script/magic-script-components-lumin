@@ -2,8 +2,10 @@
 
 import { LandscapeApp, ui } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
+import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
-import executor from './utilities/executor.js'
+import executor from './utilities/executor.js';
+import { logInfo } from '../../util/logger.js';
 
 export class MxsLandscapeApp extends LandscapeApp {
     // The 0.5 value is the number of seconds to call `updateLoop` in an interval if
@@ -12,7 +14,7 @@ export class MxsLandscapeApp extends LandscapeApp {
         super(timeDelta);
 
         this._app = appComponent;
-        this._prismSize = [appComponent.props.volumeSize];
+        this._prisms = [];
         this._prismControllers = [];
     }
 
@@ -21,30 +23,13 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   onAppStart(arg) {
-    for (let size of this._prismSize) {
-      // TODO: MxsPrismController(this._app.volume);
-      // Each controller is responsible for one prism (volume)
-      let controller;
-      try {
-        controller = new AppPrismController(this._app);
-        this._prismControllers.push(controller);
-      } catch (error) {
-        throw new Error(`Creating AppPrismController failed: ${error.name} - ${error.message}\n${error.stack}`);
+    const container = {
+      controller: {
+        getRoot: () => ({ addChild: (child) => logInfo('App container - adding child (scene)') })
       }
+    };
 
-      let prism;
-      try {
-        prism = this.requestNewPrism(size);
-      } catch (error) {
-        throw new Error(`Creating Prism failed: ${error.name} - ${error.message}\n${error.stack}`);
-      }
-
-      try {
-        prism.setPrismController(controller);
-      } catch (error) {
-        throw new Error(`Setting Prism controller failed: ${error.name} - ${error.message}\n${error.stack}`);
-      }
-    }
+    ReactMagicScript.render(this._app, container);
   }
 
   updateLoop(delta) {
@@ -75,5 +60,34 @@ export class MxsLandscapeApp extends LandscapeApp {
     }
 
     return prismController.getContainer(nodeName);
+  }
+
+
+  addPrism(properties) {
+    const prismSize = properties.size;
+
+    if (!Array.isArray(prismSize)) {
+      throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
+    }
+
+    const prism = this.requestNewPrism(prismSize);
+    this._prisms.push(prism);
+
+    const controller = new AppPrismController(properties);
+    this._prismControllers.push(controller);
+
+    prism.setPrismController(controller);
+    return prism;
+  }
+
+  removePrism(prism) {
+    const controller = prism.getPrismController();
+
+    this._prismControllers = this._prismControllers.filter(c => c !== controller);
+    this._prisms = this._prisms.filter(p => p.getPrismId() !== prism.getPrismId());
+
+    controller.deleteSceneGraph();
+    prism.setPrismController(null);
+    this.deletePrism(prism);
   }
 }
