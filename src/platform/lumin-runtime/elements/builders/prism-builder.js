@@ -6,7 +6,7 @@ import { ElementBuilder } from './element-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 
-import { executor } from '../../utilities/executor.js';
+import executor from '../../utilities/executor.js';
 import { logWarning } from '../../../../util/logger.js';
 
 export class PrismBuilder extends ElementBuilder {
