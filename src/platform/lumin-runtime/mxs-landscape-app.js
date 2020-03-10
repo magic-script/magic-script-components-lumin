@@ -4,7 +4,8 @@ import { LandscapeApp, ui } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
-import executor from './utilities/executor.js'
+import executor from './utilities/executor.js';
+import { logInfo } from '../../util/logger.js';
 
 export class MxsLandscapeApp extends LandscapeApp {
     // The 0.5 value is the number of seconds to call `updateLoop` in an interval if
@@ -24,7 +25,7 @@ export class MxsLandscapeApp extends LandscapeApp {
   onAppStart(arg) {
     const container = {
       controller: {
-        getRoot: () => ({ addChild: (child) => console.log('App container - adding child (scene)') })
+        getRoot: () => ({ addChild: (child) => logInfo('App container - adding child (scene)') })
       }
     };
 

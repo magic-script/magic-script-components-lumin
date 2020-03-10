@@ -1,13 +1,11 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { ui } from 'lumin';
-
 import { ElementBuilder } from './element-builder.js';
 
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import executor from '../../utilities/executor.js';
-import { logWarning } from '../../../../util/logger.js';
+import { logWarning, logError } from '../../../../util/logger.js';
 
 export class PrismBuilder extends ElementBuilder {
   constructor () {
@@ -39,7 +37,7 @@ export class PrismBuilder extends ElementBuilder {
       enumerable: true,
       writable: false,
       configurable: false,
-      value: (child) => console.log('Prism is not supposed to add children !')
+      value: (child) => logError('Prism is not supposed to add children !')
     });
 
 
@@ -109,12 +107,13 @@ export class PrismBuilder extends ElementBuilder {
   trackHandGesture (prism, oldProperties, newProperties) {
     // startTrackHandGesture
     // stopTrackHandGesture
-    console.log('PrismBuilder.validate has not been implemented yet');
+    logWarning('PrismBuilder.trackHandGesture has not been implemented yet');
   }
 
   trackingAutoHapticOnGesture (prism, oldProperties, newProperties) {
       // startTrackingAutoHapticOnGesture
       // stopTrackingAutoHapticOnGesture
+      logWarning('PrismBuilder.trackingAutoHapticOnGesture has not been implemented yet');
   }
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
