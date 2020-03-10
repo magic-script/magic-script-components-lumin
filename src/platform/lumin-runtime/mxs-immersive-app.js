@@ -26,6 +26,7 @@ export class MxsImmersiveApp extends ImmersiveApp {
         this._prismControllers.push(controller);
 
         const prism = this.requestNewPrism(size);
+        this.positionPrism(prism, [0, 0, -1]);
         prism.setPrismController(controller);
     }
   }
