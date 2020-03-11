@@ -1,23 +1,17 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp } from 'lumin';
+import { LandscapeApp } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
 import executor from './utilities/executor.js';
 import { logInfo } from '../../util/logger.js';
 
-export class MxsImmersiveApp extends ImmersiveApp {
-    constructor(appComponent, timeDelta) {
-        super(timeDelta);
-
-        this._app = appComponent;
-        this._prisms = [];
-        this._prismControllers = [];
-    }
-
-  init() {
-    return 0;
+export class MxsLandscapeApp extends LandscapeApp {
+  constructor(appComponent) {
+      this._app = appComponent;
+      this._prisms = [];
+      this._prismControllers = [];
   }
 
   onAppStart(arg) {
@@ -60,14 +54,15 @@ export class MxsImmersiveApp extends ImmersiveApp {
     return prismController.getContainer(nodeName);
   }
 
-  addPrism(properties) {
+
+  addPrism(properties, app) {
     const prismSize = properties.size;
 
     if (!Array.isArray(prismSize)) {
       throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
     }
 
-    const prism = executor.callNativeFunction(this, 'requestNewPrism', prismSize);
+    const prism = executor.callNativeFunction(app, 'requestNewPrism', prismSize);
     this._prisms.push(prism);
 
     const controller = new AppPrismController(properties);
@@ -77,7 +72,7 @@ export class MxsImmersiveApp extends ImmersiveApp {
     return prism;
   }
 
-  removePrism(prism) {
+  removePrism(prism, app) {
     const controller = executor.callNativeFunction(prism, 'getPrismController');
 
     this._prismControllers = this._prismControllers.filter(c => c !== controller);
@@ -85,6 +80,6 @@ export class MxsImmersiveApp extends ImmersiveApp {
 
     executor.callNativeAction(controller, 'deleteSceneGraph');
     executor.callNativeAction(prism, 'setPrismController', null);
-    executor.callNativeAction(this, 'deletePrism', prism);
+    executor.callNativeAction(app, 'deletePrism', prism);
   }
 }
