@@ -1,13 +1,12 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { LandscapeApp } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
 import executor from './utilities/executor.js';
 import { logInfo } from '../../util/logger.js';
 
-export class MxsLandscapeApp extends LandscapeApp {
+export class MxsBaseApp {
   constructor(appComponent) {
       this._app = appComponent;
       this._prisms = [];
