@@ -14,7 +14,7 @@ export class LineBuilder extends RenderBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = prism.createLineNode();
+        const element = this._callNodeFunction(prism, 'createLineNode');
 
         this.update(element, undefined, properties);
 
@@ -22,13 +22,13 @@ export class LineBuilder extends RenderBuilder {
     }
 
     setPoints(element, oldProperties, newProperties) {
-        element.clearPoints();
+        this._callNodeAction(element, 'clearPoints');
 
         const points = newProperties.points;
         if ( points !== undefined && Array.isArray(points) ) {
             points.forEach( point => {
                 PropertyDescriptor.throwIfNotArray(point, 'vec3');
-                element.addPoints(point);
+                this._callNodeAction(element, 'addPoints', point);
             });
         }
     }

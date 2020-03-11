@@ -6,7 +6,6 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js';
 export class LayoutBuilder extends UiNodeBuilder {
 
     update(element, oldProperties, newProperties) {
-        // this.throwIfNotInstanceOf(element, ui.UiButton);
         super.update(element, oldProperties, newProperties);
 
         this._validateSize(newProperties);
@@ -29,14 +28,14 @@ export class LayoutBuilder extends UiNodeBuilder {
 
         if (width || height) {
             if (width === undefined) {
-                width = element.getSize()[0];
+                width = this._callNodeFunction(element, 'getSize')[0];
             }
 
             if (height === undefined) {
-                height = element.getSize()[1];
+                height = this._callNodeFunction(element, 'getSize')[1];
             }
 
-            element.setSize([width, height]);
+            this._callNodeAction(element, 'setSize', [width, height]);
         }
     }
 

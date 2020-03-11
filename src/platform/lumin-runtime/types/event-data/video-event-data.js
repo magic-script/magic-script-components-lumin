@@ -2,7 +2,8 @@
 import { VideoEventData as _VideoEventData } from 'lumin';
 import { ServerEvent } from './server-event.js';
 import { VideoEventType } from '../video-event-type.js';
-import { extractor } from '../../utilities/extractor.js';
+
+import extractor from '../../utilities/extractor.js';
 
 export class VideoEventData extends ServerEvent {
     constructor(nativeEvent) {

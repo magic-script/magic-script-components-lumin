@@ -34,7 +34,7 @@ export class ProgressBarBuilder extends UiNodeBuilder {
         const width  = properties.width;
         const height = this.getPropertyValue('height', 0.0, properties);
 
-        const element = ui.UiProgressBar.Create(prism, width, height);
+        const element = this._createNode(ui.UiProgressBar, 'Create', prism, width, height);
 
         const unapplied = this.excludeProperties(properties, ['width', 'height']);
 
@@ -53,7 +53,7 @@ export class ProgressBarBuilder extends UiNodeBuilder {
     setProgressColor (element, oldProperties, newProperties) {
         const { beginColor, endColor } = newProperties.progressColor;
         if ( beginColor !== undefined && endColor !== undefined ) {
-            element.setProgressColor( ColorProperty.parse(beginColor), ColorProperty.parse(endColor) );
+            this._callNodeAction(element, 'setProgressColor',  ColorProperty.parse(beginColor), ColorProperty.parse(endColor));
         }
     }
 

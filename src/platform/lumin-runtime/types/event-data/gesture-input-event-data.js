@@ -6,8 +6,8 @@ import { ControlTouchPadInputEventData } from './control-touch-pad-input-event-d
 import { GestureType } from '../gesture-type.js';
 import { GestureDirection } from '../gesture-direction.js';
 
-import { extractor } from '../../utilities/extractor.js';
-import { validator } from '../../utilities/validator.js'
+import extractor from '../../utilities/extractor.js';
+import validator from '../../utilities/validator.js'
 
 export class GestureInputEventData extends ControlTouchPadInputEventData {
     constructor(nativeEvent) {

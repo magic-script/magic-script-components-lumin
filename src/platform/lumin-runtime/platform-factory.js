@@ -1,13 +1,19 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp, ModelNode, TransformNode, ui } from 'lumin';
+import { ImmersiveApp, ModelNode, TransformNode, Prism, ui } from 'lumin';
+
+import { setPath } from 'magic-script-polyfills/src/writable-path.js';
 
 import { NativeFactory } from '../../core/native-factory.js';
 import { MxsLandscapeApp } from './mxs-landscape-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
+import { MxsScene } from './elements/mxs-scene.js';
 
 import { UiNodeEvents } from './types/ui-node-events.js';
 import { ControllerEvents } from './types/controller-events.js';
+
+import executor from './utilities/executor.js';
+import { logError } from '../../util/logger.js';
 
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
@@ -63,6 +69,14 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.createElement expects "name" to be string');
     }
 
+    if (name === 'scene') {
+      return this._createScene(name, container, ...args);
+    }
+
+    if (name === 'prism') {
+      return this._createPrism(name, container, ...args);
+    }
+
     let element;
     if (this._mapping.elements[name] !== undefined) {
       element = this._createElement(name, container, ...args);
@@ -85,22 +99,22 @@ export class PlatformFactory extends NativeFactory {
       value: (child) => {
         if (this.isController(element)) {
           if (this.isController(child)) {
-            element.addChildController(child);
+            executor.callNativeAction(element, 'addChildController', child);
           } else {
-            element.addChild(child);
+            executor.callNativeAction(element, 'addChild', child);
             if (child.childController !== undefined) {
-              element.addChildController(child.childController);
+              executor.callNativeAction(element, 'addChildController', child.childController);
             }
           }
         } else {
           if (this.isController(child)) {
             element.childController = child;
             const handler = () => {
-              element.addChild(child.getRoot());
-              child.removeListener('onAttachPrism', handler);
+              executor.callNativeAction(element, 'addChild', executor.callNativeFunction(child, 'getRoot'));
+              executor.callNativeAction(child, 'removeListener', 'onAttachPrism', handler);
             };
 
-            child.addListener('onAttachPrism', handler);
+            executor.callNativeAction(child, 'addListener', 'onAttachPrism', handler);
           } else {
             element.childController = child.childController;
             this._addChildNodeToParentNode(element, child);
@@ -114,9 +128,11 @@ export class PlatformFactory extends NativeFactory {
 
   _createElement (name, container, ...args) {
     if (this.elementBuilders[name] === undefined) {
-      const createBuilder = this._mapping.elements[name];
-      this.elementBuilders[name] = createBuilder();
+      this.elementBuilders[name] = this._mapping.elements[name]();
     }
+
+    // Set local path for caching fetch-ed files
+    setPath(this._app.getWritablePath());
 
     const prism = container.controller.getPrism();
     const element = this.elementBuilders[name].create(prism, ...args);
@@ -129,11 +145,26 @@ export class PlatformFactory extends NativeFactory {
 
   _createController (name, container, ...args) {
     if (this.controllerBuilders[name] === undefined) {
-      const createBuilder = this._mapping.controllers[name];
-      this.controllerBuilders[name] = createBuilder();
+      this.controllerBuilders[name] = this._mapping.controllers[name]();
     }
 
     return this.controllerBuilders[name].create(...args);
+  }
+
+  _createPrism(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create(this._app, ...args);
+  }
+
+  _createScene(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create();
   }
 
   updateElement (name, ...args) {
@@ -141,6 +172,19 @@ export class PlatformFactory extends NativeFactory {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
     }
 
+    if (name === 'scene') {
+      return;
+    }
+
+    if (name === 'prism') {
+      this.elementBuilders[name].update(...args, this._app);
+      return;
+    }
+
+    this._updateElement(name, ...args)
+  }
+
+  _updateElement (name, ...args) {
     const prism = typeof args[0].getPrismId === 'function'
       ? this._app.getPrism(args[0].getPrismId())
       : undefined;
@@ -159,112 +203,112 @@ export class PlatformFactory extends NativeFactory {
   _addChildNodeToParentNode (parent, child) {
     if (parent instanceof ui.UiScrollView) {
       if (child instanceof ui.UiScrollBar) {
-        parent.setScrollBar(child.Orientation, child);
+        executor.callNativeAction(parent, 'setScrollBar', child.Orientation, child);
       }
 
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.setScrollContent(child, child.offset);
+          executor.callNativeAction(parent, 'setScrollContent', child, child.offset);
         } else {
-          parent.setScrollContent(child);
+          executor.callNativeAction(parent, 'setScrollContent', child);
         }
       }
     } else if (parent instanceof ui.UiListView) {
       if (child instanceof ui.UiScrollBar) {
-        parent.setScrollBar(child);
+        executor.callNativeAction(parent, 'setScrollBar', child);
       }
       if (child instanceof ui.UiListViewItem) {
         const { Padding, ItemAlignment } = child;
         if (Padding !== undefined) {
           if (ItemAlignment !== undefined) {
-            parent.addItem(child, Padding, ItemAlignment);
+            executor.callNativeAction(parent, 'addItem', child, Padding, ItemAlignment);
           } else {
-            parent.addItem(child, Padding);
+            executor.callNativeAction(parent, 'addItem', child, Padding);
           }
         } else {
-          parent.addItem(child);
+          executor.callNativeAction(parent, 'addItem', child);
         }
       }
     } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
       const { padding, itemAlignment } = child;
       if (padding !== undefined) {
         if (itemAlignment !== undefined) {
-          parent.addItem(child, padding, itemAlignment);
+          executor.callNativeAction(parent, 'addItem', child, padding, itemAlignment);
         } else {
-          parent.addItem(child, padding);
+          executor.callNativeAction(parent, 'addItem', child, padding);
           parent.mxsSetItemAlignment(parent.getItemCount() - 1);
         }
       } else {
-        parent.addItem(child);
+        executor.callNativeAction(parent, 'addItem', child);
 
         // Should set the alignment and padding after adding items completes !
-        const index = parent.getItemCount() - 1;
+        const index = executor.callNativeFunction(parent, 'getItemCount') - 1;
         parent.mxsSetItemAlignment(index);
         parent.mxsSetItemPadding(index);
       }
     } else if (parent instanceof ui.UiSlider) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.setSliderModel(child, child.offset);
+          executor.callNativeAction(parent, 'setSliderModel', child, child.offset);
         } else {
-          parent.setSliderModel(child);
+          executor.callNativeAction(parent, 'setSliderModel', child);
         }
       }
     } else if (parent instanceof ui.UiRectLayout) {
       if (child instanceof TransformNode) {
-        parent.setContent(child);
+        executor.callNativeAction(parent, 'setContent', child);
       }
     } else if (parent instanceof ui.UiDropDownList) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.ButtonModel(child, child.offset);
+          executor.callNativeAction(parent, 'setButtonModel', child, child.offset);
         } else {
-          parent.ButtonModel(child);
+          executor.callNativeAction(parent, 'setButtonModel', child);
         }
       }
       if (child instanceof ui.DropDownListItem) {
         const list = [...parent.getList()];
         list.push(child);
-        parent.setList(list);
+        executor.callNativeAction(parent, 'setList', list);
         if (parent.showListItems) {
-          parent.showList(parent.showListItems);
+          executor.callNativeAction(parent, 'showList', parent.showListItems);
         }
       }
       // ListFont: Font2dResource(fontDesc, fontFile, a_absolutePath)
       // fontDesc = Font2dDesc(advanceDir, flowDir, tileSize, quality, minAlpha)
     } else if (parent instanceof ui.UiDialog) {
       if (child instanceof TransformNode) {
-        parent.setDialogContent(child);
-        parent.init();
+        executor.callNativeAction(parent, 'setDialogContent', child);
+        executor.callNativeAction(parent, 'init');
       }
     } else if (parent instanceof ui.UiToggle) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.setToggleModel(child, child.offset);
+          executor.callNativeAction(parent, 'setToggleModel', child, child.offset);
         } else {
-          parent.setToggleModel(child);
+          executor.callNativeAction(parent, 'setToggleModel', child);
         }
       }
     } else if (parent instanceof ui.UiPanel) {
       if (child instanceof ui.UiPanel) {
         if (child.side !== undefined) {
-          parent.setEdgeTransition(child.side, child);
+          executor.callNativeAction(parent, 'setEdgeTransition', child.side, child);
         }
       } else {
-        parent.addChild(child);
+        executor.callNativeAction(parent, 'addChild', child);
       }
     } else if (parent instanceof ui.UiPortalIcon) {
       if (child instanceof ModelNode) {
-        parent.setIconModel(child, child.offset);
+        executor.callNativeAction(parent, 'setIconModel', child, child.offset);
       } else if (child instanceof TransformNode) {
-        parent.setBackgroundModel(child, child.offset);
+        executor.callNativeAction(parent, 'setBackgroundModel', child, child.offset);
       }
     } else if (parent instanceof ui.UiButton) {
       if (child instanceof TransformNode) {
         if (child.offset !== undefined) {
-          parent.setButtonModel(child, child.offset);
+          executor.callNativeAction(parent, 'setButtonModel', child, child.offset);
         } else {
-          parent.setButtonModel(child);
+          executor.callNativeAction(parent, 'setButtonModel', child);
         }
       }
     } else if (parent instanceof ui.UiPageView) {
@@ -272,113 +316,157 @@ export class PlatformFactory extends NativeFactory {
         const { padding, itemAlignment } = child;
         if (padding !== undefined) {
           if (itemAlignment !== undefined) {
-            parent.addPage(child, padding, itemAlignment);
+            executor.callNativeAction(parent, 'addPage', child, padding, itemAlignment);
           } else {
-            parent.addPage(child, padding);
+            executor.callNativeAction(parent, 'addPage', child, padding);
           }
         } else {
-          parent.addPage(child);
+          executor.callNativeAction(parent, 'addPage', child);
         }
       }
     } else {
-      parent.addChild(child);
+      executor.callNativeAction(parent, 'addChild', child);
     }
   }
 
   addChildElement (parent, child) {
     if (typeof child === 'string') {
-      parent.setText(child);
+      executor.callNativeAction(parent, 'setText', child);
     } else if (typeof child === 'number') {
-      parent.setText(child.toString());
+      executor.callNativeAction(parent, 'setText', child.toString());
     } else {
       parent.addChild$Universal(child);
     }
   }
 
-  _removeChildNodeToParentNode (parent, child) {
+  _removeChildNodeFromParentNode (parent, child) {
     if (parent instanceof ui.UiScrollView) {
       // ScrollBar: child is <UiScrollBar, orientation>
       if (child instanceof ui.UiScrollBar) {
-        parent.setScrollBar(child);
+        executor.callNativeAction(parent, 'setScrollBar', child.Orientation, null);
       }
       // ScrollContent: child is <TransformNode, vec3>
     } else if (parent instanceof ui.UiListView) {
       // ScrollBar: child is UiSCrollBar
       // ListViewItem: use addItem instead of addChild
+      if (child instanceof ui.UiListViewItem) {
+        const itemCount = executor.callNativeFunction(parent, `getItemCount`);
+
+        for (let index = 0; index < itemCount; index++) {
+          const item = executor.callNativeFunction(parent, 'getItem', index);
+          const itemId = executor.callNativeFunction(item, 'getNodeId');
+          const childId = executor.callNativeFunction(child, 'getNodeId');
+          if ( itemId === childId ) {
+            const orphan = executor.callNativeFunction(parent, 'removeItem', index);
+            const prism = this._app.getPrism(orphan.getPrismId());
+            executor.callNativeAction(prism, 'deleteNode', orphan);
+          }
+        }
+      }
     } else if (parent instanceof ui.UiSlider) {
-      // SliderModel: child is <Node, vec3>
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setSliderModel', null);
+      }
     } else if (parent instanceof ui.UiRectLayout) {
-      // Content: child is TransformNode
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setContent', child);
+      }
+    } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
+      if (child instanceof TransformNode) {
+        executor.callNativeFunction(parent, 'removeItem', child);
+        const prism = this._app.getPrism(child.getPrismId());
+        executor.callNativeAction(prism, 'deleteNode', child);
+      }
     } else if (parent instanceof ui.UiDropDownList) {
       // ButtonModel: child is <Node, vec3>
       // List: child is array of DropDownListItem(s)
       // ListFont: Font2dResource(fontDesc, fontFile, a_absolutePath)
       // fontDesc = Font2dDesc(advanceDir, flowDir, tileSize, quality, minAlpha)
     } else if (parent instanceof ui.UiDialog) {
-      // DialogContent: child is TransformNode
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setDialogContent', null);
+        // executor.callNativeAction(parent, 'init');
+      }
     } else if (parent instanceof ui.UiToggle) {
-      // ToggleModel: child is <Node, vec3>
+      if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setToggleModel', null);
+      }
     } else if (parent instanceof ui.UiPanel) {
-      // EdgeTransition: child is <side, UiPanel>
+      if (child instanceof ui.UiPanel) {
+        if (child.side !== undefined) {
+          // LRT is not checking for nullptr yet !
+          // executor.callNativeAction(parent, 'setEdgeTransition', child.side, null);
+        }
+      } else {
+        executor.callNativeAction(parent, 'removeChild', child);
+      }
     } else if (parent instanceof ui.UiPortalIcon) {
-      // BackgroundModel: child is <Node, vec3>
-      // IconModel: : child is <Node, vec3>
+      if (child instanceof ModelNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setIconModel', null, child.offset);
+      } else if (child instanceof TransformNode) {
+        // LRT is not checking for nullptr yet !
+        // executor.callNativeAction(parent, 'setBackgroundModel', null, child.offset);
+      }
     } else if (parent instanceof ui.UiPageView) {
       if (child instanceof TransformNode) {
-        parent.removePage(child);
+        executor.callNativeAction(parent, 'removePage', child);
       }
+    } else {
+      executor.callNativeAction(parent, 'removeChild', child);
+      const prism = this._app.getPrism(child.getPrismId());
+      executor.callNativeAction(prism, 'deleteNode', child);
     }
-  }
-
-  // TODO(tcuadra): Expose listView.removeItem(ListViewItem) overload
-  //                to avoid the need to perform this lookup
-  _getListViewIndex (listView, item) {
-    for (let i = 0; i < listView.getItemCount(); i++) {
-      if (item === listView.getItem(i)) {
-        return i;
-      }
-    }
-    return -1;
   }
 
   removeChildElement (parent, child) {
     if (typeof child === 'string' || typeof child === 'number') {
       parent.setText('');
     } else {
+      if (parent instanceof MxsScene) {
+        if (child instanceof Prism) {
+          parent.removeChild(child);
+          this._app.removePrism(child);
+        } else {
+          logError('Scene element should have Prism children only!');
+        }
+        return;
+      }
+
       if (this.isController(child)) {
         if (!this.isController(parent)) {
           throw new Error('Removing controller from non-controller parent');
         }
-        parent.removeChildController(child);
+        executor.callNativeAction(parent, 'removeChildController', child);
       } else if (this.isController(parent)) {
-        parent.getRoot().removeChild(child);
-        parent.getPrism().deleteNode(child);
-      } else if (parent instanceof ui.UiListView) {
-        parent.removeItem(this._getListViewIndex(parent, child));
+        executor.callNativeAction(parent.getRoot(), 'removeChild', child);
+        executor.callNativeAction(parent.getPrism(), 'deleteNode', child);
       } else {
-        parent.removeChild(child);
-        const prism = this._app.getPrism(child.getPrismId());
-        prism.deleteNode(child);
+        this._removeChildNodeFromParentNode(parent, child);
       }
     }
   }
 
   appendChildToContainer (container, child) {
     if (this.isController(child)) {
-      container.controller.addChildController(child);
-      container.parent.addChild(child.getRoot());
+      executor.callNativeAction(container.controller, 'addChildController', child);
+      executor.callNativeAction(container.parent, 'addChild', child.getRoot());
     } else {
-      container.controller.getRoot().addChild(child);
+      executor.callNativeAction(container.controller.getRoot(), 'addChild', child);
     }
   }
 
   removeChildFromContainer (container, child) {
     if (this.isController(child)) {
-      container.controller.removeChildController(child);
+      executor.callNativeAction(container.controller, 'removeChildController', child);
     } else {
-      container.controller.getRoot().removeChild(child);
+      executor.callNativeAction(container.controller.getRoot(), 'removeChild', child);
       const prism = this._app.getPrism(child.getPrismId());
-      prism.deleteNode(child);
+      executor.callNativeAction(prism, 'deleteNode', child);
     }
   }
 

@@ -1,3 +1,5 @@
+import validator from '../../utilities/validator.js';
+
 export class ElementAdapter {
     constructor(name, properties) {
         if (typeof name === 'string') {

@@ -3,13 +3,16 @@
 import { ui } from 'lumin';
 
 import { TextContainerBuilder } from './text-container-builder.js';
+
+import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import { TextChildrenProperty } from '../properties/text-children-property.js';
+
 import { ToggleType } from '../../types/toggle-type.js';
 
-import { validator } from '../../utilities/validator.js';
-import { EnumProperty } from '../properties/enum-property.js';
+import validator from '../../utilities/validator.js';
+
 
 export class ToggleBuilder extends TextContainerBuilder {
     constructor(){
@@ -38,7 +41,7 @@ export class ToggleBuilder extends TextContainerBuilder {
 
         const height = this.getPropertyValue('height', 0.0, properties);
 
-        const element = ui.UiToggle.Create(prism, text, type, height);
+        const element = this._createNode(ui.UiToggle, 'Create', prism, text, type, height);
 
         const unapplied = this.excludeProperties(properties, ['children', 'text', 'type', 'height']);
 

@@ -21,7 +21,7 @@ export class TextProviderBuilder extends UiNodeBuilder {
 
     const children = newProperties.children;
     if (TextChildrenProperty.isValid(children)) {
-      element.setText(this._getText(children));
+      this._callNodeAction(element, 'setText', this._getText(children));
     }
   }
 

@@ -26,7 +26,7 @@ export class SliderBuilder extends UiNodeBuilder {
         const width  = properties.width;;
         const height = this.getPropertyValue('height', 0.0, properties);
 
-        const element = ui.UiSlider.Create(prism, width, height);
+        const element = this._createNode(ui.UiSlider, 'Create', prism, width, height);
 
         const unapplied = this.excludeProperties(properties, ['width', 'height']);
 

@@ -2,7 +2,8 @@
 import { RayCastEventData as _RayCastEventData } from 'lumin';
 import { ServerEvent } from './server-event.js';
 import { RayCastEventType } from '../ray-cast-event-type.js';
-import { extractor } from '../../utilities/extractor.js';
+
+import extractor from '../../utilities/extractor.js';
 
 export class RayCastEventData extends ServerEvent {
 

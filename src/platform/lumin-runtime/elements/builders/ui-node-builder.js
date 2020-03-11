@@ -3,6 +3,7 @@
 import { ui } from 'lumin';
 
 import { TransformBuilder } from './transform-builder.js';
+
 import { ArrayProperty } from '../properties/array-property.js';
 import { ClassProperty } from '../properties/class-property.js';
 import { EnumProperty } from '../properties/enum-property.js';
@@ -15,7 +16,7 @@ import { FocusRequest } from '../../types/focus-request.js';
 import { RenderingLayer } from '../../types/rendering-layer.js';
 import { SoundEvent } from '../../types/sound-event.js';
 
-import { validator } from '../../utilities/validator.js';
+import validator from '../../utilities/validator.js';
 
 export class UiNodeBuilder extends TransformBuilder {
     constructor(){
@@ -58,17 +59,12 @@ export class UiNodeBuilder extends TransformBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        const element = ui.UiNode.Create(prism);
+        const element = this._createNode(ui.UiNode, 'Create', prism);
 
         this.update(element, undefined, properties);
 
         return element;
     }
-
-    // update(element, oldProperties, newProperties) {
-    //     // this.throwIfNotInstanceOf(element, ui.UiNode);
-    //     super.update(element, oldProperties, newProperties);
-    // }
 
     validate(element, oldProperties, newProperties) {
         super.validate(element, oldProperties, newProperties);
@@ -86,12 +82,14 @@ export class UiNodeBuilder extends TransformBuilder {
         const focusRequest = FocusRequest[newProperties.activateResponse];
         const onActivateResponse = new ui.OnActivateResponse(focusRequest);
 
-        element.setOnActivateResponse(onActivateResponse);
+        this._callNodeAction(element, 'setOnActivateResponse', onActivateResponse);
     }
 
     setEventSoundID(element, oldProperties, newProperties) {
         const { soundEvent, soundName } = newProperties.eventSoundId;
 
-        element.setEventSoundID(SoundEvent[soundEvent], soundName);
+        if (soundEvent !== undefined && soundName !== undefined) {
+            this._callNodeAction(element, 'setEventSoundID', SoundEvent[soundEvent], soundName);
+        }
     }
 }
