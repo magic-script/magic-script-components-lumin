@@ -1,16 +1,18 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp, ui } from 'lumin';
+import { ImmersiveApp } from 'lumin';
 import { AppPrismController } from './controllers/app-prism-controller.js';
+import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
+
+import executor from './utilities/executor.js';
+import { logInfo } from '../../util/logger.js';
 
 export class MxsImmersiveApp extends ImmersiveApp {
-    // The 0.5 value is the number of seconds to call `updateLoop` in an interval if
-    // there are no other events waking the event loop.
     constructor(appComponent, timeDelta) {
         super(timeDelta);
 
         this._app = appComponent;
-        this._prismSize = [appComponent.props.volumeSize];
+        this._prisms = [];
         this._prismControllers = [];
     }
 
@@ -19,16 +21,21 @@ export class MxsImmersiveApp extends ImmersiveApp {
   }
 
   onAppStart(arg) {
-    for (let size of this._prismSize) {
-        // TODO: MxsPrismController(this._app.volume);
-        // Each controller is responsible for one prism (volume)
-        const controller = new AppPrismController(this._app);
-        this._prismControllers.push(controller);
+    // for (let size of this._prismSize) {
+    //     const controller = new AppPrismController(this._app);
+    //     this._prismControllers.push(controller);
 
-        const prism = this.requestNewPrism(size);
-        this.positionPrism(prism, [0, 0, -1]);
-        prism.setPrismController(controller);
-    }
+    //     const prism = this.requestNewPrism(size);
+    //     this.positionPrism(prism, [0, 0, -1]);
+    //     prism.setPrismController(controller);
+    // }
+    const container = {
+      controller: {
+        getRoot: () => ({ addChild: (child) => logInfo('App container - adding child (scene)') })
+      }
+    };
+
+    ReactMagicScript.render(this._app, container);
   }
 
   updateLoop(delta) {
@@ -59,5 +66,33 @@ export class MxsImmersiveApp extends ImmersiveApp {
     }
 
     return prismController.getContainer(nodeName);
+  }
+
+  addPrism(properties) {
+    const prismSize = properties.size;
+
+    if (!Array.isArray(prismSize)) {
+      throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
+    }
+
+    const prism = executor.callNativeFunction(this, 'requestNewPrism', prismSize);
+    this._prisms.push(prism);
+
+    const controller = new AppPrismController(properties);
+    this._prismControllers.push(controller);
+
+    executor.callNativeAction(prism, 'setPrismController', controller);
+    return prism;
+  }
+
+  removePrism(prism) {
+    const controller = executor.callNativeFunction(prism, 'getPrismController');
+
+    this._prismControllers = this._prismControllers.filter(c => c !== controller);
+    this._prisms = this._prisms.filter(p => executor.callNativeFunction(p, 'getPrismId') !== executor.callNativeFunction(prism, 'getPrismId'));
+
+    executor.callNativeAction(controller, 'deleteSceneGraph');
+    executor.callNativeAction(prism, 'setPrismController', null);
+    executor.callNativeAction(this, 'deletePrism', prism);
   }
 }
