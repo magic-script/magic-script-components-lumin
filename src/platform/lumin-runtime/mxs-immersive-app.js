@@ -1,13 +1,13 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { LandscapeApp } from 'lumin';
+import { ImmersiveApp } from 'lumin';
 
-export class MxsLandscapeApp extends LandscapeApp {
-    constructor(timeDelta, baseApp) {
-        super(timeDelta);
+export class MxsImmersiveApp extends ImmersiveApp {
+  constructor(timeDelta, baseApp) {
+    super(timeDelta);
 
-        this._baseApp = baseApp;
-    }
+    this._baseApp = baseApp;
+  }
 
   init() {
     return 0;

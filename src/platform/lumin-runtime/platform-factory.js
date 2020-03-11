@@ -1,11 +1,13 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp, ModelNode, TransformNode, Prism, ui } from 'lumin';
+import { ModelNode, TransformNode, Prism, ui } from 'lumin';
 
 import { setPath } from 'magic-script-polyfills/src/writable-path.js';
 
 import { NativeFactory } from '../../core/native-factory.js';
+import { MxsBaseApp } from './mxs-base-app.js';
 import { MxsLandscapeApp } from './mxs-landscape-app.js';
+import { MxsImmersiveApp } from './mxs-immersive-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
 import { MxsScene } from './elements/mxs-scene.js';
 
@@ -15,6 +17,9 @@ import { ControllerEvents } from './types/controller-events.js';
 import executor from './utilities/executor.js';
 import { logError } from '../../util/logger.js';
 
+const DEFAULT_APP_TYPE = 'landscape';
+const DEFAULT_TIME_DELTA = 0;
+
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
     super(componentMapping);
@@ -22,6 +27,12 @@ export class PlatformFactory extends NativeFactory {
     // { type, builder }
     this.elementBuilders = {};
     this.controllerBuilders = {};
+
+    // App constructors
+    this._appConstructors = {
+      'landscape': MxsLandscapeApp,
+      'immersive': MxsImmersiveApp
+    };
 
     // Storing the app in order to get access to nodes prism
     this._app;
@@ -181,7 +192,7 @@ export class PlatformFactory extends NativeFactory {
       return;
     }
 
-    this._updateElement(name, ...args)
+    this._updateElement(name, ...args);
   }
 
   _updateElement (name, ...args) {
@@ -470,26 +481,35 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
+  _validateAppType (type) {
+    if (type !== undefined && this._appConstructors[type] === undefined) {
+      throw new TypeError(`Invalid argument: Unknown app type: ${type}`);
+    }
+  }
+
+  _validateAppTimeDelta (delta) {
+    if (delta !== undefined && typeof delta !== 'number') {
+      throw new TypeError('Invalid argument: App timeDelta should be a number value');
+    }
+  }
+
+  _validateAppComponentProperties (properties) {
+    this._validateAppType(properties.type);
+    this._validateAppTimeDelta(properties.timeDelta);
+  }
+
   createApp (appComponent) {
     if (typeof appComponent !== 'object') {
       throw new TypeError('Invalid argument: PlatformFactory.createContainer expects "component" to be an object');
     }
 
-    const appType = appComponent.props.type;
+    this._validateAppComponentProperties(appComponent.props);
 
-    let app;
+    const type = appComponent.props.type === undefined ? DEFAULT_APP_TYPE : appComponent.props.type;
+    const timeDelta = appComponent.props.timeDelta === undefined ? DEFAULT_TIME_DELTA : appComponent.props.timeDelta;
 
-    if (appType === 'landscape') {
-      app = new MxsLandscapeApp(appComponent, 0.5);
-    } else if (appType === 'immersive') {
-      app = new ImmersiveApp(0.5);
-      app.type = 'immersiveApp';
-    } else {
-      throw new TypeError(`Invalid argument: Unknown app type: ${appType}`);
-    }
+    this._app = new this._appConstructors[type](timeDelta, new MxsBaseApp(appComponent));
 
-    // Saving the app so the factory can get access to the nodes prism
-    this._app = app;
-    return app;
+    return this._app;
   }
 }
