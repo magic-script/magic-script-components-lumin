@@ -17,6 +17,9 @@ import { ControllerEvents } from './types/controller-events.js';
 import executor from './utilities/executor.js';
 import { logError } from '../../util/logger.js';
 
+const DEFAULT_APP_TYPE = 'landscape';
+const DEFAULT_TIME_DELTA = 0;
+
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
     super(componentMapping);
@@ -479,13 +482,13 @@ export class PlatformFactory extends NativeFactory {
   }
 
   _validateAppType (type) {
-    if (this._appConstructors[type] === undefined) {
+    if (type !== undefined && this._appConstructors[type] === undefined) {
       throw new TypeError(`Invalid argument: Unknown app type: ${type}`);
     }
   }
 
   _validateAppTimeDelta (delta) {
-    if (typeof delta !== 'number') {
+    if (delta !== undefined && typeof delta !== 'number') {
       throw new TypeError('Invalid argument: App timeDelta should be a number value');
     }
   }
@@ -502,7 +505,9 @@ export class PlatformFactory extends NativeFactory {
 
     this._validateAppComponentProperties(appComponent.props);
 
-    const { type, timeDelta } = appComponent.props;
+    const type = appComponent.props.type === undefined ? DEFAULT_APP_TYPE : appComponent.props.type;
+    const timeDelta = appComponent.props.timeDelta === undefined ? DEFAULT_TIME_DELTA : appComponent.props.timeDelta;
+
     this._app = new this._appConstructors[type](timeDelta, new MxsBaseApp(appComponent));
 
     return this._app;
