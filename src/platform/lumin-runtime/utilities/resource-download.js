@@ -34,7 +34,7 @@ function addMaskAndSpinner (element, prism) {
 
 function removeMaskAndSpinner (element, prism, spinner, properties) {
     // Remove color mask
-    const color = ColorProperty.validate(properties.color)
+    const color = (properties.color !== undefined && ColorProperty.validate(properties.color))
       ? ColorProperty.parse(properties.color)
       : DEFAULT_COLOR_MASK
     executor.callNativeAction(element, 'setColor', color);
