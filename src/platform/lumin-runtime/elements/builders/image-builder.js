@@ -1,6 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ui, Desc2d } from 'lumin';
+import { ui, Desc2d, INVALID_RESOURCE_ID } from 'lumin';
 import { SystemIcons } from '../../types/system-icons.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
@@ -9,7 +9,11 @@ import { ColorProperty } from '../properties/color-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import loadRemoteResource from '../../utilities/resource-download.js';
+import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
+
+import { isUrl } from '../../../../util/download.js';
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -41,9 +45,16 @@ export class ImageBuilder extends UiNodeBuilder {
     } else if (resourceId) {
       element = this._createNode(ui.UiImage, 'Create', prism, resourceId, width, height, useFrame);
     } else if (filePath) {
-      element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      if (isUrl(filePath)) {
+        // Create placeholder image
+        element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
+        loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
+          (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true));
+      } else {
+        element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+      }
     } else if (color) {
-      element = this._createNode(ui.UiImage, 'Create', prism, BigInt(0), width, height, useFrame);
+      element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
     }
 
     const unapplied = this.excludeProperties(properties, ['icon', 'filePath', 'resourceId', 'height', 'width']);
@@ -110,16 +121,18 @@ export class ImageBuilder extends UiNodeBuilder {
   _setFilePath (element, oldProperties, newProperties, prism) {
     if (oldProperties.filePath === undefined) {
       if (newProperties.filePath !== undefined) {
+        const absolutePath = newProperties.absolutePath === true;
         this._callNodeAction(element, 'setRenderResource',
-          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+          this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
       }
     } else {
       if (newProperties.filePath !== undefined) {
         if (oldProperties.filePath !== newProperties.filePath) {
           const oldResourceId = this._callNodeFunction(element, 'getRenderResource');
+          const absolutePath = newProperties.absolutePath === true;
 
           this._callNodeAction(element, 'setRenderResource',
-            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath));
+            this._callNodeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, newProperties.filePath, absolutePath));
 
             this._callNodeAction(prism, 'destroyResource', oldResourceId);
         }

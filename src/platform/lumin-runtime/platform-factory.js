@@ -1,15 +1,24 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { ImmersiveApp, ModelNode, TransformNode, ui } from 'lumin';
+import { ModelNode, TransformNode, Prism, ui } from 'lumin';
+
+import { setPath } from 'magic-script-polyfills/src/writable-path.js';
 
 import { NativeFactory } from '../../core/native-factory.js';
+import { MxsBaseApp } from './mxs-base-app.js';
 import { MxsLandscapeApp } from './mxs-landscape-app.js';
+import { MxsImmersiveApp } from './mxs-immersive-app.js';
 import { MxsPrismController } from './controllers/mxs-prism-controller.js';
+import { MxsScene } from './elements/mxs-scene.js';
 
 import { UiNodeEvents } from './types/ui-node-events.js';
 import { ControllerEvents } from './types/controller-events.js';
 
 import executor from './utilities/executor.js';
+import { logError } from '../../util/logger.js';
+
+const DEFAULT_APP_TYPE = 'landscape';
+const DEFAULT_TIME_DELTA = 0;
 
 import { logWarning } from '../../util/logger.js';
 
@@ -34,6 +43,12 @@ export class PlatformFactory extends NativeFactory {
     // }
     this._eventCallbackData = {};
 
+    // App constructors
+    this._appConstructors = {
+      'landscape': MxsLandscapeApp,
+      'immersive': MxsImmersiveApp
+    };
+
     // Storing the app in order to get access to nodes prism
     this._app;
   }
@@ -42,11 +57,12 @@ export class PlatformFactory extends NativeFactory {
     return element instanceof MxsPrismController;
   }
 
-  _setCallbackData (prismId, nodeId, callbackId, eventName) {
+  _setCallbackDataPerNode (node, callbackId, eventName) {
+    const prismId = executor.callNativeFunction(node, 'getPrismId');
     if (this._eventCallbackData[prismId] === undefined) {
       this._eventCallbackData[prismId] = {};
     }
-
+    const nodeId = executor.callNativeFunction(node, 'getNodeId');
     if (this._eventCallbackData[prismId][nodeId] === undefined) {
       this._eventCallbackData[prismId][nodeId] = {};
     }
@@ -54,10 +70,12 @@ export class PlatformFactory extends NativeFactory {
     this._eventCallbackData[prismId][nodeId][eventName] = callbackId;
   }
 
-  _getCallbackData (prismId, nodeId) {
-    return this._eventCallbackData[prismId] === undefined
-      ? undefined
-      : this._eventCallbackData[prismId][nodeId];
+  _getCallbackDataPerNode (node) {
+    const prismData = this._eventCallbackData[executor.callNativeFunction(node, 'getPrismId')];
+
+    return prismData
+      ? prismData[executor.callNativeFunction(node, 'getNodeId')]
+      : {};
   }
 
   setComponentEvents (element, properties, controller) {
@@ -75,7 +93,7 @@ export class PlatformFactory extends NativeFactory {
               pair.handler(new eventDescriptor.dataType(eventData))
             );
 
-            this._setCallbackData(element.getPrismId(), element.getNodeId(), callbackId, eventDescriptor.subName.slice(0, -3));
+            this._setCallbackDataPerNode(element, callbackId, eventDescriptor.subName.slice(0, -3));
           } catch (error) {
             throw new Error(`Tyring to subscribe handler ${pair.name} to ${eventDescriptor.subName} failed, error: ${error.message}`);
           }
@@ -100,6 +118,14 @@ export class PlatformFactory extends NativeFactory {
   createElement (name, container, ...args) {
     if (typeof name !== 'string') {
       throw new Error('PlatformFactory.createElement expects "name" to be string');
+    }
+
+    if (name === 'scene') {
+      return this._createScene(name, container, ...args);
+    }
+
+    if (name === 'prism') {
+      return this._createPrism(name, container, ...args);
     }
 
     let element;
@@ -156,6 +182,9 @@ export class PlatformFactory extends NativeFactory {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
 
+    // Set local path for caching fetch-ed files
+    setPath(this._app.getWritablePath());
+
     const prism = container.controller.getPrism();
     const element = this.elementBuilders[name].create(prism, ...args);
 
@@ -173,11 +202,40 @@ export class PlatformFactory extends NativeFactory {
     return this.controllerBuilders[name].create(...args);
   }
 
+  _createPrism(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create(this._app, ...args);
+  }
+
+  _createScene(name, container, ...args) {
+    if (this.elementBuilders[name] === undefined) {
+      this.elementBuilders[name] = this._mapping.elements[name]();
+    }
+
+    return this.elementBuilders[name].create();
+  }
+
   updateElement (name, ...args) {
     if (typeof name !== 'string') {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
     }
 
+    if (name === 'scene') {
+      return;
+    }
+
+    if (name === 'prism') {
+      this.elementBuilders[name].update(...args, this._app);
+      return;
+    }
+
+    this._updateElement(name, ...args);
+  }
+
+  _updateElement (name, ...args) {
     const prism = typeof args[0].getPrismId === 'function'
       ? this._app.getPrism(args[0].getPrismId())
       : undefined;
@@ -332,7 +390,7 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
-  _removeChildNodeToParentNode (parent, child) {
+  _removeChildNodeFromParentNode (parent, child) {
     if (parent instanceof ui.UiScrollView) {
       // ScrollBar: child is <UiScrollBar, orientation>
       if (child instanceof ui.UiScrollBar) {
@@ -365,6 +423,12 @@ export class PlatformFactory extends NativeFactory {
       if (child instanceof TransformNode) {
         // LRT is not checking for nullptr yet !
         // executor.callNativeAction(parent, 'setContent', child);
+      }
+    } else if (parent instanceof ui.UiLinearLayout || parent instanceof ui.UiGridLayout) {
+      if (child instanceof TransformNode) {
+        executor.callNativeFunction(parent, 'removeItem', child);
+        const prism = this._app.getPrism(child.getPrismId());
+        executor.callNativeAction(prism, 'deleteNode', child);
       }
     } else if (parent instanceof ui.UiDropDownList) {
       // ButtonModel: child is <Node, vec3>
@@ -405,12 +469,10 @@ export class PlatformFactory extends NativeFactory {
       }
     } else {
       // Unsibscribe from the events
-      const callbackData = this._getCallbackData(child.getPrismId(), child.getNodeId());
-      if (callbackData !== undefined) {
-        for (const eventName in callbackData) {
-          if (!executor.callNativeFunction(child, `${eventName}Unsub`, callbackData[eventName])) {
-            logWarning(`Node ${child.getNodeId()} failed to unsubscribe from ${eventName} event`);
-          }
+      const callbackData = this._getCallbackDataPerNode(child);
+      for (const eventName in callbackData) {
+        if (!executor.callNativeFunction(child, `${eventName}Unsub`, callbackData[eventName])) {
+          logWarning(`Node ${child.getNodeId()} failed to unsubscribe from ${eventName} event`);
         }
       }
 
@@ -424,6 +486,16 @@ export class PlatformFactory extends NativeFactory {
     if (typeof child === 'string' || typeof child === 'number') {
       parent.setText('');
     } else {
+      if (parent instanceof MxsScene) {
+        if (child instanceof Prism) {
+          parent.removeChild(child);
+          this._app.removePrism(child);
+        } else {
+          logError('Scene element should have Prism children only!');
+        }
+        return;
+      }
+
       if (this.isController(child)) {
         if (!this.isController(parent)) {
           throw new Error('Removing controller from non-controller parent');
@@ -433,7 +505,7 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent.getRoot(), 'removeChild', child);
         executor.callNativeAction(parent.getPrism(), 'deleteNode', child);
       } else {
-        this._removeChildNodeToParentNode(parent, child);
+        this._removeChildNodeFromParentNode(parent, child);
       }
     }
   }
@@ -457,26 +529,35 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
+  _validateAppType (type) {
+    if (type !== undefined && this._appConstructors[type] === undefined) {
+      throw new TypeError(`Invalid argument: Unknown app type: ${type}`);
+    }
+  }
+
+  _validateAppTimeDelta (delta) {
+    if (delta !== undefined && typeof delta !== 'number') {
+      throw new TypeError('Invalid argument: App timeDelta should be a number value');
+    }
+  }
+
+  _validateAppComponentProperties (properties) {
+    this._validateAppType(properties.type);
+    this._validateAppTimeDelta(properties.timeDelta);
+  }
+
   createApp (appComponent) {
     if (typeof appComponent !== 'object') {
       throw new TypeError('Invalid argument: PlatformFactory.createContainer expects "component" to be an object');
     }
 
-    const appType = appComponent.props.type;
+    this._validateAppComponentProperties(appComponent.props);
 
-    let app;
+    const type = appComponent.props.type === undefined ? DEFAULT_APP_TYPE : appComponent.props.type;
+    const timeDelta = appComponent.props.timeDelta === undefined ? DEFAULT_TIME_DELTA : appComponent.props.timeDelta;
 
-    if (appType === 'landscape') {
-      app = new MxsLandscapeApp(appComponent, 0.5);
-    } else if (appType === 'immersive') {
-      app = new ImmersiveApp(0.5);
-      app.type = 'immersiveApp';
-    } else {
-      throw new TypeError(`Invalid argument: Unknown app type: ${appType}`);
-    }
+    this._app = new this._appConstructors[type](timeDelta, new MxsBaseApp(appComponent));
 
-    // Saving the app so the factory can get access to the nodes prism
-    this._app = app;
-    return app;
+    return this._app;
   }
 }
