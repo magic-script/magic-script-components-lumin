@@ -8,6 +8,7 @@ import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { ViewMode } from '../../types/view-mode.js';
 import { VideoAction } from '../../types/video-action.js';
+import { isUrl } from '../../../../util/download.js';
 
 const DEFAULT_FRAME_WIDTH = 512;
 const DEFAULT_FRAME_HEIGHT = 512;
@@ -42,9 +43,11 @@ export class VideoBuilder extends QuadBuilder {
         const element = this._callNodeFunction(prism, 'createVideoNode', width, height);
 
         if (videoPath !== undefined) {
-            this._callNodeAction(element, 'setVideoPath', videoPath);
-        } else {
-            this._callNodeAction(element, 'setVideoUri', videoUri);
+          if (isUrl(videoPath)) {
+            this._callNodeAction(element, "setVideoUri", videoPath);
+          } else {
+            this._callNodeAction(element, "setVideoPath", videoPath);
+          }
         }
 
         this._callNodeAction(element, 'setViewMode', viewMode);
