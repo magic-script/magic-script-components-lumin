@@ -78,6 +78,10 @@ export class PlatformFactory extends NativeFactory {
       : {};
   }
 
+  _getCallbackDataPerPrism (prism) {
+    return this._eventCallbackData[executor.callNativeFunction(prism, 'getPrismId')] || {};
+  }
+
   setComponentEvents (element, properties, controller) {
     const eventHandlers = Object.keys(properties)
       .filter(key => key.length > 2 && key.startsWith('on'))
@@ -111,6 +115,18 @@ export class PlatformFactory extends NativeFactory {
         } else {
           throw new TypeError(`Event ${pair.name} is not recognized event`);
         }
+      }
+    }
+  }
+
+  removeComponentEvents (node) {
+    this._unsubscribeNodeEventHandlers(executor.callNativeFunction(node, 'getNodeId'), this._getCallbackDataPerNode(node));
+  }
+
+  _unsubscribeNodeEventHandlers (nodeId, nodeEventHandlerIds) {
+    for (const eventName in nodeEventHandlerIds) {
+      if (!executor.callNativeFunction(child, `${eventName}Unsub`, nodeEventHandlerIds[eventName])) {
+        logWarning(`Node ${nodeId} failed to unsubscribe from ${eventName} event`);
       }
     }
   }
@@ -468,18 +484,23 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent, 'removePage', child);
       }
     } else {
-      // Unsibscribe from the events
-      const callbackData = this._getCallbackDataPerNode(child);
-      for (const eventName in callbackData) {
-        if (!executor.callNativeFunction(child, `${eventName}Unsub`, callbackData[eventName])) {
-          logWarning(`Node ${child.getNodeId()} failed to unsubscribe from ${eventName} event`);
-        }
-      }
-
+      this.removeComponentEvents(child);
       executor.callNativeAction(parent, 'removeChild', child);
+
       const prism = this._app.getPrism(child.getPrismId());
       executor.callNativeAction(prism, 'deleteNode', child);
     }
+  }
+
+  _removePrismFromScene (scene, prism) {
+    scene.removeChild(prism);
+
+    const prismNodeCallbackData = this._getCallbackDataPerPrism(prism);
+    for (const [nodeId, nodeEventHandlerIds] of Object.entries(prismNodeCallbackData)) {
+      this._unsubscribeNodeEventHandlers(nodeId, nodeEventHandlerIds);
+    }
+
+    this._app.removePrism(prism);
   }
 
   removeChildElement (parent, child) {
@@ -488,8 +509,7 @@ export class PlatformFactory extends NativeFactory {
     } else {
       if (parent instanceof MxsScene) {
         if (child instanceof Prism) {
-          parent.removeChild(child);
-          this._app.removePrism(child);
+          this._removePrismFromScene(parent, child);
         } else {
           logError('Scene element should have Prism children only!');
         }
