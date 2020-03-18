@@ -79,6 +79,8 @@ export class MxsBaseApp {
 
     executor.callNativeAction(controller, 'deleteSceneGraph');
     executor.callNativeAction(prism, 'setPrismController', null);
-    executor.callNativeAction(app, 'deletePrism', prism);
+
+    // Set Prism deletion after the current call completes.
+    setTimeout(() => executor.callNativeAction(app, 'deletePrism', prism), 0)
   }
 }
