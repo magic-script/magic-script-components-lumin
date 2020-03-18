@@ -8,6 +8,7 @@ import { ColorProperty } from '../properties/color-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import { EclipseButtonType } from '../../types/eclipse-button-type.js';
+import { LabelDisplayMode } from '../../types/label-display-mode.js';
 import { SystemIcons } from '../../types/system-icons.js';
 import { Side } from '../../types/side.js';
 
@@ -54,10 +55,14 @@ export class ButtonBuilder extends TextContainerBuilder {
         PropertyDescriptor.throwIfNotTypeOf(newProperties.height, 'number');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.roundness, 'number');
         PropertyDescriptor.throwIfNotTypeOf(newProperties.iconPath, 'string');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.iconScale, 'number');
+        PropertyDescriptor.throwIfNotTypeOf(newProperties.outlineButton, 'boolean');
 
         this._validateEnumerationValue(newProperties.type, 'button type', validator.validateEclipseButtonType);
         this._validateEnumerationValue(newProperties.iconType, 'icon type', validator.validateSystemIcon);
         this._validateEnumerationValue(newProperties.labelSide, 'label side', validator.validateSide);
+        this._validateEnumerationValue(newProperties.labelDisplayMode, 'label display mode', validator.validateLabelDisplayMode);
+
     }
 
     _validateEnumerationValue(value, messageSubject, predicate) {
@@ -68,7 +73,7 @@ export class ButtonBuilder extends TextContainerBuilder {
         return text === undefined ? this._getText(children) : text;
     }
 
-    getEclipseButtonParams (properties) {
+    _createEclipseButtonParams (properties) {
         const text = this.getText(properties.children, properties.text);
         const { type, iconPath, labelSide, height, iconType } = properties;
 
@@ -108,6 +113,24 @@ export class ButtonBuilder extends TextContainerBuilder {
         }
 
         throw new TypeError('Cannot create button with provided parameters');
+    }
+
+    _setEclipseButtonParamsProperty (eclipseButtonParams, name, value) {
+        if (value !== undefined) {
+            eclipseButtonParams[name] = value;
+        }
+    }
+
+    _setEclipseButtonParamsProperties (eclipseButtonParams, properties) {
+        this._setEclipseButtonParamsProperty(eclipseButtonParams, 'labelDisplayMode', LabelDisplayMode[properties.labelDisplayMode]);
+        this._setEclipseButtonParamsProperty(eclipseButtonParams, 'iconScale', properties.iconScale);
+        this._setEclipseButtonParamsProperty(eclipseButtonParams, 'outlineButton', properties.outlineButton);
+    }
+
+    getEclipseButtonParams (properties) {
+        const eclipseButtonParams = this._createEclipseButtonParams(properties);
+        this._setEclipseButtonParamsProperties(eclipseButtonParams, properties);
+        return eclipseButtonParams;
     }
 
     extraTypeScript() {
