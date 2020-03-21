@@ -30,6 +30,9 @@ export class PlatformFactory extends NativeFactory {
     this.elementBuilders = {};
     this.controllerBuilders = {};
 
+    // The member '_eventCallbackData' should store the callbackId for each node for each prism
+    // PlatformFactory uses the callbackIds to unsubscribe all the callbacks when closing the prism
+    // Map structure: 
     // { prismId: { nodeId: { eventName: callbackId } }
     //
     // example:
@@ -71,11 +74,8 @@ export class PlatformFactory extends NativeFactory {
   }
 
   _getCallbackDataPerNode (node) {
-    const prismData = this._eventCallbackData[executor.callNativeFunction(node, 'getPrismId')];
-
-    return prismData
-      ? prismData[executor.callNativeFunction(node, 'getNodeId')] || {}
-      : {};
+    const prismData = this._getCallbackDataPerPrism(executor.callNativeFunction(node, 'getPrismId'));
+    return prismData[executor.callNativeFunction(node, 'getNodeId')] || {};
   }
 
   _getCallbackDataPerPrism (prism) {
