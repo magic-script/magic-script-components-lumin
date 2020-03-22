@@ -40,6 +40,13 @@ export class PrismBuilder extends ElementBuilder {
       value: (child) => logError('Prism is not supposed to add children !')
     });
 
+    Object.defineProperty(prism, 'onDestroyHandlerId', {
+      enumerable: true,
+      writable: true,
+      configurable: false,
+      value: undefined
+    });
+
     // Filter out 'size' property
     const { size, ...unapplied } = properties;
     this.update(prism, undefined, unapplied, app);

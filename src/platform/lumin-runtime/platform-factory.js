@@ -20,6 +20,8 @@ import { logError } from '../../util/logger.js';
 const DEFAULT_APP_TYPE = 'landscape';
 const DEFAULT_TIME_DELTA = 0;
 
+import { logWarning } from '../../util/logger.js';
+
 export class PlatformFactory extends NativeFactory {
   constructor (componentMapping) {
     super(componentMapping);
@@ -27,6 +29,22 @@ export class PlatformFactory extends NativeFactory {
     // { type, builder }
     this.elementBuilders = {};
     this.controllerBuilders = {};
+
+    // The member '_eventCallbackData' should store the callbackId for each node for each prism
+    // PlatformFactory uses the callbackIds to unsubscribe all the callbacks when closing the prism
+    // Map structure: 
+    // { prismId: { nodeId: { eventName: callbackId } }
+    //
+    // example:
+    // PrismId = 1, ChildNodeId = 1, EventName = `onActivate`
+    // callbackIdObject = onActivateSub(callback)
+    //
+    // {
+    //    1: {
+    //      1: { onActivate: callbackIdObject }
+    //    }
+    // }
+    this._eventCallbackData = {};
 
     // App constructors
     this._appConstructors = {
@@ -42,6 +60,28 @@ export class PlatformFactory extends NativeFactory {
     return element instanceof MxsPrismController;
   }
 
+  _setCallbackDataPerNode (node, callbackId, eventName) {
+    const prismId = executor.callNativeFunction(node, 'getPrismId');
+    if (this._eventCallbackData[prismId] === undefined) {
+      this._eventCallbackData[prismId] = {};
+    }
+    const nodeId = executor.callNativeFunction(node, 'getNodeId');
+    if (this._eventCallbackData[prismId][nodeId] === undefined) {
+      this._eventCallbackData[prismId][nodeId] = {};
+    }
+
+    this._eventCallbackData[prismId][nodeId][eventName] = callbackId;
+  }
+
+  _getCallbackDataPerNode (node) {
+    const prismData = this._getCallbackDataPerPrism(executor.callNativeFunction(node, 'getPrismId'));
+    return prismData[executor.callNativeFunction(node, 'getNodeId')] || {};
+  }
+
+  _getCallbackDataPerPrism (prism) {
+    return this._eventCallbackData[executor.callNativeFunction(prism, 'getPrismId')] || {};
+  }
+
   setComponentEvents (element, properties, controller) {
     const eventHandlers = Object.keys(properties)
       .filter(key => key.length > 2 && key.startsWith('on'))
@@ -53,7 +93,11 @@ export class PlatformFactory extends NativeFactory {
       if (eventDescriptor !== undefined) {
         if (typeof pair.handler === 'function') {
           try {
-            element[eventDescriptor.subName]((eventData) => pair.handler(new eventDescriptor.dataType(eventData)));
+            const callbackId = element[eventDescriptor.subName]((eventData) =>
+              pair.handler(new eventDescriptor.dataType(eventData))
+            );
+
+            this._setCallbackDataPerNode(element, callbackId, eventDescriptor.subName.slice(0, -3));
           } catch (error) {
             throw new Error(`Tyring to subscribe handler ${pair.name} to ${eventDescriptor.subName} failed, error: ${error.message}`);
           }
@@ -75,34 +119,15 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
-  createElement (name, container, ...args) {
-    if (typeof name !== 'string') {
-      throw new Error('PlatformFactory.createElement expects "name" to be string');
+  _unsubscribeNodeEventHandlers (node, nodeEventHandlerIds) {
+    for (const eventName in nodeEventHandlerIds) {
+      if (!executor.callNativeFunction(node, `${eventName}Unsub`, nodeEventHandlerIds[eventName])) {
+        logWarning(`Node ${executor.callNativeFunction(node, 'getNodeId')} failed to unsubscribe from ${eventName} event`);
+      }
     }
+  }
 
-    if (name === 'scene') {
-      return this._createScene(name, container, ...args);
-    }
-
-    if (name === 'prism') {
-      return this._createPrism(name, container, ...args);
-    }
-
-    let element;
-    if (this._mapping.elements[name] !== undefined) {
-      element = this._createElement(name, container, ...args);
-      Object.defineProperty(element, 'childController', {
-        enumerable: true,
-        writable: true,
-        configurable: false,
-        value: undefined
-      });
-    } else if (this._mapping.controllers[name] !== undefined) {
-      element = this._createController(name, container, ...args);
-    } else {
-      throw new Error(`Unknown tag: ${name}`);
-    }
-
+  _setAddChildUniversal (element) {
     Object.defineProperty(element, 'addChild$Universal', {
       enumerable: true,
       writable: false,
@@ -133,8 +158,6 @@ export class PlatformFactory extends NativeFactory {
         }
       }
     });
-
-    return element;
   }
 
   _createElement (name, container, ...args) {
@@ -178,6 +201,53 @@ export class PlatformFactory extends NativeFactory {
     return this.elementBuilders[name].create();
   }
 
+  createElement (name, container, ...args) {
+    if (typeof name !== 'string') {
+      throw new Error('PlatformFactory.createElement expects "name" to be string');
+    }
+
+    if (name === 'scene') {
+      return this._createScene(name, container, ...args);
+    }
+
+    if (name === 'prism') {
+      return this._createPrism(name, container, ...args);
+    }
+
+    let element;
+    if (this._mapping.elements[name] !== undefined) {
+      element = this._createElement(name, container, ...args);
+      Object.defineProperty(element, 'childController', {
+        enumerable: true,
+        writable: true,
+        configurable: false,
+        value: undefined
+      });
+    } else if (this._mapping.controllers[name] !== undefined) {
+      element = this._createController(name, container, ...args);
+    } else {
+      throw new Error(`Unknown tag: ${name}`);
+    }
+
+    this._setAddChildUniversal(element);
+
+    return element;
+  }
+
+  _updateElement (name, ...args) {
+    const prism = typeof args[0].getPrismId === 'function'
+      ? this._app.getPrism(args[0].getPrismId())
+      : undefined;
+
+    if (this._mapping.elements[name] !== undefined) {
+      this.elementBuilders[name].update(...args, prism);
+    } else if (this._mapping.controllers[name] !== undefined) {
+      this.controllerBuilders[name].update(...args, prism);
+    } else {
+      throw new Error(`Unknown tag: ${name}`);
+    }
+  }
+
   updateElement (name, ...args) {
     if (typeof name !== 'string') {
       throw new Error('PlatformFactory.updateElement expects "name" to be string');
@@ -193,20 +263,6 @@ export class PlatformFactory extends NativeFactory {
     }
 
     this._updateElement(name, ...args);
-  }
-
-  _updateElement (name, ...args) {
-    const prism = typeof args[0].getPrismId === 'function'
-      ? this._app.getPrism(args[0].getPrismId())
-      : undefined;
-
-    if (this._mapping.elements[name] !== undefined) {
-      this.elementBuilders[name].update(...args, prism);
-    } else if (this._mapping.controllers[name] !== undefined) {
-      this.controllerBuilders[name].update(...args, prism);
-    } else {
-      throw new Error(`Unknown tag: ${name}`);
-    }
   }
 
   // TODO: Should be replaced by Proxy.addChild(parent, child)
@@ -428,10 +484,30 @@ export class PlatformFactory extends NativeFactory {
         executor.callNativeAction(parent, 'removePage', child);
       }
     } else {
+      this._unsubscribeNodeEventHandlers(child, this._getCallbackDataPerNode(child));
       executor.callNativeAction(parent, 'removeChild', child);
+
       const prism = this._app.getPrism(child.getPrismId());
       executor.callNativeAction(prism, 'deleteNode', child);
     }
+  }
+
+  _removePrismFromScene (scene, prism) {
+    scene.removeChild(prism);
+
+    if (prism.onDestroyHandlerId) {
+      executor.callNativeAction(prism, 'onDestroyEventUnsub', prism.onDestroyHandlerId);
+    }
+
+    const prismNodeCallbackData = this._getCallbackDataPerPrism(prism);
+    for (const [nodeId, nodeEventHandlerIds] of Object.entries(prismNodeCallbackData)) {
+      this._unsubscribeNodeEventHandlers(
+        executor.callNativeFunction(prism, 'getNode', BigInt(nodeId)),
+        nodeEventHandlerIds
+      );
+    }
+
+    this._app.removePrism(prism);
   }
 
   removeChildElement (parent, child) {
@@ -440,8 +516,7 @@ export class PlatformFactory extends NativeFactory {
     } else {
       if (parent instanceof MxsScene) {
         if (child instanceof Prism) {
-          parent.removeChild(child);
-          this._app.removePrism(child);
+          this._removePrismFromScene(parent, child);
         } else {
           logError('Scene element should have Prism children only!');
         }
@@ -475,6 +550,15 @@ export class PlatformFactory extends NativeFactory {
     if (this.isController(child)) {
       executor.callNativeAction(container.controller, 'removeChildController', child);
     } else {
+      if (container instanceof MxsScene) {
+        if (child instanceof Prism) {
+          this._removePrismFromScene(container, child);
+        } else {
+          logError('Scene element should have Prism children only!');
+        }
+        return;
+      }
+
       executor.callNativeAction(container.controller.getRoot(), 'removeChild', child);
       const prism = this._app.getPrism(child.getPrismId());
       executor.callNativeAction(prism, 'deleteNode', child);

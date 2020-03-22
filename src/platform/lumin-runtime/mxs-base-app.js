@@ -68,10 +68,25 @@ export class MxsBaseApp {
     this._prismControllers.push(controller);
 
     executor.callNativeAction(prism, 'setPrismController', controller);
+
+    const onDestroyHandlerId = executor.callNativeFunction(prism, 'onDestroyEventSub', (closingPrism) => {
+      const prismId = executor.callNativeFunction(closingPrism, 'getPrismId');
+      this._prisms = this._prisms.filter(p => executor.callNativeFunction(p, 'getPrismId') !== prismId);
+
+      if (!executor.callNativeFunction(closingPrism, 'onDestroyEventUnsub', onDestroyHandlerId)) {
+        logWarning('Failed to unsubscribe from Prism.onDestroyEvent');
+      }
+    });
+
     return prism;
   }
 
   removePrism(prism, app) {
+    const prismId = executor.callNativeFunction(prism, 'getPrismId');
+    if (this._prisms.every(p => executor.callNativeFunction(p, 'getPrismId') !== prismId)) {
+      return;
+    }
+
     const controller = executor.callNativeFunction(prism, 'getPrismController');
 
     this._prismControllers = this._prismControllers.filter(c => c !== controller);
@@ -79,6 +94,8 @@ export class MxsBaseApp {
 
     executor.callNativeAction(controller, 'deleteSceneGraph');
     executor.callNativeAction(prism, 'setPrismController', null);
-    executor.callNativeAction(app, 'deletePrism', prism);
+
+    // Set Prism deletion after the current call completes.
+    setTimeout(() => executor.callNativeAction(app, 'deletePrism', prism), 0)
   }
 }
