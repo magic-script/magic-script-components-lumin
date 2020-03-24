@@ -11,9 +11,34 @@ export class MxsBaseApp {
       this._app = appComponent;
       this._prisms = [];
       this._prismControllers = [];
+      this._eventHandlers = {
+        // onAppStart: [], // The rendering process hasn't started yet
+        onAppPause: [],
+        onAppResume: [],
+        // onDeviceActive: [],
+        // onDeviceReality: [],
+        // onDeviceStandby: [],
+        // onDeviceStart: [],
+        // onDeviceStop: []
+      };
+
+      this._onAppStartData;
   }
 
-  onAppStart(arg) {
+  get OnAppStartData () {
+    return this._onAppStartData;
+  }
+
+  onAppStart(args) {
+    this._onAppStartData = { 
+      initArgs: args,
+      isImageTrackingReady: this.isImageTrackingReady(),
+      isInternetConnected: this.isInternetConnected(),
+      isShareableApp: this.isShareableApp(),
+      isWiFiConnected: this.isWiFiConnected(),
+      isWiFiEnabled: this.isWiFiEnabled(),
+    };
+
     const container = {
       controller: {
         getRoot: () => ({ addChild: (child) => logInfo('App container - adding child (scene)') })
