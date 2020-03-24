@@ -198,7 +198,7 @@ export class PlatformFactory extends NativeFactory {
       this.elementBuilders[name] = this._mapping.elements[name]();
     }
 
-    return this.elementBuilders[name].create();
+    return this.elementBuilders[name].create(this._app, ...args);
   }
 
   createElement (name, container, ...args) {

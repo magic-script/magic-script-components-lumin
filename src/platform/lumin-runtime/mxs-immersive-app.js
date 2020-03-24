@@ -9,6 +9,13 @@ export class MxsImmersiveApp extends ImmersiveApp {
     this._baseApp = baseApp;
   }
 
+  get OnAppStartData () {
+    return {
+      ...this._baseApp.OnAppStartData, 
+      isImageTrackingReady: typeof this.isImageTrackingReady === 'function' ? this.isImageTrackingReady() : undefined,
+    };
+  }
+
   init() {
     return 0;
   }

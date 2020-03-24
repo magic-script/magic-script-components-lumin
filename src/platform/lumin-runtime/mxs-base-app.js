@@ -31,12 +31,11 @@ export class MxsBaseApp {
 
   onAppStart(args) {
     this._onAppStartData = { 
-      initArgs: args,
-      isImageTrackingReady: this.isImageTrackingReady(),
-      isInternetConnected: this.isInternetConnected(),
-      isShareableApp: this.isShareableApp(),
-      isWiFiConnected: this.isWiFiConnected(),
-      isWiFiEnabled: this.isWiFiEnabled(),
+      initArgs: args.getUri(),
+      isInternetConnected: typeof this.isInternetConnected === 'function' ? this.isInternetConnected() : undefined,
+      isWiFiConnected: typeof this.isWiFiConnected === 'function' ? this.isWiFiConnected() : undefined,
+      isWiFiEnabled: typeof this.isWiFiEnabled === 'function' ? this.isWiFiEnabled() : undefined,
+      isShareableApp: typeof this.isShareableApp === 'function' ? this.isShareableApp() : undefined
     };
 
     const container = {

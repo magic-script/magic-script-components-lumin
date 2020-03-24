@@ -3,11 +3,15 @@
 import { LandscapeApp } from 'lumin';
 
 export class MxsLandscapeApp extends LandscapeApp {
-    constructor(timeDelta, baseApp) {
-        super(timeDelta);
+  constructor(timeDelta, baseApp) {
+    super(timeDelta);
 
-        this._baseApp = baseApp;
-    }
+    this._baseApp = baseApp;
+  }
+
+  get OnAppStartData () {
+    return this._baseApp.OnAppStartData;
+  }
 
   init() {
     return 0;
