@@ -7,6 +7,11 @@ import { PropertyDescriptor } from '../properties/property-descriptor.js';
 import executor from '../../utilities/executor.js';
 import { logWarning, logError } from '../../../../util/logger.js';
 
+import { mat4, vec3, quat } from 'gl-matrix';
+
+import { XrClientProvider } from 'magic-script-components';
+
+
 export class PrismBuilder extends ElementBuilder {
   constructor () {
     super();
@@ -76,7 +81,9 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   _setPosition (prism, oldProperties, newProperties, app) {
-    if (newProperties.position !== undefined) {
+    if (newProperties.anchorUuid !== undefined) {
+      this._setPositionWithAnchor(prism, oldProperties, newProperties, app);
+    } else if (newProperties.position !== undefined) {
       if (this.getPropertyValue('positionRelativeToCamera', false, newProperties)) {
         executor.callNativeAction(app, 'positionPrismRelativeToCamera', prism, newProperties.position);
       } else {
@@ -91,13 +98,46 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   _setOrientation (prism, oldProperties, newProperties, app) {
-    if (newProperties.orientation !== undefined) {
+    if (newProperties.anchorUuid !== undefined) {
+      this._setOrientationWithAnchor(prism, oldProperties, newProperties, app);
+    } else if (newProperties.orientation !== undefined) {
       if (this.getPropertyValue('orientationRelativeToCamera', false, newProperties)) {
         executor.callNativeAction(app, 'orientPrismRelativeToCamera', prism, newProperties.orientation);
       } else {
         executor.callNativeAction(app, 'orientPrism', prism, newProperties.orientation);
       }
     }
+  }
+
+  _getAnchorPose(properties) {
+    const xrClient = XrClientProvider.getXrClient();
+    return xrClient._getAnchorPose(properties.anchorUuid);
+  }
+
+  _setPositionWithAnchor (prism, oldProperties, newProperties, app) {
+    const anchorPose = this._getAnchorPose(newProperties);
+    if (!anchorPose) {
+      return false;
+    }
+
+    let pos = vec3.create();
+    mat4.getTranslation(pos, anchorPose);
+    executor.callNativeAction(app, 'positionPrism', prism, pos);
+
+    return true;
+  }
+
+  _setOrientationWithAnchor (prism, oldProperties, newProperties, app) {
+    const anchorPose = this._getAnchorPose(newProperties);
+    if (!anchorPose) {
+      return false;
+    }
+
+    let rot = quat.create();
+    mat4.getRotation(rot, anchorPose);
+    executor.callNativeAction(app, 'orientPrism', prism, rot);
+
+    return true;
   }
 
   _validateSize (prism, oldProperties, newProperties) {
