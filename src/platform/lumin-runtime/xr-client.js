@@ -43,9 +43,7 @@ class XrClient {
                 return;
             }
 
-            let anchorId = pcf.getId().toString();
-            anchorId = anchorId.substring(1, anchorId.length - 1);
-
+            const anchorId = pcf.getId().toString().slice(1, -1); // strip {}
             const pose = pcf.getTransform();
 
             const confidence = {
