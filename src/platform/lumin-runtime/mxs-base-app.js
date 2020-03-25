@@ -31,7 +31,7 @@ export class MxsBaseApp {
 
   onAppStart(args) {
     this._onAppStartData = { 
-      initArgs: args.getUri(),
+      uri: args.getUri(),
       isInternetConnected: typeof this.isInternetConnected === 'function' ? this.isInternetConnected() : undefined,
       isWiFiConnected: typeof this.isWiFiConnected === 'function' ? this.isWiFiConnected() : undefined,
       isWiFiEnabled: typeof this.isWiFiEnabled === 'function' ? this.isWiFiEnabled() : undefined,
