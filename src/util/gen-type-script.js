@@ -197,8 +197,10 @@ function createParentLookup (elements, classToProps) {
       parentBuilderClass = getParentClass(parentBuilder);
     }
   }
-  // ListViewProps has itemAlignement which conflicts with Content -- remove parent as workaround
+  // Following Props have itemAlignement which conflicts with ContentProps -- remove parent as workaround
   propsToParent['ListViewProps'] = undefined;
+  propsToParent['GridLayoutProps'] = undefined;
+  propsToParent['LinearLayoutProps'] = undefined;
 
   return propsToParent;
 }
