@@ -24,6 +24,14 @@ export class MxsImmersiveApp extends ImmersiveApp {
     this._baseApp.onAppStart(arg);
   }
 
+  onAppPause() {
+    this._baseApp.onAppPause();
+  }
+
+  onAppResume() {
+    this._baseApp.onAppResume();
+  }
+
   updateLoop(delta) {
     return this._baseApp.updateLoop(delta);
   }
@@ -42,5 +50,13 @@ export class MxsImmersiveApp extends ImmersiveApp {
 
   removePrism(prism) {
     this._baseApp.removePrism(prism, this);
+  }
+
+  addListener(eventName, eventHandler) {
+    this._baseApp.addListener(eventName, eventHandler);
+  }
+
+  removeListener(eventName, eventHandler) {
+    this._baseApp.removeListener(eventName, eventHandler);
   }
 }

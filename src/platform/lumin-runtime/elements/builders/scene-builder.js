@@ -3,6 +3,7 @@ import { MxsScene } from '../mxs-scene.js';
 
 export class SceneBuilder extends ElementBuilder {
     constructor() {
+        super();
         this._appEventNames = ['onAppPause', 'onAppResume'];
     }
 

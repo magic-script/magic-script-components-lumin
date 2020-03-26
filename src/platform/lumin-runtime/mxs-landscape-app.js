@@ -21,6 +21,12 @@ export class MxsLandscapeApp extends LandscapeApp {
     this._baseApp.onAppStart(arg);
   }
 
+  addListener(eventName, eventHandler) {
+  }
+
+  removeListener(eventName, eventHandler) {
+  }
+
   updateLoop(delta) {
     return this._baseApp.updateLoop(delta);
   }
