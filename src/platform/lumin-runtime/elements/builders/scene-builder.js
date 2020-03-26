@@ -13,28 +13,22 @@ export class SceneBuilder extends ElementBuilder {
         }
     }
 
-    _callAppFunction(app, functionName, ...args) {
-        app[functionName](...args);
-    }
-
-    _updateListeners(app, oldProperties, newProperties, updateAction, predicate) {
+    _updateListeners(app, oldProperties, newProperties, updateAction, selector) {
         this._appEventNames.forEach(eventName => {
-            if (predicate(oldProperties[eventName], newProperties[eventName])) {
-                this._callAppFunction(app, updateAction, eventName, oldProperties.onAppPause);
-            }
+            app[updateAction](eventName, selector(oldProperties[eventName], newProperties[eventName]));
         });
     }
 
     create(app, properties) {
         this._callOnAppStart(app, properties.onAppStart);
 
-        this._updateListeners(app, {}, properties, 'addListener', (oldValue, newValue) => !oldValue && newValue);
+        this._updateListeners(app, {}, properties, 'addListener', (oldValue, newValue) => newValue);
 
         return new MxsScene();
     }
 
     update (prism, oldProperties, newProperties, app) {
-        this._updateListeners(app, oldProperties, newProperties, 'removeListener', (oldValue, newValue) => oldValue && !newValue);
-        this._updateListeners(app,  oldProperties, newProperties, 'addListener', (oldValue, newValue) => !oldValue && newValue);
+        this._updateListeners(app, oldProperties, newProperties, 'removeListener', (oldValue, newValue) => oldValue);
+        this._updateListeners(app,  oldProperties, newProperties, 'addListener', (oldValue, newValue) => newValue);
     }
 }

@@ -26,29 +26,6 @@ export class MxsBaseApp {
     return this._onAppStartData;
   }
 
-  addListener(eventName, eventHandler) {
-    if (typeof eventHandler === 'function') {
-      const handlers = this._eventHandlers[eventName];
-      if (handlers) {
-        handlers.push(eventHandler);
-      } else {
-        logWarning(`Provided event ${eventName} is not supported`);
-      }
-    } else {
-      logWarning(`Provided event handler for ${eventName} is not a function`);
-    }
-  }
-
-  removeListener(eventName, eventHandler) {
-    const handlers = this._eventHandlers[eventName];
-    if (handlers) {
-      const index = handlers.indexOf(eventHandler);
-      handlers.splice(index, 1);
-    } else {
-      logWarning(`Provided event ${eventName} is not supported`);
-    }
-  }
-
   onAppStart(args) {
     this._onAppStartData = { 
       uri: args.getUri(),
@@ -149,5 +126,28 @@ export class MxsBaseApp {
 
     // Set Prism deletion after the current call completes.
     setTimeout(() => executor.callNativeAction(app, 'deletePrism', prism), 0)
+  }
+
+  addListener(eventName, eventHandler) {
+    if (typeof eventHandler === 'function') {
+      const handlers = this._eventHandlers[eventName];
+      if (handlers) {
+        handlers.push(eventHandler);
+      } else {
+        logWarning(`Provided event ${eventName} is not supported`);
+      }
+    }
+  }
+
+  removeListener(eventName, eventHandler) {
+    const handlers = this._eventHandlers[eventName];
+    if (handlers) {
+      const index = handlers.indexOf(eventHandler);
+      if (index > -1 ) {
+        handlers.splice(index, 1);
+      }
+    } else {
+      logWarning(`Provided event ${eventName} is not supported`);
+    }
   }
 }
