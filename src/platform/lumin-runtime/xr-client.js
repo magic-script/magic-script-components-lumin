@@ -12,17 +12,8 @@ class XrClient {
      *
      * No-op on Lumin.
      */
-    connect(token) {
-        return 'success';
-    }
-
-    /**
-     * Sets the update interval for PCF polling
-     *
-     * No-op on Lumin.
-     */
-    async setUpdateInterval(interval) {
-        return 'success';
+    async connect(_token) {
+        return 'connected';
     }
 
     /**
@@ -79,7 +70,7 @@ class XrClient {
      */
     async createAnchor(anchorId, pose) {
         this._anchors[anchorId] = pose;
-        return 'success';
+        return true;
     }
 
     /**
@@ -90,7 +81,7 @@ class XrClient {
      */
     async removeAnchor(anchorId) {
         delete this._anchors[anchorId];
-        return 'success';
+        return true;
     }
 
     /**
@@ -100,7 +91,7 @@ class XrClient {
      */
     async removeAllAnchors() {
         this._anchors = {};
-        return 'success';
+        return true;
     }
 
     _setNativeApp(app) {
