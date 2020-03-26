@@ -4,7 +4,7 @@ import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
 import executor from './utilities/executor.js';
-import { logInfo } from '../../util/logger.js';
+import { logInfo, logWarning } from '../../util/logger.js';
 
 export class MxsBaseApp {
   constructor(appComponent) {
@@ -12,14 +12,11 @@ export class MxsBaseApp {
       this._prisms = [];
       this._prismControllers = [];
       this._eventHandlers = {
-        // onAppStart: [], // The rendering process hasn't started yet
+        // The rendering process hasn't started yet
+        // OnAppStartData will be provided on demand as property.
+        // onAppStart: [],
         onAppPause: [],
-        onAppResume: [],
-        // onDeviceActive: [],
-        // onDeviceReality: [],
-        // onDeviceStandby: [],
-        // onDeviceStart: [],
-        // onDeviceStop: []
+        onAppResume: []
       };
 
       this._onAppStartData;
@@ -27,6 +24,29 @@ export class MxsBaseApp {
 
   get OnAppStartData () {
     return this._onAppStartData;
+  }
+
+  addListener(eventName, eventHandler) {
+    if (typeof eventHandler === 'function') {
+      const handlers = this._eventHandlers[eventName];
+      if (handlers) {
+        handlers.push(eventHandler);
+      } else {
+        logWarning(`Provided event ${eventName} is not supported`);
+      }
+    } else {
+      logWarning(`Provided event handler for ${eventName} is not a function`);
+    }
+  }
+
+  removeListener(eventName, eventHandler) {
+    const handlers = this._eventHandlers[eventName];
+    if (handlers) {
+      const index = handlers.indexOf(eventHandler);
+      handlers.splice(index, 1);
+    } else {
+      logWarning(`Provided event ${eventName} is not supported`);
+    }
   }
 
   onAppStart(args) {
@@ -45,6 +65,14 @@ export class MxsBaseApp {
     };
 
     ReactMagicScript.render(this._app, container);
+  }
+
+  onAppPause() {
+    this._eventHandlers.onAppPause.forEach(handler => handler(...args));
+  }
+
+  onAppResume() {
+    this._eventHandlers.onAppResume.forEach(handler => handler(...args));
   }
 
   updateLoop(delta) {
