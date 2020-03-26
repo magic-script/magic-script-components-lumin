@@ -45,11 +45,11 @@ export class MxsBaseApp {
   }
 
   onAppPause() {
-    this._eventHandlers.onAppPause.forEach(handler => handler(...args));
+    this._eventHandlers.onAppPause.forEach(handler => handler());
   }
 
   onAppResume() {
-    this._eventHandlers.onAppResume.forEach(handler => handler(...args));
+    this._eventHandlers.onAppResume.forEach(handler => handler());
   }
 
   updateLoop(delta) {
