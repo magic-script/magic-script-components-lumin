@@ -21,12 +21,6 @@ export class MxsLandscapeApp extends LandscapeApp {
     this._baseApp.onAppStart(arg);
   }
 
-  addListener(eventName, eventHandler) {
-  }
-
-  removeListener(eventName, eventHandler) {
-  }
-
   updateLoop(delta) {
     return this._baseApp.updateLoop(delta);
   }
@@ -45,5 +39,13 @@ export class MxsLandscapeApp extends LandscapeApp {
 
   removePrism(prism) {
     this._baseApp.removePrism(prism, this);
+  }
+
+  addListener(eventName, eventHandler) {
+    this._baseApp.addListener(eventName, eventHandler);
+  }
+
+  removeListener(eventName, eventHandler) {
+    this._baseApp.removeListener(eventName, eventHandler);
   }
 }

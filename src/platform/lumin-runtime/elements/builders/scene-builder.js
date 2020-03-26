@@ -28,7 +28,7 @@ export class SceneBuilder extends ElementBuilder {
     create(app, properties) {
         this._callOnAppStart(app, properties.onAppStart);
 
-        this._updateListeners(undefined, {}, properties, 'addListener', (oldValue, newValue) => !oldValue && newValue);
+        this._updateListeners(app, {}, properties, 'addListener', (oldValue, newValue) => !oldValue && newValue);
 
         return new MxsScene();
     }
