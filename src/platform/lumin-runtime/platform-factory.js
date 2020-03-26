@@ -254,6 +254,7 @@ export class PlatformFactory extends NativeFactory {
     }
 
     if (name === 'scene') {
+      this.elementBuilders[name].update(...args, this._app);
       return;
     }
 
