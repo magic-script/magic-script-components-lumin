@@ -46,7 +46,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
-    "magic-script-components": "git+https://github.com/magic-script/magic-script-components.git#XrClient",
+    "magic-script-components": "3.0.0",
     "react-test-renderer": "^16.9.0"
   }
 }
