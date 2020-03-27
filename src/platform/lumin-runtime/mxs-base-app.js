@@ -4,16 +4,37 @@ import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 
 import executor from './utilities/executor.js';
-import { logInfo } from '../../util/logger.js';
+import { logInfo, logWarning } from '../../util/logger.js';
 
 export class MxsBaseApp {
   constructor(appComponent) {
       this._app = appComponent;
       this._prisms = [];
       this._prismControllers = [];
+      this._eventHandlers = {
+        // The rendering process hasn't started yet
+        // OnAppStartData will be provided on demand as property.
+        // onAppStart: [],
+        onAppPause: [],
+        onAppResume: []
+      };
+
+      this._onAppStartData;
   }
 
-  onAppStart(arg) {
+  get OnAppStartData () {
+    return this._onAppStartData;
+  }
+
+  onAppStart(args) {
+    this._onAppStartData = { 
+      uri: args.getUri(),
+      isInternetConnected: typeof this.isInternetConnected === 'function' ? this.isInternetConnected() : undefined,
+      isWiFiConnected: typeof this.isWiFiConnected === 'function' ? this.isWiFiConnected() : undefined,
+      isWiFiEnabled: typeof this.isWiFiEnabled === 'function' ? this.isWiFiEnabled() : undefined,
+      isShareableApp: typeof this.isShareableApp === 'function' ? this.isShareableApp() : undefined
+    };
+
     const container = {
       controller: {
         getRoot: () => ({ addChild: (child) => logInfo('App container - adding child (scene)') })
@@ -21,6 +42,14 @@ export class MxsBaseApp {
     };
 
     ReactMagicScript.render(this._app, container);
+  }
+
+  onAppPause() {
+    this._eventHandlers.onAppPause.forEach(handler => handler());
+  }
+
+  onAppResume() {
+    this._eventHandlers.onAppResume.forEach(handler => handler());
   }
 
   updateLoop(delta) {
@@ -97,5 +126,28 @@ export class MxsBaseApp {
 
     // Set Prism deletion after the current call completes.
     setTimeout(() => executor.callNativeAction(app, 'deletePrism', prism), 0)
+  }
+
+  addListener(eventName, eventHandler) {
+    if (typeof eventHandler === 'function') {
+      const handlers = this._eventHandlers[eventName];
+      if (handlers) {
+        handlers.push(eventHandler);
+      } else {
+        logWarning(`Provided event ${eventName} is not supported`);
+      }
+    }
+  }
+
+  removeListener(eventName, eventHandler) {
+    const handlers = this._eventHandlers[eventName];
+    if (handlers) {
+      const index = handlers.indexOf(eventHandler);
+      if (index > -1 ) {
+        handlers.splice(index, 1);
+      }
+    } else {
+      logWarning(`Provided event ${eventName} is not supported`);
+    }
   }
 }

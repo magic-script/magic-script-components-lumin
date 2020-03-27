@@ -9,12 +9,27 @@ export class MxsImmersiveApp extends ImmersiveApp {
     this._baseApp = baseApp;
   }
 
+  get OnAppStartData () {
+    return {
+      ...this._baseApp.OnAppStartData, 
+      isImageTrackingReady: typeof this.isImageTrackingReady === 'function' ? this.isImageTrackingReady() : undefined,
+    };
+  }
+
   init() {
     return 0;
   }
 
   onAppStart(arg) {
     this._baseApp.onAppStart(arg);
+  }
+
+  onAppPause() {
+    this._baseApp.onAppPause();
+  }
+
+  onAppResume() {
+    this._baseApp.onAppResume();
   }
 
   updateLoop(delta) {
@@ -35,5 +50,13 @@ export class MxsImmersiveApp extends ImmersiveApp {
 
   removePrism(prism) {
     this._baseApp.removePrism(prism, this);
+  }
+
+  addListener(eventName, eventHandler) {
+    this._baseApp.addListener(eventName, eventHandler);
+  }
+
+  removeListener(eventName, eventHandler) {
+    this._baseApp.removeListener(eventName, eventHandler);
   }
 }
