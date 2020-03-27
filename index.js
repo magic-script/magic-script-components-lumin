@@ -16,7 +16,7 @@ export default {
         this._init();
 
         this._app = this._nativeFactory.createApp(app);
-        XrClientProvider.getXrClient()._setNativeApp(this._app);
+        XrClientProvider.getXrClient().setNativeApp(this._app);
     },
 
     getContainer(nodeName) {

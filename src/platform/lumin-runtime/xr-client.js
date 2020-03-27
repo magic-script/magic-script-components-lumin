@@ -94,11 +94,11 @@ class XrClient {
         return true;
     }
 
-    _setNativeApp(app) {
+    setNativeApp(app) {
         this._app = app;
     }
 
-    _getAnchorPose(anchorId) {
+    getAnchorPose(anchorId) {
         return this._anchors[anchorId];
     }
 }

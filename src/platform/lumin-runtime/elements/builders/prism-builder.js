@@ -111,7 +111,7 @@ export class PrismBuilder extends ElementBuilder {
 
   _getAnchorPose(properties) {
     const xrClient = XrClientProvider.getXrClient();
-    return xrClient._getAnchorPose(properties.anchorUuid);
+    return xrClient.getAnchorPose(properties.anchorUuid);
   }
 
   _setPositionWithAnchor (prism, oldProperties, newProperties, app) {
