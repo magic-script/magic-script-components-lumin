@@ -38,7 +38,7 @@ declare module "magic-script-components" {
     for (let propName in builder._propertyDescriptors) {
       const propertyDescriptor = builder._propertyDescriptors[propName];
       if (propertyDescriptor.Name !== propName) {
-        console.error(`Mismatched prop name, ${elementName}.${propName} !== ${propertyDescriptor.Name}`);
+        throw `Mismatched prop name, ${elementName}.${propName} !== ${propertyDescriptor.Name}`;
       }
       const propTs = propertyDescriptor.generateTypeScript();
       deps = {...deps, ...propertyDescriptor.tsDependentTypes()};
