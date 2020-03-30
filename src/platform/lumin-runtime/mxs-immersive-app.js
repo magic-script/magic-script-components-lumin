@@ -49,7 +49,7 @@ export class MxsImmersiveApp extends ImmersiveApp {
   }
 
   updatePrism(prism, properties) {
-    this._baseApp.updatePrism(prism, properties, this);
+    this._baseApp.updatePrism(prism, properties);
   }
 
   removePrism(prism) {

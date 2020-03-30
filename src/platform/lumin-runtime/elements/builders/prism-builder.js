@@ -73,6 +73,8 @@ export class PrismBuilder extends ElementBuilder {
     this._setSize(prism, oldProperties, newProperties, app);
     this._setPosition(prism, oldProperties, newProperties, app);
     this._setOrientation(prism, oldProperties, newProperties, app);
+
+    app.updatePrism(prism, newProperties);
   }
 
   _validatePosition (prism, oldProperties, newProperties) {

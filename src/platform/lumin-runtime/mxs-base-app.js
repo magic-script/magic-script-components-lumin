@@ -110,7 +110,7 @@ export class MxsBaseApp {
     return prism;
   }
 
-  updatePrism(prism, properties, app) {
+  updatePrism(prism, properties) {
     const controller = executor.callNativeFunction(prism, 'getPrismController');
     ReactMagicScript.render(properties.children, controller.getContainer());
   }
