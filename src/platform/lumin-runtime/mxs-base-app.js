@@ -110,6 +110,11 @@ export class MxsBaseApp {
     return prism;
   }
 
+  updatePrism(prism, properties) {
+    const controller = executor.callNativeFunction(prism, 'getPrismController');
+    ReactMagicScript.render(properties.children, controller.getContainer());
+  }
+
   removePrism(prism, app) {
     const prismId = executor.callNativeFunction(prism, 'getPrismId');
     if (this._prisms.every(p => executor.callNativeFunction(p, 'getPrismId') !== prismId)) {

@@ -37,6 +37,10 @@ export class MxsLandscapeApp extends LandscapeApp {
     return this._baseApp.addPrism(properties, this);
   }
 
+  updatePrism(prism, properties) {
+    this._baseApp.updatePrism(prism, properties);
+  }
+
   removePrism(prism) {
     this._baseApp.removePrism(prism, this);
   }
