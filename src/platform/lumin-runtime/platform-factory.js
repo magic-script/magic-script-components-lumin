@@ -74,12 +74,12 @@ export class PlatformFactory extends NativeFactory {
   }
 
   _getCallbackDataPerNode (node) {
-    const prismData = this._getCallbackDataPerPrism(executor.callNativeFunction(node, 'getPrismId'));
+    const prismData = this._getCallbackDataPerPrismId(executor.callNativeFunction(node, 'getPrismId'));
     return prismData[executor.callNativeFunction(node, 'getNodeId')] || {};
   }
 
-  _getCallbackDataPerPrism (prism) {
-    return this._eventCallbackData[executor.callNativeFunction(prism, 'getPrismId')] || {};
+  _getCallbackDataPerPrismId (prismId) {
+    return this._eventCallbackData[prismId] || {};
   }
 
   setComponentEvents (element, properties, controller) {
@@ -500,7 +500,7 @@ export class PlatformFactory extends NativeFactory {
       executor.callNativeAction(prism, 'onDestroyEventUnsub', prism.onDestroyHandlerId);
     }
 
-    const prismNodeCallbackData = this._getCallbackDataPerPrism(prism);
+    const prismNodeCallbackData = this._getCallbackDataPerPrismId(executor.callNativeFunction(prism, 'getPrismId'));
     for (const [nodeId, nodeEventHandlerIds] of Object.entries(prismNodeCallbackData)) {
       this._unsubscribeNodeEventHandlers(
         executor.callNativeFunction(prism, 'getNode', BigInt(nodeId)),
