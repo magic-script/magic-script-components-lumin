@@ -1,6 +1,6 @@
 {
   "name": "magic-script-components-lumin",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "MagicScript Components renderer for Lumin Runtime platform",
   "module": "index.js",
   "files": [
@@ -29,9 +29,10 @@
   },
   "homepage": "https://github.com/magic-script/magic-script-components-lumin#readme",
   "dependencies": {
+    "chroma-js": "^2.1.0",
+    "gl-matrix": "^3.2.1",
     "react": "^16.9.0",
-    "react-reconciler": "^0.21.0",
-    "chroma-js": "^2.1.0"
+    "react-reconciler": "^0.21.0"
   },
   "peerDependencies": {
     "@babel/core": "^7.6.0",
@@ -45,7 +46,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
-    "magic-script-components": "2.0.0",
+    "magic-script-components": "2.0.2",
     "react-test-renderer": "^16.9.0"
   }
 }

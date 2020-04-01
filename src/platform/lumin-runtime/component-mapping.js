@@ -41,6 +41,8 @@ import { ModelBuilder } from './elements/builders/model-builder.js';
 import { QuadBuilder } from './elements/builders/quad-builder.js';
 import { VideoBuilder } from './elements/builders/video-builder.js';
 
+import { PrismBuilder } from './elements/builders/prism-builder.js';
+import { SceneBuilder } from './elements/builders/scene-builder.js'
 
 export default {
     version: '1.0',
@@ -50,7 +52,6 @@ export default {
     },
     elements: {
         'view': () => new GroupBuilder(),
-        // 'view': () => new UiNodeBuilder(),
         'text': () => new TextBuilder(),
         'textEdit': () => new TextEditBuilder(),
         'button': () => new ButtonBuilder(),
@@ -59,7 +60,6 @@ export default {
         'scrollView': () => new ScrollViewBuilder(),
         'listView': () => new ListViewBuilder(),
         'listViewItem': () => new ListViewItemBuilder(),
-
         'spinner': () => new LoadingSpinnerBuilder(),
         'slider': () => new SliderBuilder(),
         'progressBar': () => new ProgressBarBuilder(),
@@ -71,7 +71,6 @@ export default {
         'toggle': () => new ToggleBuilder(),
         'toggleGroup': () => new ToggleGroupBuilder(),
         'panel': () => new PanelBuilder(),
-
         'tab': () => new TabBuilder(),
         'dialog': () => new DialogBuilder(),
         'pageView': () => new PageViewBuilder(),
@@ -89,6 +88,9 @@ export default {
         'video': () => new VideoBuilder(),
         'audio': () => new AudioBuilder(),
         'light': () => new LightBuilder(),
-        'line' : () => new LineBuilder()
+        'line' : () => new LineBuilder(),
+
+        'prism': () => new PrismBuilder(),
+        'scene': () => new SceneBuilder()
     }
 };

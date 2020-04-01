@@ -4,7 +4,6 @@ declare module "magic-script-components-lumin" {
   import { AppProps } from 'magic-script-components'
 
   export default class {
-    static bootstrap: (app: ReactElement<AppProps>) => void
+    static bootstrap: (app: ReactElement<AppProps>) => void;
   }
-
 }

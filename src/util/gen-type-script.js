@@ -2,7 +2,9 @@ import configuration from "../configuration.js";
 import { UiNodeEvents } from '../platform/lumin-runtime/types/ui-node-events.js';
 
 export function generateTypeScript () {
-  let str = `declare module "magic-script-components" {
+  let str = `/// <reference path='./XrClientBridge.d.ts' />
+
+declare module "magic-script-components" {
 
   // Components:
   // --------------------------------------------------------------------------------
@@ -40,7 +42,9 @@ export function generateTypeScript () {
       }
       const propTs = propertyDescriptor.generateTypeScript();
       deps = {...deps, ...propertyDescriptor.tsDependentTypes()};
-      list.push(propTs);
+      if (propTs !== undefined) {
+        list.push(propTs);
+      }
     }
 
     propTypes[name] = {
@@ -197,8 +201,10 @@ function createParentLookup (elements, classToProps) {
       parentBuilderClass = getParentClass(parentBuilder);
     }
   }
-  // ListViewProps has itemAlignement which conflicts with Content -- remove parent as workaround
+  // Following Props have itemAlignement which conflicts with ContentProps -- remove parent as workaround
   propsToParent['ListViewProps'] = undefined;
+  propsToParent['GridLayoutProps'] = undefined;
+  propsToParent['LinearLayoutProps'] = undefined;
 
   return propsToParent;
 }
