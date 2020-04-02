@@ -19,6 +19,7 @@ import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
 
 import { isUrl } from '../../../../util/download.js';
+import { logError } from '../../../../util/logger.js';
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -58,6 +59,9 @@ export class ImageBuilder extends UiNodeBuilder {
           (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true));
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
+        
+        // Manually set 'fit' property since 'filePath' won't be part of the unapplied priperties array
+        this.setFit(element, undefined, properties);
       }
     } else if (color) {
       element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
@@ -151,7 +155,7 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   _applyFitMode (element, fitMode, originalSize, targetSize) {
-    const texCoords = this._calculateTexCoords(originalSize, targetSize, fitMode);
+    const texCoords = this._calculateTexCoords(fitMode, originalSize, targetSize);
     this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
