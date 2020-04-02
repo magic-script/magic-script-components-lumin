@@ -67,7 +67,7 @@ export class ImageBuilder extends UiNodeBuilder {
       element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
     }
 
-    const unapplied = this.excludeProperties(properties, ['icon', 'filePath', 'resourceId', 'height', 'width']);
+    const unapplied = this.excludeProperties(properties, ['icon', 'filePath', 'resourceId', 'height', 'width', 'fit']);
 
     this.apply(element, undefined, unapplied);
 
