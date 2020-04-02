@@ -21,6 +21,8 @@ import validator from '../../utilities/validator.js';
 import { isUrl } from '../../../../util/download.js';
 import { logError } from '../../../../util/logger.js';
 
+const DEFAULT_TEXTURE_COORDINATES = [[0, 1], [1,1], [1,0], [0,0]];
+
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
     super();
@@ -173,7 +175,7 @@ export class ImageBuilder extends UiNodeBuilder {
       this._callNodeAction(element, 'setTexCoords', texCoords);
     } else {
       // Apply 'stretch' as default
-      this._callNodeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
+      this._callNodeAction(element, 'setTexCoords', DEFAULT_TEXTURE_COORDINATES);
     }
   }
 
