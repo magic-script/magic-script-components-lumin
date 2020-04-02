@@ -18,6 +18,7 @@ import { FontStyle, FontWeight } from '../types/font-style.js';
 import { GestureType } from '../types/gesture-type.js';
 import { GravityWellSnap } from '../types/gravity-well-snap.js';
 import { HandGestureKeypointName } from '../types/hand-gesture-keypoint-name.js';
+import { ImageFitMode } from '../types/image-fit-mode.js';
 import { LabelDisplayMode } from '../types/label-display-mode.js';
 import { LightType } from '../types/light-type.js';
 import { LoadingSpinnerType } from '../types/loading-spinner-type.js';
@@ -66,6 +67,7 @@ const validator = {
     validateGestureType: value => validate(value, GestureType),
     validateGravityWellSnap: value => validate(value, GravityWellSnap),
     validateHandGestureKeypointName: value => validate(value, HandGestureKeypointName),
+    validateImageFitMode: value => validate(value, ImageFitMode),
     validateLabelDisplayMode: value => validate(value, LabelDisplayMode),
     validateLightType: value => validate(value, LightType),
     validateLoadingSpinnerType: value => validate(value, LoadingSpinnerType),

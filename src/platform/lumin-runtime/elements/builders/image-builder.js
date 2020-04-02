@@ -1,7 +1,8 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
 import { ui, Desc2d, INVALID_RESOURCE_ID } from 'lumin';
-import { SystemIcons } from '../../types/system-icons.js';
+import { getSize } from 'magic-script-polyfills/src/size.js';
+import { readfileSync } from 'magic-script-polyfills/src/fs-sync.js';
 
 import { UiNodeBuilder } from './ui-node-builder.js';
 import { ArrayProperty } from '../properties/array-property.js';
@@ -10,28 +11,14 @@ import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
+import { ImageFitMode } from '../../types/image-fit-mode.js';
+import { SystemIcons } from '../../types/system-icons.js';
+
 import loadRemoteResource from '../../utilities/resource-download.js';
 import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
 
 import { isUrl } from '../../../../util/download.js';
-
-import { getSize } from 'magic-script-polyfills/src/size.js';
-import { readfileSync } from 'magic-script-polyfills/src/fs-sync.js';
-
-/**
- * @exports ImageContentMode
- * @description Represents content mode of image.
- */ 
-const ImageContentMode = {
-  aspectFill: 'aspectFill',
-  aspectFit: 'aspectFit',
-  stretch: 'stretch'
-}
-
-// const REGEX_URL = /^(http(s?):\/\/.*)/;
-// const REGEX_FILE_PATH = new RegExp('^(/)?([^/\0]+(/)?)+$');
-const REGEX_LOCAL_PATH = /^(\/)?([^\/\0]+(\/)?)+$/;
 
 export class ImageBuilder extends UiNodeBuilder {
   constructor () {
@@ -41,13 +28,11 @@ export class ImageBuilder extends UiNodeBuilder {
     this._propertyDescriptors['opaque'] = new PrimitiveTypeProperty('opaque', 'setIsOpaque', true, 'boolean');
     this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
     this._propertyDescriptors['texCoords'] = new ArrayProperty('texCoords', 'setTexCoords', false, 'vec4');
+    this._propertyDescriptors['fit'] = new EnumProperty('fit', 'setFit', false, ImageFitMode, 'ImageFitMode');
 
     // Expects Id
     this._propertyDescriptors['imageFrameResource'] = new PrimitiveTypeProperty('imageFrameResource', 'setImageFrameResource', true, 'number');
     this._propertyDescriptors['renderResource'] = new PrimitiveTypeProperty('renderResource', 'setRenderResource', true, 'number');
-
-    // Custom props
-    this._propertyDescriptors['contentMode'] = new EnumProperty('contentMode', 'setContentMode', false, ImageContentMode, 'ImageContentMode');
   }
 
   create (prism, properties) {
@@ -135,53 +120,60 @@ export class ImageBuilder extends UiNodeBuilder {
     this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
-  _getTexCoords (dimension, size, mode) {
-    let offset = { u: 0, v: 0 };
+  _calculateTexCoords (fitMode, originalSize, targetSize) {
+    const MAX = 1.0, MIN = 0, MID = 0.5;
 
-    if (mode === ImageContentMode.aspectFill || 
-        mode === ImageContentMode.aspectFit) {
-      const factors = { h: size.width / dimension.width, v: size.height / dimension.height };
-      const factor = (mode === ImageContentMode.aspectFill) ? Math.max(factors.h, factors.v) : Math.min(factors.h, factors.v);
-      const target = { width: factor * dimension.width, height: factor * dimension.height };
-      offset.u = 0.5 * (1.0 - (size.width / target.width));
-      offset.v = 0.5 * (1.0 - (size.height / target.height));
-    } else if (mode === ImageContentMode.stretch) {
-      offset.u = 0;
-      offset.v = 0;
+    // Default value works for 'stretch' ImageFitMode only !
+    const offset = { x: 0, y: 0 };
+
+    if (fitMode === ImageFitMode['aspect-fill'] || 
+        fitMode === ImageFitMode['aspect-fit']) {
+      const ratio = {
+        h: targetSize.width / originalSize.width,
+        v: targetSize.height / originalSize.height
+      };
+      const factor = fitMode === ImageFitMode['aspect-fill']
+        ? Math.max(ratio.h, ratio.v)
+        : Math.min(ratio.h, ratio.v);
+      const calculatedSize = {
+        width: factor * originalSize.width,
+        height: factor * originalSize.height
+      };
+      offset.x = MID * (MAX - (targetSize.width / calculatedSize.width));
+      offset.y = MID * (MAX - (targetSize.height / calculatedSize.height));
     }
 
-    const u0 = 0 + offset.u;
-    const u1 = 1 - offset.u;
-    const v0 = 0 + offset.v;
-    const v1 = 1 - offset.v;
-    return [[u0, v1], [u1,v1], [u1,v0], [u0,v0]];
+    const x0 = MIN + offset.x;
+    const x1 = MAX - offset.x;
+    const y0 = MIN + offset.y;
+    const y1 = MAX - offset.y;
+    return [[x0, y1], [x1, y1], [x1, y0], [x0, y0]];
   }
 
-  setContentMode (element, oldProperties, newProperties) {
-    if (!REGEX_LOCAL_PATH.test(newProperties.filePath)) {
+  _applyFitMode (element, fitMode, originalSize, targetSize) {
+    const texCoords = this._calculateTexCoords(originalSize, targetSize, fitMode);
+    this._callNodeAction(element, 'setTexCoords', texCoords);
+  }
+
+  setFit (element, oldProperties, newProperties) {
+    if (isUrl(newProperties.filePath)) {
       return;
     }
 
-    let meta;
+    let imageSize;
     try {
-      meta = getSize(readfileSync(newProperties.filePath, 'r', 0o644));
+      imageSize = getSize(readfileSync(newProperties.filePath, 'r', 0o644));
     } catch (error) {
       logError(error.message);
     }
 
-    if (meta) {
-      this._setContentMode(element, oldProperties, newProperties, meta);
+    if (imageSize) {
+      const fitMode = this.getPropertyValue('fit', 'aspect-fill', newProperties);
+      this._applyFitMode(element, ImageFitMode[fitMode], { width: imageSize.width, height: imageSize.height }, { width: newProperties.width, height: newProperties.height});
     } else {
+      // Apply 'stretch' as default
       this._callNodeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
     }
-  }
-
-  _setContentMode (element, oldProperties, newProperties, meta) {
-    const contentMode = this.getPropertyValue('contentMode', ImageContentMode.aspectFill, newProperties);
-    const size = { width: newProperties.width, height: newProperties.height };
-    const dimensions = { width: meta.width, height: meta.height };
-    const texCoords = this._getTexCoords(dimensions, size, contentMode);
-    this._callNodeAction(element, 'setTexCoords', texCoords);
   }
 
   _validateFilePath (newProperties) {

@@ -96,14 +96,14 @@ export class QuadBuilder extends RenderBuilder {
 
   _defineRenderResourceConstructors () {
     this._renderResourceConstructors = {
-      'Animation': this._createAnimation.bind(this),
-      'AnimationBlendSetup': this._createAnimationBlendSetup.bind(this),
-      'AnimationSet': this._createAnimationSet.bind(this),
-      'Material': this._createMaterial.bind(this),
-      'Model': this._createModel.bind(this),
-      'Mtl': this._createMtl.bind(this),
-      'TexturePack': this._createTexturePack.bind(this),
-      'Texture': this._createTexture.bind(this)
+      'animation': this._createAnimation.bind(this),
+      'animation-blend-setup': this._createAnimationBlendSetup.bind(this),
+      'animation-set': this._createAnimationSet.bind(this),
+      'material': this._createMaterial.bind(this),
+      'model': this._createModel.bind(this),
+      'mtl': this._createMtl.bind(this),
+      'texture-pack': this._createTexturePack.bind(this),
+      'texture': this._createTexture.bind(this)
     };
   }
 
