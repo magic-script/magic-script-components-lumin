@@ -58,24 +58,9 @@ export class ImageBuilder extends UiNodeBuilder {
         loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
           (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true),
           (localPath) => {
-            if (!properties.fit) {
-              return;
-            }
-
-            let imageSize;
-            try {
-              console.log('callback: ', localPath);
-              imageSize = getSize(readfileSync(localPath, 'r', 0o644));
-            } catch (error) {
-              logError(error.message);
-            }
-        
-            if (imageSize) {
-              const fitMode = this.getPropertyValue('fit', 'aspect-fill', properties);
-              this._applyFitMode(element, ImageFitMode[fitMode], { width: imageSize.width, height: imageSize.height }, { width: properties.width, height: properties.height});
-            } else {
-              // Apply 'stretch' as default
-              executor.callNativeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
+            const fitMode = ImageFitMode[properties.fit];
+            if (fitMode) {
+              this._applyFitMode(element, localPath, fitMode, { width: properties.width, height: properties.height});
             }
           });
       } else {
@@ -175,29 +160,26 @@ export class ImageBuilder extends UiNodeBuilder {
     return [[x0, y1], [x1, y1], [x1, y0], [x0, y0]];
   }
 
-  _applyFitMode (element, fitMode, originalSize, targetSize) {
-    const texCoords = this._calculateTexCoords(fitMode, originalSize, targetSize);
-    this._callNodeAction(element, 'setTexCoords', texCoords);
-  }
-
-  setFit (element, oldProperties, newProperties) {
-    if (isUrl(newProperties.filePath)) {
-      return;
-    }
-
+  _applyFitMode (element, filePath, fitMode, targetSize) {
     let imageSize;
     try {
-      imageSize = getSize(readfileSync(newProperties.filePath, 'r', 0o644));
+      imageSize = getSize(readfileSync(filePath, 'r', 0o644));
     } catch (error) {
       logError(error.message);
     }
 
     if (imageSize) {
-      const fitMode = this.getPropertyValue('fit', 'aspect-fill', newProperties);
-      this._applyFitMode(element, ImageFitMode[fitMode], { width: imageSize.width, height: imageSize.height }, { width: newProperties.width, height: newProperties.height});
+      const texCoords = this._calculateTexCoords(fitMode, { width: imageSize.width, height: imageSize.height }, targetSize);
+      this._callNodeAction(element, 'setTexCoords', texCoords);
     } else {
       // Apply 'stretch' as default
       this._callNodeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
+    }
+  }
+
+  setFit (element, oldProperties, newProperties) {
+    if (!isUrl(newProperties.filePath)) {
+      this._applyFitMode(element, newProperties.filePath, ImageFitMode[newProperties.fit], { width: newProperties.width, height: newProperties.height});
     }
   }
 
