@@ -49,7 +49,7 @@ function doesElementExist (element, prism) {
     return executor.callNativeFunction(prism, 'getNode', nodeId) !== null;
 }
 
-export default async function loadRemoteResource (url, properties, element, prism, setResourceFunctionName, createResourceFunction) {
+export default async function loadRemoteResource (url, properties, element, prism, setResourceFunctionName, createResourceFunction, postLoadAction) {
     const spinner = addMaskAndSpinner(element, prism);
 
     // Fetch the remote image
@@ -74,5 +74,6 @@ export default async function loadRemoteResource (url, properties, element, pris
     if (doesElementExist(element, prism)) {
       executor.callNativeAction(element, setResourceFunctionName, resourceId);
       removeMaskAndSpinner(element, prism, spinner, properties);
+      postLoadAction(filePath);
     }
 }

@@ -56,7 +56,28 @@ export class ImageBuilder extends UiNodeBuilder {
         // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
         loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
-          (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true));
+          (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true),
+          (localPath) => {
+            if (!properties.fit) {
+              return;
+            }
+
+            let imageSize;
+            try {
+              console.log('callback: ', localPath);
+              imageSize = getSize(readfileSync(localPath, 'r', 0o644));
+            } catch (error) {
+              logError(error.message);
+            }
+        
+            if (imageSize) {
+              const fitMode = this.getPropertyValue('fit', 'aspect-fill', properties);
+              this._applyFitMode(element, ImageFitMode[fitMode], { width: imageSize.width, height: imageSize.height }, { width: properties.width, height: properties.height});
+            } else {
+              // Apply 'stretch' as default
+              executor.callNativeAction(element, 'setTexCoords', [[0, 1], [1,1], [1,0], [0,0]]);
+            }
+          });
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
         
