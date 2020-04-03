@@ -193,8 +193,10 @@ export class ImageBuilder extends UiNodeBuilder {
     if (isUrl(newProperties.filePath)) {
       const resourceId = element.getRenderResource();
       if (resourceId !== INVALID_RESOURCE_ID) {
-        const filePath = prism.getResource(resourceId).getBasePath();
-        this._applyFitMode(element, filePath, ImageFitMode[newProperties.fit], { width: newProperties.width, height: newProperties.height});
+        const resource = prism.getResource(resourceId);
+        const filePath = resource.getBasePath();
+        const fileName = resource.getFileName();
+        this._applyFitMode(element, `${filePath}/${fileName}`, ImageFitMode[newProperties.fit], { width: newProperties.width, height: newProperties.height});
       } else {
         logWarning('The remote resource has not been loaded yet. Could not apply "fit" property');
       }
