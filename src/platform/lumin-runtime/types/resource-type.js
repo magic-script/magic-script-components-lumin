@@ -8,12 +8,12 @@ import { utils } from 'lumin';
  * @description Magic-Script Components ResourceType
  */
 export const ResourceType = {
-  'Animation' : 0,
-  'AnimationBlendSetup' : 1,
-  'AnimationSet' : 2,
-  'Material' : 3,
-  'Model' : 4,
-  'Mtl' : 5,
-  'TexturePack' : 6,
-  'Texture' : 7
+  'animation' : 0,
+  'animation-blend-setup' : 1,
+  'animation-set' : 2,
+  'material' : 3,
+  'model' : 4,
+  'mtl' : 5,
+  'texture-pack' : 6,
+  'texture' : 7
 };
