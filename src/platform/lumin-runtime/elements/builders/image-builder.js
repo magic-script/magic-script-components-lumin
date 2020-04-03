@@ -19,7 +19,7 @@ import executor from '../../utilities/executor.js';
 import validator from '../../utilities/validator.js';
 
 import { isUrl } from '../../../../util/download.js';
-import { logError } from '../../../../util/logger.js';
+import { logError, logWarning } from '../../../../util/logger.js';
 
 const DEFAULT_TEXTURE_COORDINATES = [[0, 1], [1,1], [1,0], [0,0]];
 
@@ -31,7 +31,6 @@ export class ImageBuilder extends UiNodeBuilder {
     this._propertyDescriptors['opaque'] = new PrimitiveTypeProperty('opaque', 'setIsOpaque', true, 'boolean');
     this._propertyDescriptors['color'] = new ColorProperty('color', 'setColor', true);
     this._propertyDescriptors['texCoords'] = new ArrayProperty('texCoords', 'setTexCoords', false, 'vec4');
-    this._propertyDescriptors['fit'] = new EnumProperty('fit', 'setFit', false, ImageFitMode, 'ImageFitMode');
 
     // Expects Id
     this._propertyDescriptors['imageFrameResource'] = new PrimitiveTypeProperty('imageFrameResource', 'setImageFrameResource', true, 'number');
@@ -57,6 +56,7 @@ export class ImageBuilder extends UiNodeBuilder {
       if (isUrl(filePath)) {
         // Create placeholder image
         element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
+
         loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
           (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true),
           (localPath) => {
@@ -69,7 +69,7 @@ export class ImageBuilder extends UiNodeBuilder {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
         
         // Manually set 'fit' property since 'filePath' won't be part of the unapplied priperties array
-        this.setFit(element, undefined, properties);
+        this._setFit(element, undefined, properties);
       }
     } else if (color) {
       element = this._createNode(ui.UiImage, 'Create', prism, INVALID_RESOURCE_ID, width, height, useFrame);
@@ -91,6 +91,9 @@ export class ImageBuilder extends UiNodeBuilder {
 
     this._validateFilePath(newProperties);
     this._setFilePath(element, oldProperties, newProperties, prism);
+
+    this._validateFit(newProperties);
+    this._setFit(element, oldProperties, newProperties, prism);
   }
 
   validate (element, oldProperties, newProperties) {
@@ -103,6 +106,7 @@ export class ImageBuilder extends UiNodeBuilder {
 
     this._validateSize(newProperties);
     this._validateFilePath(newProperties);
+    this._validateFit(newProperties);
   }
 
   _validateSize (properties) {
@@ -179,8 +183,22 @@ export class ImageBuilder extends UiNodeBuilder {
     }
   }
 
-  setFit (element, oldProperties, newProperties) {
-    if (!isUrl(newProperties.filePath)) {
+  _validateFit (properties) {
+    const type = properties.fit;
+    const message = `The provided image fit ${fit} is not a valid value`;
+    PropertyDescriptor.throwIfPredicateFails(type, message, validator.validateImageFitMode);
+  }
+
+  _setFit (element, oldProperties, newProperties, prism) {
+    if (isUrl(newProperties.filePath)) {
+      const resourceId = element.getRenderResource();
+      if (resourceId !== INVALID_RESOURCE_ID) {
+        const filePath = prism.getResource(resourceId).getBasePath();
+        this._applyFitMode(element, filePath, ImageFitMode[newProperties.fit], { width: newProperties.width, height: newProperties.height});
+      } else {
+        logWarning('The remote resource has not been loaded yet. Could not apply "fit" property');
+      }
+    } else {
       this._applyFitMode(element, newProperties.filePath, ImageFitMode[newProperties.fit], { width: newProperties.width, height: newProperties.height});
     }
   }
