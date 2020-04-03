@@ -6,7 +6,7 @@ class NativeLinking {
       if (url && typeof url === 'string' && url.length > 0) {
         resolve(true);
       } else {
-        reject('Invalid url format.');
+        reject({ message: 'Invalid format.' });
       }
     });
   }
@@ -17,7 +17,7 @@ class NativeLinking {
       if (result === DispatchResult.kOk) {
         resolve();
       } else {
-        reject(result);
+        reject({ message: `Cannot open url: ${url}`, code: result.value });
       }
     });
   }
