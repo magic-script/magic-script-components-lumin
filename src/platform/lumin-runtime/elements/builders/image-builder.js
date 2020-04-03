@@ -184,9 +184,9 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   _validateFit (properties) {
-    const type = properties.fit;
+    const fit = properties.fit;
     const message = `The provided image fit ${fit} is not a valid value`;
-    PropertyDescriptor.throwIfPredicateFails(type, message, validator.validateImageFitMode);
+    PropertyDescriptor.throwIfPredicateFails(fit, message, validator.validateImageFitMode);
   }
 
   _setFit (element, oldProperties, newProperties, prism) {
