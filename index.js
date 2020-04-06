@@ -1,6 +1,7 @@
 import configuration from './src/configuration.js';
 import { generateTypeScript } from './src/util/gen-type-script.js';
 import { PlatformInformation } from './src/platform/lumin-runtime/platform-information.js';
+import { NativeLinking } from './src/platform/lumin-runtime/native-linking.js';
 import { NativePlaneDetector } from './src/platform/lumin-runtime/native-plane-detector.js';
 import { XrClient } from './src/platform/lumin-runtime/xr-client.js';
 import { XrClientProvider } from 'magic-script-components';
@@ -24,8 +25,7 @@ export default {
     },
 
     generateTypeScript,
-
     PlatformInformation,
-
+    NativeLinking,
     NativePlaneDetector
 }
