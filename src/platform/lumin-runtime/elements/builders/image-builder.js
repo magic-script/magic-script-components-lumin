@@ -60,15 +60,12 @@ export class ImageBuilder extends UiNodeBuilder {
         loadRemoteResource(filePath, properties, element, prism, 'setRenderResource',
           (localPath) => executor.callNativeFunction(prism, 'createTextureResourceId', Desc2d.DEFAULT, localPath, true),
           (localPath) => {
-            const fitMode = ImageFitMode[properties.fit];
-            if (fitMode) {
-              this._applyFitMode(element, localPath, fitMode, { width: properties.width, height: properties.height});
-            }
+            this._applyFitMode(element, localPath, ImageFitMode[properties.fit], { width: properties.width, height: properties.height});
           });
       } else {
         element = this._createNode(ui.UiImage, 'Create', prism, filePath, width, height, absolutePath, useFrame);
         
-        // Manually set 'fit' property since 'filePath' won't be part of the unapplied priperties array
+        // Manually set 'fit' property since 'filePath' won't be part of the unapplied properties array
         this._setFit(element, undefined, properties);
       }
     } else if (color) {
@@ -167,6 +164,10 @@ export class ImageBuilder extends UiNodeBuilder {
   }
 
   _applyFitMode (element, filePath, fitMode, targetSize) {
+    if (fitMode === undefined) {
+      return;
+    }
+
     let imageSize;
     try {
       imageSize = getSize(readfileSync(filePath, 'r', 0o644));
