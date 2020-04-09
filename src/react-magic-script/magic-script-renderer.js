@@ -36,7 +36,14 @@ const UPDATE_SIGNAL = {};
 //  hostContext: HostContext,
 //  internalInstanceHandle: Object
 function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-  return mxs._nativeFactory.createElement(type, rootContainerInstance, props);
+  try {
+    var obj =  mxs._nativeFactory.createElement(type, rootContainerInstance, props);
+  } catch (e) {
+    let message = `ERROR Type: ${type}\nproperties: ${JSON.stringify(props)}`;
+    console.error(`${message}\n${e.message}`);
+    obj = mxs._nativeFactory.createElement('text', rootContainerInstance, {textSize: 0.015, children: message});
+  }
+  return obj;
 }
 
 // Function: This function is used to create separate text nodes if the target allows only creating text in separate text nodes
