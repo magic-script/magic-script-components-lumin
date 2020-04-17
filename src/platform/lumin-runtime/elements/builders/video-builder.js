@@ -8,6 +8,7 @@ import { EnumProperty } from '../properties/enum-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { ViewMode } from '../../types/view-mode.js';
 import { VideoAction } from '../../types/video-action.js';
+import { isUrl } from '../../../../util/download.js';
 
 const DEFAULT_FRAME_WIDTH = 512;
 const DEFAULT_FRAME_HEIGHT = 512;
@@ -20,7 +21,6 @@ export class VideoBuilder extends QuadBuilder {
         this._propertyDescriptors['looping'] = new PrimitiveTypeProperty('looping', 'setLooping', true, 'boolean');
         this._propertyDescriptors['timedTextPath'] = new PrimitiveTypeProperty('timedTextPath', 'setTimedTextPath', true, 'string');
         this._propertyDescriptors['videoPath'] = new PrimitiveTypeProperty('videoPath', 'setVideoPath', false, 'string');
-        this._propertyDescriptors['videoUri'] = new PrimitiveTypeProperty('videoUri', 'setVideoUri', false, 'string');
         this._propertyDescriptors['volume'] = new PrimitiveTypeProperty('volume', 'setVolume', true, 'number');
         this._propertyDescriptors['seekTo'] = new PrimitiveTypeProperty('seekTo', 'seekTo', true, 'number');
         this._propertyDescriptors['action'] = new EnumProperty('action', 'setAction', false, VideoAction, 'VideoAction');
@@ -29,7 +29,7 @@ export class VideoBuilder extends QuadBuilder {
     create(prism, properties) {
         this.throwIfInvalidPrism(prism);
 
-        let { width, height, volume, viewMode, videoPath, videoUri } = properties;
+        let { width, height, volume, viewMode, videoPath } = properties;
 
         width  = width  === undefined ? DEFAULT_FRAME_WIDTH  : width;
         height = height === undefined ? DEFAULT_FRAME_HEIGHT : height;
@@ -42,9 +42,7 @@ export class VideoBuilder extends QuadBuilder {
         const element = this._callNodeFunction(prism, 'createVideoNode', width, height);
 
         if (videoPath !== undefined) {
-            this._callNodeAction(element, 'setVideoPath', videoPath);
-        } else {
-            this._callNodeAction(element, 'setVideoUri', videoUri);
+            this._callNodeAction(element, isUrl(videoPath) ? 'setVideoUri' : 'setVideoPath', videoPath);
         }
 
         this._callNodeAction(element, 'setViewMode', viewMode);
@@ -56,26 +54,18 @@ export class VideoBuilder extends QuadBuilder {
         return element;
     }
 
-    setValue (element, oldProperties, newProperties, property, setter) {
-      const newValue = newProperties[property];
-
-      if (newValue === undefined) {
-        return;
-      }
-
-      if (oldProperties !== undefined && oldProperties[property] === newValue) {
-        return;
-      }
-
-      this._callNodeAction(element, setter, newValue);
-    }
-
     setVideoPath (element, oldProperties, newProperties) {
-      this.setValue(element, oldProperties, newProperties, 'videoPath', 'setVideoPath');
-    }
+      const newVideoPath = newProperties.videoPath;
 
-    setVideoUri (element, oldProperties, newProperties) {
-      this.setValue(element, oldProperties, newProperties, 'videoUri', 'setVideoUri');
+      if (newVideoPath === undefined) {
+        return;
+      }
+
+      if (oldProperties !== undefined && oldProperties.videoPath === newVideoPath) {
+        return;
+      }
+
+      this._callNodeAction(element, isUrl(newVideoPath) ? 'setVideoUri' : 'setVideoPath', newVideoPath);
     }
 
     setAction(element, oldProperties, newProperties) {

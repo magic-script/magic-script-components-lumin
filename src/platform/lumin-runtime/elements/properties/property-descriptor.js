@@ -119,6 +119,6 @@ export class PropertyDescriptor {
     }
 
     generateTypeScript() {
-        return `${this._name}?: ${this.tsType()};`;
+        return this.tsType() === undefined ? undefined : `${this._name}?: ${this.tsType()};`;
     }
 }

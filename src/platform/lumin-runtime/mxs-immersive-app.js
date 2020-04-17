@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 
-import { LandscapeApp } from 'lumin';
+import { ImmersiveApp } from 'lumin';
 
-export class MxsLandscapeApp extends LandscapeApp {
+export class MxsImmersiveApp extends ImmersiveApp {
   constructor(timeDelta, baseApp) {
     super(timeDelta);
 
@@ -10,7 +10,10 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   get OnAppStartData () {
-    return this._baseApp.OnAppStartData;
+    return {
+      ...this._baseApp.OnAppStartData, 
+      isImageTrackingReady: typeof this.isImageTrackingReady === 'function' ? this.isImageTrackingReady() : undefined,
+    };
   }
 
   init() {
@@ -19,6 +22,14 @@ export class MxsLandscapeApp extends LandscapeApp {
 
   onAppStart(arg) {
     this._baseApp.onAppStart(arg);
+  }
+
+  onAppPause() {
+    this._baseApp.onAppPause();
+  }
+
+  onAppResume() {
+    this._baseApp.onAppResume();
   }
 
   updateLoop(delta) {
