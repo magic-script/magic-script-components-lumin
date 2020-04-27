@@ -46,8 +46,6 @@
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
-    "react": "^16.9.0",
-    "react-reconciler": "^0.21.0",
     "magic-script-components": "2.0.2",
     "react-test-renderer": "^16.9.0"
   }
