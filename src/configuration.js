@@ -6,8 +6,9 @@ import { MessageSeverity } from './util/logger.js';
 import SpatialLogger from './platform/lumin-runtime/utilities/spatial-logger.js';
 
 export default {
+  logMinMessageSeverity: MessageSeverity.error,
   nativeMapping: nativeComponentMapping,
   nativeFactory: PlatformFactory,
   spatialLogger: SpatialLogger,
-  logMinMessageSeverity: MessageSeverity.error
+  showSpatialLogger: true
 };

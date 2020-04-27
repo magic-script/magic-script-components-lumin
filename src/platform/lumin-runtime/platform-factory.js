@@ -566,6 +566,40 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
+  _createConfirmDialogNode (prism, title, message) {
+    const uiDialog = UiDialog.Create(prism, title, message, null, DialogType.kSingleAction);
+    uiDialog.setAlignment(Alignment.CENTER_CENTER);
+    const callbackId = uiDialog.onConfirmSub((eventData) => {
+      uiDialog.onConfirmUnsub(callbackId)
+      prism.deleteNode(uiDialog);
+    });
+    return uiDialog;
+  }
+
+  showSpatialMessage (prism, message) {
+    prism.getRoot().addChild(this._createConfirmDialogNode(prism, title, message));
+  }
+
+  _showErrorOnElementAction (container, message) {
+    logError(message);
+    showSpatialMessage(container.controller.getPrism(), message);    
+  }
+
+  showErrorOnCreateElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container,
+      `Creating element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+  }
+
+  showErrorOnUpdateElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container,
+      `Updating element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+  }
+
+  showErrorOnRemoveElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container,
+      `Removing element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+  }
+
   _validateAppType (type) {
     if (type !== undefined && this._appConstructors[type] === undefined) {
       throw new TypeError(`Invalid argument: Unknown app type: ${type}`);

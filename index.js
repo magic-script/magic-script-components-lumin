@@ -11,12 +11,18 @@ XrClientProvider.setXrClient(new XrClient());
 export default {
     _init() {
         this._nativeFactory = new configuration.nativeFactory(configuration.nativeMapping);
+        this._spatialLogger = new configuration.spatialLogger();
     },
 
     bootstrap(app) {
         this._init();
 
         this._app = this._nativeFactory.createApp(app);
+        
+        if (configuration.showSpatialLogger) {
+            this._spatialLogger.setNativeApp(this._app);
+        }
+
         XrClientProvider.getXrClient().setNativeApp(this._app);
     },
 
