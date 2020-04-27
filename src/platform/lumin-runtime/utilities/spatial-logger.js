@@ -1,5 +1,5 @@
 import { ui, VEC3_ZERO } from 'lumin';
-import { logError } from './logger.js';
+import { logError } from '../../../util/logger.js';
 
 const { UiText, UiListView, UiListViewItem, Alignment, HorizontalTextAlignment, DialogType } = ui;
 
@@ -33,8 +33,8 @@ function _createLogListView (prism, width, height) {
 
 function _createLogPrism (app, size, position, orientation) {
   const prism = app.requestNewPrism(size);
-  app.positionPrism(prism, position);
-  app.orientPrism(prism, orientation);
+  app.positionPrismRelativeToCamera(prism, position);
+  app.orientPrismRelativeToCamera(prism, orientation);
   return prism;
 }
 
@@ -50,7 +50,7 @@ export default class SpatialLogger {
     if (this._app === undefined) {
       return;
     }
-    
+
     if (this._logView.getItemCount() >= LOG_MAX_ITEM_COUNT) {
       this._prism.deleteNode(this._logView.removeItem(0));
     }
