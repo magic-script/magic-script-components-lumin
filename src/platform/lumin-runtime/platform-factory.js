@@ -567,37 +567,46 @@ export class PlatformFactory extends NativeFactory {
   }
 
   _createConfirmDialogNode (prism, title, message) {
-    const uiDialog = UiDialog.Create(prism, title, message, null, DialogType.kSingleAction);
-    uiDialog.setAlignment(Alignment.CENTER_CENTER);
+    const uiDialog = ui.UiDialog.CreateScrolling(prism, title, message, ui.DialogType.kSingleAction, ui.DialogLayout.kStandard);
     const callbackId = uiDialog.onConfirmSub((eventData) => {
-      uiDialog.onConfirmUnsub(callbackId)
+      uiDialog.onConfirmUnsub(callbackId);
       prism.deleteNode(uiDialog);
     });
     return uiDialog;
   }
 
-  showSpatialMessage (prism, message) {
+  showSpatialMessage (prism, title, message) {
     prism.getRootNode().addChild(this._createConfirmDialogNode(prism, title, message));
   }
 
-  _showErrorOnElementAction (container, message) {
+  _showErrorOnElementAction (container, title, message) {
     logError(message);
-    showSpatialMessage(container.controller.getPrism(), message);    
+    
+    if (container === undefined || container.controller === undefined) {
+      return;
+    }
+
+    if (typeof container.controller.getPrism !== 'function') {
+      return;
+    }
+
+    const prism = container.controller.getPrism();
+    if (prism === undefined) {
+      return;
+    }
+    this.showSpatialMessage(prism, title, message);    
   }
 
   showErrorOnCreateElement (type, properties, container, error) {
-    this._showErrorOnElementAction(container,
-      `Creating element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+    this._showErrorOnElementAction(container, `Creating ${type} has failed`, error.message);
   }
 
   showErrorOnUpdateElement (type, properties, container, error) {
-    this._showErrorOnElementAction(container,
-      `Updating element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+    this._showErrorOnElementAction(container, `Updating ${type} has failed`, error.message);
   }
 
   showErrorOnRemoveElement (type, properties, container, error) {
-    this._showErrorOnElementAction(container,
-      `Removing element type ${type} has failed.\nProperties: ${JSON.stringify(properties)}\n${error.message}`);
+    this._showErrorOnElementAction(container, `Removing ${type} has failed`, error.message);
   }
 
   _validateAppType (type) {

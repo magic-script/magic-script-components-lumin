@@ -40,10 +40,7 @@ function createInstance(type, props, rootContainerInstance, hostContext, interna
   try {
     instance =  mxs._nativeFactory.createElement(type, rootContainerInstance, props);
   } catch (error) {
-    // let message = `ERROR Type: ${type}\nproperties: ${JSON.stringify(props)}`;
-    // console.error(`${message}\n${e.message}`);
-    // obj = mxs._nativeFactory.createElement('text', rootContainerInstance, {textSize: 0.015, children: message});
-    mxs._spatialLogger.logErrorOnCreateElement(type, props, rootContainerInstance, error);
+    mxs._nativeFactory.showErrorOnCreateElement(type, props, rootContainerInstance, error);
   }
   return instance;
 }
