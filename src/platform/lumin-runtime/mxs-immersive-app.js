@@ -25,7 +25,7 @@ export class MxsImmersiveApp extends ImmersiveApp {
   }
 
   onAppStart(arg) {
-    this._baseApp.onAppStart(arg);
+    this._baseApp.onAppStart(arg, this);
   }
 
   onAppPause() {

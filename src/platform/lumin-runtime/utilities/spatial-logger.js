@@ -30,7 +30,6 @@ function _createLogListView (prism) {
   uiListView.setDefaultItemPadding(LOG_DEFAULT_ITEM_PADDING);
   const x = parseFloat(width)  / 2 - 0.002;
   const y = parseFloat(height) / 2;
-  console.log('[x:y]: ', x, y);
   uiListView.setLocalPosition([-x, y - LOG_TITLE_HEIGHT, 0]);
   return uiListView;
 }

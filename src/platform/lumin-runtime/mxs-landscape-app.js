@@ -22,7 +22,7 @@ export class MxsLandscapeApp extends LandscapeApp {
   }
 
   onAppStart(arg) {
-    this._baseApp.onAppStart(arg);
+    this._baseApp.onAppStart(arg, this);
   }
 
   updateLoop(delta) {

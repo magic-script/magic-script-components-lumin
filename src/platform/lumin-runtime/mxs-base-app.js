@@ -30,7 +30,7 @@ export class MxsBaseApp {
     this._spatialLogger = spatialLogger;
   }
 
-  onAppStart(args) {
+  onAppStart(args, app) {
     this._onAppStartData = { 
       uri: args.getUri(),
       isInternetConnected: typeof this.isInternetConnected === 'function' ? this.isInternetConnected() : undefined,
