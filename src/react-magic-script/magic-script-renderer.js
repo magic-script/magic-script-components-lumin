@@ -227,7 +227,11 @@ function commitMount(instance, type, newProps, internalInstanceHandle) {
 //  newProps: Props,
 //  internalInstanceHandle: Object
 function commitUpdate(instance, updatePayload, type, oldProps, newProps, internalInstanceHandle) {
-  mxs._nativeFactory.updateElement(type, instance, oldProps, newProps);
+  try {
+    mxs._nativeFactory.updateElement(type, instance, oldProps, newProps);
+  } catch (error) {
+    mxs._nativeFactory.showErrorOnUpdateElement(type, props, rootContainerInstance, error);
+  }
 }
 
 // Function: insertBefore
@@ -265,7 +269,11 @@ function insertInContainerBefore(container, child, beforeChild) {
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function removeChild(parentInstance, child) {
-  mxs._nativeFactory.removeChildElement(parentInstance, child);
+  try {
+    mxs._nativeFactory.removeChildElement(parentInstance, child);
+  } catch (error) {
+    mxs._nativeFactory.showErrorOnRemoveElement(type, props, rootContainerInstance, error);
+  }
 }
 
 // Function: removeChildFromContainer
