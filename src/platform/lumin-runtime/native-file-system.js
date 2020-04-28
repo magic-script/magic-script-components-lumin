@@ -1,43 +1,92 @@
-import { open, write, close, read } from "magic-script-polyfills/src-ts/fs-promised.ts"
-import { b64ToBin, rawToBin, strToBin, binToStr } from "magic-script-polyfills/src/bintools.js"
+import {
+    utf8Encode, utf8Decode, rawEncode, rawDecode, base64Encode, base64Decode,
+    open, close, read, write, fstat, unlink, rename
+} from './uv-utils.js'
 
-
-class NativeFileSystem {
-    
-     async writeFile(path, contents, encoding) {
-        const fd = await open(path, "w", 0o644);
-        try {
-            const body = encoding === 'utf8' ? strToBin(contents)
-            : encoding === 'base64' ? b64ToBin(contents)
-            : encoding === 'ascii' ? rawToBin(contents) 
-            : `Unsupported encoding '${encoding}'`;
-            if(body === `Unsupported encoding '${encoding}'`) {
-                throw new Error(body)
-            }
-            await write(fd, body, 0);
-        } finally {
-            await close(fd);
-        }
+/**
+ * Encode a string using RNFS encoding strings.
+ * @param {string} str
+ * @param {"utf8"|"ascii"|"base64"} encoding
+ * @returns Uint8Array
+ */
+function encode(str, encoding = 'utf8') {
+    switch (encoding) {
+        case 'utf8': return utf8Encode(str)
+        case 'ascii': return rawEncode(str)
+        case 'base64': return base64Encode(str)
     }
-
-    async readFile(path, encoding) {
-        const fd = await open(path, "r", 0o444);
-        try {
-            let content = new Uint8Array(64 * 1024);
-            await read(fd, content, 0);
-            binToStr(content);
-        } finally {
-            await close(fd);
-        }
-    }
-
-    deleteFile(path) {
-        return new Promise(new Error('Function delete is not implemented yet'))    
-    }
-
-    moveFile(srcPath, dstPath) {
-        return new Promise(new Error('Function delete is not implemented yet'))    
-    }
+    throw new Error(`Unsupported encoding '${encoding}'`)
 }
 
-export { NativeFileSystem };
+/**
+ * Decode a string using RNFS encoding strings.
+ * @param {Uint8Array} bin
+ * @param {"utf8"|"ascii"|"base64"} encoding
+ * @returns string
+ */
+function decode(bin, encoding = 'utf8') {
+    switch (encoding) {
+        case 'utf8': return utf8Decode(bin)
+        case 'ascii': return rawDecode(bin)
+        case 'base64': return base64Decode(bin)
+    }
+    throw new Error(`Unsupported encoding '${encoding}'`)
+}
+
+export class NativeFileSystem {
+    /**
+       * @param {string} path
+       * @param {string} contents
+       * @param {"utf8"|"ascii"|"base64"} encoding
+       * @returns {Promise<void>}
+       */
+    async writeFile(path, contents, encoding = 'utf8') {
+        const fd = await open(path, 'w', 0o644)
+        try {
+            const binary = encode(contents, encoding)
+            let offset = 0
+            while (offset < binary.length) {
+                const bytesWritten = await write(fd, binary.subarray(offset), offset)
+                if (bytesWritten === 0) throw new Error('Unable to write bytes')
+                offset += bytesWritten
+            }
+        } finally {
+            await close(fd)
+        }
+    }
+
+    /**
+       * @param {string} path
+       * @param {"utf8"|"ascii"|"base64"} encoding
+       * @returns {Promise<string>}
+       */
+    async readFile(path, encoding = 'utf8') {
+        const fd = await open(path, 'r', 0o444)
+        try {
+            const { size } = await fstat(fd)
+            const bin = new Uint8Array(size)
+            let offset = 0
+            while (offset < size) {
+                const bytesRead = await read(fd, bin, offset)
+                if (bytesRead === 0) throw new Error('Unable to read bytes')
+                offset += bytesRead
+            }
+            return decode(bin, encoding)
+        } finally {
+            await close(fd)
+        }
+    }
+
+    /**
+       * @param {string} path
+       * @returns {Promise<void>}
+       */
+    deleteFile(path) { return unlink(path) }
+
+    /**
+       * @param {string} srcPath
+       * @param {string} dstPath
+       * @returns {Promise<void>}
+       */
+    moveFile(srcPath, dstPath) { return rename(srcPath, dstPath) }
+}
