@@ -577,7 +577,7 @@ export class PlatformFactory extends NativeFactory {
   }
 
   showSpatialMessage (prism, message) {
-    prism.getRoot().addChild(this._createConfirmDialogNode(prism, title, message));
+    prism.getRootNode().addChild(this._createConfirmDialogNode(prism, title, message));
   }
 
   _showErrorOnElementAction (container, message) {

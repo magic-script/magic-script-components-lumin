@@ -9,6 +9,5 @@ export default {
   logMinMessageSeverity: MessageSeverity.error,
   nativeMapping: nativeComponentMapping,
   nativeFactory: PlatformFactory,
-  spatialLogger: SpatialLogger,
-  showSpatialLogger: true
+  spatialLogger: SpatialLogger
 };

@@ -16,6 +16,10 @@ export class MxsImmersiveApp extends ImmersiveApp {
     };
   }
 
+  set SpatialLogger(spatialLogger) {
+    return this._baseApp.SpatialLogger = spatialLogger;
+  }
+
   init() {
     return 0;
   }

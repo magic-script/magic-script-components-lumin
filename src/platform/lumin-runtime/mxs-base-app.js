@@ -26,6 +26,10 @@ export class MxsBaseApp {
     return this._onAppStartData;
   }
 
+  set SpatialLogger(spatialLogger) {
+    this._spatialLogger = spatialLogger;
+  }
+
   onAppStart(args) {
     this._onAppStartData = { 
       uri: args.getUri(),
@@ -34,6 +38,14 @@ export class MxsBaseApp {
       isWiFiEnabled: typeof this.isWiFiEnabled === 'function' ? this.isWiFiEnabled() : undefined,
       isShareableApp: typeof this.isShareableApp === 'function' ? this.isShareableApp() : undefined
     };
+
+    const spatialLoggerProps = this._app.props.spatialLogger;
+    if (this._spatialLogger && spatialLoggerProps) {
+      const loggerPrism = executor.callNativeFunction(app, 'requestNewPrism', spatialLoggerProps.size);
+      executor.callNativeFunction(app, 'positionPrismRelativeToCamera', loggerPrism, spatialLoggerProps.position);
+      executor.callNativeFunction(app, 'orientPrismRelativeToCamera', loggerPrism, spatialLoggerProps.orientation);
+      this._spatialLogger.init(loggerPrism);
+    }
 
     const container = {
       controller: {

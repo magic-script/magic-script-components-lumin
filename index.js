@@ -18,10 +18,7 @@ export default {
         this._init();
 
         this._app = this._nativeFactory.createApp(app);
-        
-        if (configuration.showSpatialLogger) {
-            this._spatialLogger.setNativeApp(this._app);
-        }
+        this._app.SpatialLogger = this._spatialLogger;
 
         XrClientProvider.getXrClient().setNativeApp(this._app);
     },
