@@ -84,7 +84,7 @@ export class PlatformFactory extends NativeFactory {
 
   setComponentEvents (element, properties, controller) {
     const eventHandlers = Object.keys(properties)
-      .filter(key => key.length > 2 && key.startsWith('on'))
+      .filter(key => key.length > 2 && key.startsWith('on') && properties[key])
       .map(key => ({ name: key, handler: properties[key] }));
 
     for (const pair of eventHandlers) {
