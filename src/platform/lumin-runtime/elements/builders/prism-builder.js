@@ -1,8 +1,12 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import { ElementBuilder } from './element-builder.js';
 
+import { ArrayProperty } from '../properties/array-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
+
+import { HandGestureFlags }  from '../../types/hand-gesture-flags.js';
+import { HandGestureKeypointName }  from '../../types/hand-gesture-keypoint-name.js';
 
 import executor from '../../utilities/executor.js';
 import { logWarning, logError } from '../../../../util/logger.js';
@@ -27,8 +31,8 @@ export class PrismBuilder extends ElementBuilder {
     this._propertyDescriptors['physicsWorldMeshEnabled'] = new PrimitiveTypeProperty('physicsWorldMeshEnabled', 'setPhysicsWorldMeshEnabled', true, 'boolean');
     this._propertyDescriptors['prismBloomStrength'] = new PrimitiveTypeProperty('prismBloomStrength', 'setPrismBloomStrength', true, 'number');
     this._propertyDescriptors['volumeBloomStrength'] = new PrimitiveTypeProperty('volumeBloomStrength', 'setVolumeBloomStrength', true, 'number');
-    this._propertyDescriptors['trackHandGesture'] = new PrimitiveTypeProperty('trackHandGesture', 'trackHandGesture', false, 'number');
-    this._propertyDescriptors['trackingAutoHapticOnGesture'] = new PrimitiveTypeProperty('trackingAutoHapticOnGesture', 'trackingAutoHapticOnGesture', false, 'number');
+    this._propertyDescriptors['trackHandGesture'] = new ArrayProperty('trackHandGesture', 'trackHandGesture', false);
+    this._propertyDescriptors['trackingAutoHapticOnGesture'] = new ArrayProperty('trackingAutoHapticOnGesture', 'trackingAutoHapticOnGesture', false);
 
     this._propertyDescriptors['onDestroy'] = new PrimitiveTypeProperty('onDestroy', 'setOnDestroyHandler', false, 'function');
   }
@@ -153,9 +157,36 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   trackHandGesture (prism, oldProperties, newProperties) {
-    // startTrackHandGesture
-    // stopTrackHandGesture
-    logWarning('PrismBuilder.trackHandGesture has not been implemented yet');
+    const oldHandGestures = oldProperties.trackHandGesture;
+    const newHandGestures = newProperties.trackHandGesture;
+
+    if (Array.isArray(oldHandGestures)) {
+      if (Array.isArray(newHandGestures)) {
+        const removed = oldHandGestures.filter(oldGesture => !newHandGestures.some(newGesture => newGesture === oldGesture));
+        const added = newHandGestures.filter(newGesture => !oldHandGestures.some(oldGesture => oldGesture === newGesture));
+
+        let handGestures;
+        if (removed.length > 0) {
+          handGestures = removed.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
+          prism.stopTrackHandGesture(handGestures);
+        }
+
+        if (added.length > 0) {
+          handGestures = added.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
+          prism.startTrackHandGesture(handGestures);
+        }
+      } else {
+        if (oldHandGestures.length > 0) {
+          const handGestures = oldHandGestures.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
+          prism.stopTrackHandGesture(handGestures);
+        }
+      }
+    } else {
+      if (Array.isArray(newHandGestures) && newHandGestures.length > 0) {
+        const handGestures = newHandGestures.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
+        prism.startTrackHandGesture(handGestures);
+      }
+    }
   }
 
   trackingAutoHapticOnGesture (prism, oldProperties, newProperties) {
