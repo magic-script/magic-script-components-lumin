@@ -8,6 +8,7 @@ import { AudioAction } from '../types/audio-action.js';
 import { CursorEdgeScrollMode } from '../types/cursor-edge-scroll-mode.js';
 import { CursorHoverState } from '../types/cursor-hover-state.js';
 import { DateFormat } from '../types/date-format.js';
+import { DeviceGestureFlags } from '../types/device-gesture-flags.js';
 import { DialogType } from '../types/dialog-type.js';
 import { EclipseButtonType } from '../types/eclipse-button-type.js';
 import { EclipseLabelType } from '../types/eclipse-label-type.js';
@@ -56,6 +57,7 @@ const validator = {
     validateCursorEdgeScrollMode: value => validate(value, CursorEdgeScrollMode),
     validateCursorHoverState: value => validate(value, CursorHoverState),
     validateDateFormat: value => (typeof value === 'string') && DateFormat.includes(value),
+    validateDeviceGestureFlags: value => validate(value, DeviceGestureFlags),
     validateDialogType: value => validate(value, DialogType),
     validateEclipseButtonType: value => validate(value, EclipseButtonType),
     validateEclipseLabelType: value => validate(value, EclipseLabelType),

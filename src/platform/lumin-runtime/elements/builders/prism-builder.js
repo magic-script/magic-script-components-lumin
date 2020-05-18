@@ -6,7 +6,7 @@ import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js'
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
 
 import { HandGestureFlags }  from '../../types/hand-gesture-flags.js';
-import { HandGestureKeypointName }  from '../../types/hand-gesture-keypoint-name.js';
+import { DeviceGestureFlags }  from '../../types/device-gesture-flags.js';
 
 import executor from '../../utilities/executor.js';
 import { logWarning, logError } from '../../../../util/logger.js';
@@ -156,43 +156,47 @@ export class PrismBuilder extends ElementBuilder {
     }
   }
 
-  trackHandGesture (prism, oldProperties, newProperties) {
-    const oldHandGestures = oldProperties.trackHandGesture;
-    const newHandGestures = newProperties.trackHandGesture;
+  _trackGestures(prism, oldProperties, newProperties, propertyName, flagsEnum, startFunction, stopFunction) {
+    const oldGestures = oldProperties[propertyName];
+    const newGestures = newProperties[propertyName];
 
-    if (Array.isArray(oldHandGestures)) {
-      if (Array.isArray(newHandGestures)) {
-        const removed = oldHandGestures.filter(oldGesture => !newHandGestures.some(newGesture => newGesture === oldGesture));
-        const added = newHandGestures.filter(newGesture => !oldHandGestures.some(oldGesture => oldGesture === newGesture));
+    if (Array.isArray(oldGestures)) {
+      if (Array.isArray(newGestures)) {
+        const removed = oldGestures.filter(oldGesture => newGestures.every(newGesture => newGesture !== oldGesture));
+        const added = newGestures.filter(newGesture => oldGestures.every(oldGesture => oldGesture !== newGesture));
 
-        let handGestures;
+        let gestureFlags;
         if (removed.length > 0) {
-          handGestures = removed.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
-          prism.stopTrackHandGesture(handGestures);
+          gestureFlags = removed.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          executor.callNativeFunction(prism, stopFunction, gestureFlags);
         }
 
         if (added.length > 0) {
-          handGestures = added.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
-          prism.startTrackHandGesture(handGestures);
+          gestureFlags = added.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          executor.callNativeFunction(prism, startFunction, gestureFlags);
         }
       } else {
-        if (oldHandGestures.length > 0) {
-          const handGestures = oldHandGestures.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
-          prism.stopTrackHandGesture(handGestures);
+        if (oldGestures.length > 0) {
+          const gestureFlags = oldGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          executor.callNativeFunction(prism, stopFunction, gestureFlags);
         }
       }
     } else {
-      if (Array.isArray(newHandGestures) && newHandGestures.length > 0) {
-        const handGestures = newHandGestures.reduce((gestures, gesture) => gestures | HandGestureFlags[gesture]);
-        prism.startTrackHandGesture(handGestures);
+      if (Array.isArray(newGestures) && newGestures.length > 0) {
+        const gestureFlags = newGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+        executor.callNativeFunction(prism, startFunction, gestureFlags);
       }
     }
   }
 
+  trackHandGesture (prism, oldProperties, newProperties) {
+    this._trackGestures(prism, oldProperties, newProperties,
+      'trackHandGesture', HandGestureFlags, 'startTrackHandGesture', 'stopTrackHandGesture');
+  }
+
   trackingAutoHapticOnGesture (prism, oldProperties, newProperties) {
-    // startTrackingAutoHapticOnGesture
-    // stopTrackingAutoHapticOnGesture
-    logWarning('PrismBuilder.trackingAutoHapticOnGesture has not been implemented yet');
+    this._trackGestures(prism, oldProperties, newProperties,
+      'trackingAutoHapticOnGesture', DeviceGestureFlags, 'startTrackingAutoHapticOnGesture', 'stopTrackingAutoHapticOnGesture');
   }
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
