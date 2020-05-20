@@ -65,6 +65,7 @@ export class PrismBuilder extends ElementBuilder {
     this._validateSize(prism, oldProperties, newProperties);
     this._validatePosition(prism, oldProperties, newProperties);
     this._validateOrientation(prism, oldProperties, newProperties);
+    this._validateTrackImage(prism, oldProperties, newProperties);
   }
 
   update (prism, oldProperties, newProperties, app) {
@@ -73,6 +74,7 @@ export class PrismBuilder extends ElementBuilder {
     this._setSize(prism, oldProperties, newProperties, app);
     this._setPosition(prism, oldProperties, newProperties, app);
     this._setOrientation(prism, oldProperties, newProperties, app);
+    this._setTrackImage(prism, oldProperties, newProperties, app);
 
     app.updatePrism(prism, newProperties);
   }
@@ -166,6 +168,58 @@ export class PrismBuilder extends ElementBuilder {
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
       executor.callNativeFunction(prism, 'onDestroyEventSub', newProperties.onDestroy);
+  }
+
+  _hasTrackImageChanged (oldTrackImage, newTrackImage) {
+    return oldTrackImage.name !== newTrackImage.name ||
+           oldTrackImage.size[0] != newTrackImage.size[0] ||
+           oldTrackImage.size[1] != newTrackImage.size[1] ||
+           oldTrackImage.filePath != newTrackImage.filePath ||
+           oldTrackImage.isMoving != newTrackImage.isMoving;
+  }
+
+  _startTrackingImage(app, properties, prism) {
+    const { name, size, filePath, isMoving } = properties;
+    const setterName = isMoving ? 'trackMovingImage' : 'trackStaticImage';
+    if (!executor.callNativeFunction(app, setterName, name, size, filePath, prism)) {
+      logWarning(`Starting image tracking failed for ${name}`);
+    }
+  }
+
+  _stopTrackingImage(app, properties) {
+    if (!executor.callNativeFunction(app, 'stopTrackImage', properties.name)) {
+      logWarning(`Stopping image tracking failed for ${properties.name}`);
+    }
+  }
+
+  _validateTrackImage (prism, oldProperties, newProperties) {
+    const trackImage = newProperties.trackImage;
+    if (trackImage !== undefined) {
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.isMoving, 'boolean');
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.filePath, 'string');
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.name, 'string');
+      PropertyDescriptor.throwIfNotArray(trackImage.size, 'vec2');
+    }
+  }
+
+  _setTrackImage (prism, oldProperties, newProperties, app) {
+    const oldTrackImage = oldProperties.trackImage;
+    const newTrackImage = newProperties.trackImage;
+
+    if (oldTrackImage === undefined) {
+      if (newTrackImage !== undefined) {
+        this._startTrackingImage(app, newTrackImage, prism);
+      }
+    } else {
+      if (newTrackImage === undefined) {
+        this._stopTrackingImage(app, oldTrackImage);
+      } else {
+        if (this._hasTrackImageChanged(oldTrackImage, newTrackImage)) {
+          this._stopTrackingImage(app, oldTrackImage);
+          this._startTrackingImage(app, newTrackImage, prism);
+        }
+      }
+    }
   }
 
   extraTypeScript() {
