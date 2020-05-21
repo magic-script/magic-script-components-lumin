@@ -1,9 +1,7 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-import { PrismType } from 'lumin';
-
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
-
+import { PrismType } from './types/prism-type.js';
 import executor from './utilities/executor.js';
 import { logInfo, logWarning } from '../../util/logger.js';
 
@@ -83,11 +81,10 @@ export class MxsBaseApp {
     return prismController.getContainer(nodeName);
   }
 
-
   addPrism(properties, app) {
     const prismSize = properties.size;
     // TODO: Add PrismType enum
-    const prismType = properties.type === 'camera' ? PrismType.kCamera : PrismType.kWorld;
+    const prismType = properties.type !== undefined ? PrismType[properties.type] : PrismType.kWorld;
 
     if (!Array.isArray(prismSize)) {
       throw new TypeError(`Prism size is not a vec3: ${prismSize}`);

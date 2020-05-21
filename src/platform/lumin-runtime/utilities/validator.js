@@ -26,6 +26,7 @@ import { LoadingSpinnerType } from '../types/loading-spinner-type.js';
 import { PanelEdgeConstraintLevel } from '../types/panel-edge-constraint-level.js'
 import { PanelCursorTransitionType } from '../types/panel-cursor-transition-type.js';
 import { PortalIconSize } from '../types/portal-icon-size.js';
+import { PrismType } from '../types/prism-type.js';
 import { Quality } from '../types/quality.js';
 import { RenderingLayer } from '../types/rendering-layer.js';
 import { ResourceType } from '../types/resource-type.js';
@@ -76,6 +77,7 @@ const validator = {
     validatePanelEdgeConstraintLevel: value => validate(value, PanelEdgeConstraintLevel),
     validatePanelCursorTransitionType: value => validate(value, PanelCursorTransitionType),
     validatePortalIconSize: value => validate(value, PortalIconSize),
+    validatePrismType: value => validate(value, PrismType),
     validateQuality: value => validate(value, Quality),
     validateRenderingLayer: value => validate(value, RenderingLayer),
     validateResourceType: value => validate(value, ResourceType),
