@@ -6,6 +6,6 @@ import { PrismType as luminPrismType } from 'lumin';
  * @description Represents Prism types.
  */ 
 export const PrismType = {
-    'camera': luminPrismType.kCamera,
-    'world': luminPrismType.kWolrd
+    'world': luminPrismType.kWorld,
+    'camera': luminPrismType.kCamera
 }

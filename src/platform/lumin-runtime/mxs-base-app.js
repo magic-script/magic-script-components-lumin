@@ -3,6 +3,7 @@ import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
 import { PrismType } from './types/prism-type.js';
 import executor from './utilities/executor.js';
+import validator from './utilities/validator.js';
 import { logInfo, logWarning } from '../../util/logger.js';
 
 export class MxsBaseApp {
@@ -83,14 +84,16 @@ export class MxsBaseApp {
 
   addPrism(properties, app) {
     const prismSize = properties.size;
-    // TODO: Add PrismType enum
-    const prismType = properties.type !== undefined ? PrismType[properties.type] : PrismType.kWorld;
-
     if (!Array.isArray(prismSize)) {
       throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
     }
 
-    const prism = executor.callNativeFunction(app, 'requestNewPrism', prismSize, prismType);
+    const prismType = properties.type !== undefined ? properties.type : 'world';
+    if (!validator.validatePrismType(prismType)) {
+      throw new TypeError(`Prism type is not a valid PrismType value: ${prismType}`);
+    }
+
+    const prism = executor.callNativeFunction(app, 'requestNewPrism', prismSize, PrismType[prismType]);
     this._prisms.push(prism);
 
     const controller = new AppPrismController(properties);
