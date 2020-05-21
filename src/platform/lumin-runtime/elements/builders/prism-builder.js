@@ -157,8 +157,8 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   _trackGestures(prism, oldProperties, newProperties, propertyName, flagsEnum, startFunction, stopFunction) {
-    const oldGestures = oldProperties[propertyName];
-    const newGestures = newProperties[propertyName];
+    const oldGestures = oldProperties ? oldProperties[propertyName] : undefined;
+    const newGestures = newProperties ? newProperties[propertyName] : undefined;
 
     if (Array.isArray(oldGestures)) {
       if (Array.isArray(newGestures)) {
