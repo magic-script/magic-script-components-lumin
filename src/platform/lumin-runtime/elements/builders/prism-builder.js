@@ -1,8 +1,12 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
 import { ElementBuilder } from './element-builder.js';
 
+import { ArrayProperty } from '../properties/array-property.js';
 import { PrimitiveTypeProperty } from '../properties/primitive-type-property.js';
 import { PropertyDescriptor } from '../properties/property-descriptor.js';
+
+import { HandGestureFlags }  from '../../types/hand-gesture-flags.js';
+import { DeviceGestureFlags }  from '../../types/device-gesture-flags.js';
 
 import executor from '../../utilities/executor.js';
 import { logWarning, logError } from '../../../../util/logger.js';
@@ -27,8 +31,8 @@ export class PrismBuilder extends ElementBuilder {
     this._propertyDescriptors['physicsWorldMeshEnabled'] = new PrimitiveTypeProperty('physicsWorldMeshEnabled', 'setPhysicsWorldMeshEnabled', true, 'boolean');
     this._propertyDescriptors['prismBloomStrength'] = new PrimitiveTypeProperty('prismBloomStrength', 'setPrismBloomStrength', true, 'number');
     this._propertyDescriptors['volumeBloomStrength'] = new PrimitiveTypeProperty('volumeBloomStrength', 'setVolumeBloomStrength', true, 'number');
-    this._propertyDescriptors['trackHandGesture'] = new PrimitiveTypeProperty('trackHandGesture', 'trackHandGesture', false, 'number');
-    this._propertyDescriptors['trackingAutoHapticOnGesture'] = new PrimitiveTypeProperty('trackingAutoHapticOnGesture', 'trackingAutoHapticOnGesture', false, 'number');
+    this._propertyDescriptors['trackHandGesture'] = new ArrayProperty('trackHandGesture', 'trackHandGesture', false);
+    this._propertyDescriptors['trackingAutoHapticOnGesture'] = new ArrayProperty('trackingAutoHapticOnGesture', 'trackingAutoHapticOnGesture', false);
 
     this._propertyDescriptors['onDestroy'] = new PrimitiveTypeProperty('onDestroy', 'setOnDestroyHandler', false, 'function');
   }
@@ -154,16 +158,47 @@ export class PrismBuilder extends ElementBuilder {
     }
   }
 
+  _trackGestures(prism, oldProperties, newProperties, propertyName, flagsEnum, startFunction, stopFunction) {
+    const oldGestures = oldProperties ? oldProperties[propertyName] : undefined;
+    const newGestures = newProperties ? newProperties[propertyName] : undefined;
+
+    if (Array.isArray(oldGestures)) {
+      if (Array.isArray(newGestures)) {
+        const removed = oldGestures.filter(oldGesture => newGestures.every(newGesture => newGesture !== oldGesture));
+        const added = newGestures.filter(newGesture => oldGestures.every(oldGesture => oldGesture !== newGesture));
+
+        let gestureFlags;
+        if (removed.length > 0) {
+          gestureFlags = removed.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
+          executor.callNativeFunction(prism, stopFunction, gestureFlags);
+        }
+
+        if (added.length > 0) {
+          gestureFlags = added.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
+          executor.callNativeFunction(prism, startFunction, gestureFlags);
+        }
+      } else {
+        if (oldGestures.length > 0) {
+          const gestureFlags = oldGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
+          executor.callNativeFunction(prism, stopFunction, gestureFlags);
+        }
+      }
+    } else {
+      if (Array.isArray(newGestures) && newGestures.length > 0) {
+        const gestureFlags = newGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
+        executor.callNativeFunction(prism, startFunction, gestureFlags);
+      }
+    }
+  }
+
   trackHandGesture (prism, oldProperties, newProperties) {
-    // startTrackHandGesture
-    // stopTrackHandGesture
-    logWarning('PrismBuilder.trackHandGesture has not been implemented yet');
+    this._trackGestures(prism, oldProperties, newProperties,
+      'trackHandGesture', HandGestureFlags, 'startTrackHandGesture', 'stopTrackHandGesture');
   }
 
   trackingAutoHapticOnGesture (prism, oldProperties, newProperties) {
-    // startTrackingAutoHapticOnGesture
-    // stopTrackingAutoHapticOnGesture
-    logWarning('PrismBuilder.trackingAutoHapticOnGesture has not been implemented yet');
+    this._trackGestures(prism, oldProperties, newProperties,
+      'trackingAutoHapticOnGesture', DeviceGestureFlags, 'startTrackingAutoHapticOnGesture', 'stopTrackingAutoHapticOnGesture');
   }
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {

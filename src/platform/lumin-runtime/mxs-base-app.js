@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
-
 import { AppPrismController } from './controllers/app-prism-controller.js';
 import { ReactMagicScript } from '../../react-magic-script/react-magic-script.js';
-
+import { PrismType } from './types/prism-type.js';
 import executor from './utilities/executor.js';
+import validator from './utilities/validator.js';
 import { logInfo, logWarning } from '../../util/logger.js';
 
 export class MxsBaseApp {
@@ -68,7 +68,7 @@ export class MxsBaseApp {
       this._app.props.eventListener(event);
     }
 
-    return true;
+    return false;
   }
 
   getContainer(nodeName) {
@@ -82,15 +82,18 @@ export class MxsBaseApp {
     return prismController.getContainer(nodeName);
   }
 
-
   addPrism(properties, app) {
     const prismSize = properties.size;
-
     if (!Array.isArray(prismSize)) {
       throw new TypeError(`Prism size is not a vec3: ${prismSize}`);
     }
 
-    const prism = executor.callNativeFunction(app, 'requestNewPrism', prismSize);
+    const prismType = properties.type !== undefined ? properties.type : 'world';
+    if (!validator.validatePrismType(prismType)) {
+      throw new TypeError(`Prism type is not a valid PrismType value: ${prismType}`);
+    }
+
+    const prism = executor.callNativeFunction(app, 'requestNewPrism', prismSize, PrismType[prismType]);
     this._prisms.push(prism);
 
     const controller = new AppPrismController(properties);

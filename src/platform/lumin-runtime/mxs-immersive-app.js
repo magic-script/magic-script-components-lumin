@@ -45,7 +45,14 @@ export class MxsImmersiveApp extends ImmersiveApp {
   }
 
   addPrism(properties) {
-    return this._baseApp.addPrism(properties, this);
+    const prism = this._baseApp.addPrism(properties, this);
+    const selected = properties.selected;
+
+    if (selected !== undefined && typeof selected === 'boolean') {
+      // ImmersiveApp only API !
+      this.selectPrism(prism, selected);
+    }
+    return prism;
   }
 
   updatePrism(prism, properties) {
