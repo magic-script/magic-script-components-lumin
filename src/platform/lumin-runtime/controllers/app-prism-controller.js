@@ -114,7 +114,7 @@ export class AppPrismController extends PrismController {
 
     let handlers = this._eventHandlers[this._getEventTypeName(eventData.constructor.name)];
 
-    if (!Array.isArray(handlers)) {
+    if (!Array.isArray(handlers) || handlers.length === 0) {
       handlers = this._eventHandlers.onEvent;
     }
 
