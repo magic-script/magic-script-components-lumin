@@ -68,7 +68,7 @@ export class MxsBaseApp {
       this._app.props.eventListener(event);
     }
 
-    return true;
+    return false;
   }
 
   getContainer(nodeName) {

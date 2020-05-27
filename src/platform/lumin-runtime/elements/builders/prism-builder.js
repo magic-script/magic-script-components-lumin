@@ -167,23 +167,23 @@ export class PrismBuilder extends ElementBuilder {
 
         let gestureFlags;
         if (removed.length > 0) {
-          gestureFlags = removed.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          gestureFlags = removed.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
           executor.callNativeFunction(prism, stopFunction, gestureFlags);
         }
 
         if (added.length > 0) {
-          gestureFlags = added.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          gestureFlags = added.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
           executor.callNativeFunction(prism, startFunction, gestureFlags);
         }
       } else {
         if (oldGestures.length > 0) {
-          const gestureFlags = oldGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+          const gestureFlags = oldGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
           executor.callNativeFunction(prism, stopFunction, gestureFlags);
         }
       }
     } else {
       if (Array.isArray(newGestures) && newGestures.length > 0) {
-        const gestureFlags = newGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture]);
+        const gestureFlags = newGestures.reduce((gestures, gesture) => gestures | flagsEnum[gesture].value);
         executor.callNativeFunction(prism, startFunction, gestureFlags);
       }
     }
