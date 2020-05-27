@@ -52,7 +52,8 @@ export class MxsImmersiveApp extends ImmersiveApp {
       // ImmersiveApp only API !
       this.selectPrism(prism, selected);
     }
-    return prism;  }
+    return prism;
+  }
 
   updatePrism(prism, properties) {
     this._baseApp.updatePrism(prism, properties);
