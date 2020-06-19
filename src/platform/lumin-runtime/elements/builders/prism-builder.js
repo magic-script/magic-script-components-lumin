@@ -216,6 +216,11 @@ export class PrismBuilder extends ElementBuilder {
   _startTrackingImage(app, properties, prism) {
     const { name, size, filePath, isMoving } = properties;
     const setterName = isMoving ? 'trackMovingImage' : 'trackStaticImage';
+
+    if (!executor.callNativeFunction(app, 'isImageTrackingReady', name, size, filePath, prism)) {
+      logWarning(`Image tracking is not ready`);
+    }
+
     if (!executor.callNativeFunction(app, setterName, name, size, filePath, prism)) {
       logWarning(`Starting image tracking failed for ${name}`);
     }
