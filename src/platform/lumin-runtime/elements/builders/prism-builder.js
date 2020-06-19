@@ -243,8 +243,8 @@ export class PrismBuilder extends ElementBuilder {
   }
 
   _setTrackImage (prism, oldProperties, newProperties, app) {
-    const oldTrackImage = oldProperties.trackImage;
-    const newTrackImage = newProperties.trackImage;
+    const oldTrackImage = oldProperties === undefined ? undefined : oldProperties.trackImage;
+    const newTrackImage = newProperties === undefined ? undefined : newProperties.trackImage;
 
     if (oldTrackImage === undefined) {
       if (newTrackImage !== undefined) {
