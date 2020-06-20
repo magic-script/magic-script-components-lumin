@@ -1,4 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
+import { PrivilegeId, PrivilegeResult } from 'lumin';
+
 import { ElementBuilder } from './element-builder.js';
 
 import { ArrayProperty } from '../properties/array-property.js';
@@ -217,7 +219,16 @@ export class PrismBuilder extends ElementBuilder {
     const { name, size, filePath, isMoving } = properties;
     const setterName = isMoving ? 'trackMovingImage' : 'trackStaticImage';
 
-    if (!executor.callNativeFunction(app, 'isImageTrackingReady', name, size, filePath, prism)) {
+    const privilegeResult = executor.callNativeFunction(app, 'requestPrivilegeBlocking', PrivilegeId.kCameraCapture);
+    if (privilegeResult === PrivilegeResult.kGranted) {
+      logInfo(`Camera priviledge granted`);
+    } else if (privilegeResult === PrivilegeResult.kDenied) {
+      logInfo(`Camera priviledge denied`);
+    } else if (privilegeResult === PrivilegeResult.kInvalid) {
+      logInfo(`Camera priviledge invalid`);
+    }
+
+    if (!executor.callNativeFunction(app, 'isImageTrackingReady')) {
       logWarning(`Image tracking is not ready`);
     }
 

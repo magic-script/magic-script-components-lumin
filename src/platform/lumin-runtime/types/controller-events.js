@@ -12,5 +12,5 @@ export const ControllerEvents = {
   'onSelectionEvent': { eventName: 'onSelectionEvent' },
   'onUiEvent': { eventName: 'onUiEvent' },
   'onVideoEvent': { eventName: 'onVideoEvent' },
-  'onWorldImageTrackingEvent': { eventName: 'WorldImageTrackingEvent' }
+  'onWorldImageTrackingEvent': { eventName: 'onWorldImageTrackingEvent' }
 };
