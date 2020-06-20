@@ -11,7 +11,7 @@ import { HandGestureFlags }  from '../../types/hand-gesture-flags.js';
 import { DeviceGestureFlags }  from '../../types/device-gesture-flags.js';
 
 import executor from '../../utilities/executor.js';
-import { logWarning, logError } from '../../../../util/logger.js';
+import { logInfo, logWarning, logError } from '../../../../util/logger.js';
 
 import { mat4, vec3, quat } from 'gl-matrix';
 
