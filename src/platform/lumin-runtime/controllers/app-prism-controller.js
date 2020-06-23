@@ -15,6 +15,7 @@ import { RayCastEventData } from '../types/event-data/ray-cast-event-data.js';
 import { SelectionEventData } from '../types/event-data/selection-event-data.js';
 import { UiEventData } from '../types/event-data/ui-event-data.js';
 import { VideoEventData } from '../types/event-data/video-event-data.js';
+import { WorldImageTrackingEventData } from '../types/event-data/world-image-tracking-event-data.js';
 
 export class AppPrismController extends PrismController {
   constructor (prismProps) {
@@ -38,7 +39,8 @@ export class AppPrismController extends PrismController {
       RayCastEventData,
       SelectionEventData,
       UiEventData,
-      VideoEventData
+      VideoEventData,
+      WorldImageTrackingEventData
     ];
 
     this._eventTypes.forEach(eventDataConstructor => {

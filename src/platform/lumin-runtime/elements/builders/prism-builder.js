@@ -1,4 +1,6 @@
 // Copyright (c) 2019 Magic Leap, Inc. All Rights Reserved
+import { PrivilegeId, PrivilegeResult } from 'lumin';
+
 import { ElementBuilder } from './element-builder.js';
 
 import { ArrayProperty } from '../properties/array-property.js';
@@ -9,7 +11,7 @@ import { HandGestureFlags }  from '../../types/hand-gesture-flags.js';
 import { DeviceGestureFlags }  from '../../types/device-gesture-flags.js';
 
 import executor from '../../utilities/executor.js';
-import { logWarning, logError } from '../../../../util/logger.js';
+import { logInfo, logWarning, logError } from '../../../../util/logger.js';
 
 import { mat4, vec3, quat } from 'gl-matrix';
 
@@ -69,6 +71,7 @@ export class PrismBuilder extends ElementBuilder {
     this._validateSize(prism, oldProperties, newProperties);
     this._validatePosition(prism, oldProperties, newProperties);
     this._validateOrientation(prism, oldProperties, newProperties);
+    this._validateTrackImage(prism, oldProperties, newProperties);
   }
 
   update (prism, oldProperties, newProperties, app) {
@@ -77,6 +80,7 @@ export class PrismBuilder extends ElementBuilder {
     this._setSize(prism, oldProperties, newProperties, app);
     this._setPosition(prism, oldProperties, newProperties, app);
     this._setOrientation(prism, oldProperties, newProperties, app);
+    this._setTrackImage(prism, oldProperties, newProperties, app);
 
     app.updatePrism(prism, newProperties);
   }
@@ -201,6 +205,72 @@ export class PrismBuilder extends ElementBuilder {
 
   setOnDestroyHandler (prism, oldProperties, newProperties) {
       executor.callNativeFunction(prism, 'onDestroyEventSub', newProperties.onDestroy);
+  }
+
+  _hasTrackImageChanged (oldTrackImage, newTrackImage) {
+    return oldTrackImage.name !== newTrackImage.name ||
+           oldTrackImage.size[0] != newTrackImage.size[0] ||
+           oldTrackImage.size[1] != newTrackImage.size[1] ||
+           oldTrackImage.filePath != newTrackImage.filePath ||
+           oldTrackImage.isMoving != newTrackImage.isMoving;
+  }
+
+  _startTrackingImage(app, properties, prism) {
+    const { name, size, filePath, isMoving } = properties;
+    const setterName = isMoving ? 'trackMovingImage' : 'trackStaticImage';
+
+    const privilegeResult = executor.callNativeFunction(app, 'requestPrivilegeBlocking', PrivilegeId.kCameraCapture);
+    if (privilegeResult === PrivilegeResult.kGranted) {
+      logInfo(`Camera priviledge granted`);
+    } else if (privilegeResult === PrivilegeResult.kDenied) {
+      logInfo(`Camera priviledge denied`);
+    } else if (privilegeResult === PrivilegeResult.kInvalid) {
+      logInfo(`Camera priviledge invalid`);
+    }
+
+    if (!executor.callNativeFunction(app, 'isImageTrackingReady')) {
+      logWarning(`Image tracking is not ready`);
+    }
+
+    if (!executor.callNativeFunction(app, setterName, name, size, filePath, prism)) {
+      logWarning(`Starting image tracking failed for ${name}`);
+    }
+  }
+
+  _stopTrackingImage(app, properties) {
+    if (!executor.callNativeFunction(app, 'stopTrackImage', properties.name)) {
+      logWarning(`Stopping image tracking failed for ${properties.name}`);
+    }
+  }
+
+  _validateTrackImage (prism, oldProperties, newProperties) {
+    const trackImage = newProperties.trackImage;
+    if (trackImage !== undefined) {
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.isMoving, 'boolean');
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.filePath, 'string');
+      PrimitiveTypeProperty.throwIfNotTypeOf(trackImage.name, 'string');
+      PropertyDescriptor.throwIfNotArray(trackImage.size, 'vec2');
+    }
+  }
+
+  _setTrackImage (prism, oldProperties, newProperties, app) {
+    const oldTrackImage = oldProperties === undefined ? undefined : oldProperties.trackImage;
+    const newTrackImage = newProperties === undefined ? undefined : newProperties.trackImage;
+
+    if (oldTrackImage === undefined) {
+      if (newTrackImage !== undefined) {
+        this._startTrackingImage(app, newTrackImage, prism);
+      }
+    } else {
+      if (newTrackImage === undefined) {
+        this._stopTrackingImage(app, oldTrackImage);
+      } else {
+        if (this._hasTrackImageChanged(oldTrackImage, newTrackImage)) {
+          this._stopTrackingImage(app, oldTrackImage);
+          this._startTrackingImage(app, newTrackImage, prism);
+        }
+      }
+    }
   }
 
   extraTypeScript() {
