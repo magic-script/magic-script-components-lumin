@@ -566,6 +566,49 @@ export class PlatformFactory extends NativeFactory {
     }
   }
 
+  _createConfirmDialogNode (prism, title, message) {
+    const uiDialog = ui.UiDialog.CreateScrolling(prism, title, message, ui.DialogType.kSingleAction, ui.DialogLayout.kStandard);
+    const callbackId = uiDialog.onConfirmSub((eventData) => {
+      uiDialog.onConfirmUnsub(callbackId);
+      prism.deleteNode(uiDialog);
+    });
+    return uiDialog;
+  }
+
+  showSpatialMessage (prism, title, message) {
+    prism.getRootNode().addChild(this._createConfirmDialogNode(prism, title, message));
+  }
+
+  _showErrorOnElementAction (container, title, message) {
+    logError(message);
+    
+    if (container === undefined || container.controller === undefined) {
+      return;
+    }
+
+    if (typeof container.controller.getPrism !== 'function') {
+      return;
+    }
+
+    const prism = container.controller.getPrism();
+    if (prism === undefined) {
+      return;
+    }
+    this.showSpatialMessage(prism, title, message);    
+  }
+
+  showErrorOnCreateElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container, `Creating ${type} has failed`, error.message);
+  }
+
+  showErrorOnUpdateElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container, `Updating ${type} has failed`, error.message);
+  }
+
+  showErrorOnRemoveElement (type, properties, container, error) {
+    this._showErrorOnElementAction(container, `Removing ${type} has failed`, error.message);
+  }
+
   _validateAppType (type) {
     if (type !== undefined && this._appConstructors[type] === undefined) {
       throw new TypeError(`Invalid argument: Unknown app type: ${type}`);

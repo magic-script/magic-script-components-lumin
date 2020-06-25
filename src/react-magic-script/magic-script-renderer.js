@@ -36,7 +36,13 @@ const UPDATE_SIGNAL = {};
 //  hostContext: HostContext,
 //  internalInstanceHandle: Object
 function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-  return mxs._nativeFactory.createElement(type, rootContainerInstance, props);
+  let instance;
+  try {
+    instance =  mxs._nativeFactory.createElement(type, rootContainerInstance, props);
+  } catch (error) {
+    mxs._nativeFactory.showErrorOnCreateElement(type, props, rootContainerInstance, error);
+  }
+  return instance;
 }
 
 // Function: This function is used to create separate text nodes if the target allows only creating text in separate text nodes
@@ -221,7 +227,11 @@ function commitMount(instance, type, newProps, internalInstanceHandle) {
 //  newProps: Props,
 //  internalInstanceHandle: Object
 function commitUpdate(instance, updatePayload, type, oldProps, newProps, internalInstanceHandle) {
-  mxs._nativeFactory.updateElement(type, instance, oldProps, newProps);
+  try {
+    mxs._nativeFactory.updateElement(type, instance, oldProps, newProps);
+  } catch (error) {
+    mxs._nativeFactory.showErrorOnUpdateElement(type, props, rootContainerInstance, error);
+  }
 }
 
 // Function: insertBefore
@@ -259,7 +269,11 @@ function insertInContainerBefore(container, child, beforeChild) {
 //  parentInstance: Instance,
 //  child: Instance | TextInstance
 function removeChild(parentInstance, child) {
-  mxs._nativeFactory.removeChildElement(parentInstance, child);
+  try {
+    mxs._nativeFactory.removeChildElement(parentInstance, child);
+  } catch (error) {
+    mxs._nativeFactory.showErrorOnRemoveElement(type, props, rootContainerInstance, error);
+  }
 }
 
 // Function: removeChildFromContainer

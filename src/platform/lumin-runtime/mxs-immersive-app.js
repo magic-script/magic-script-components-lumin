@@ -16,12 +16,16 @@ export class MxsImmersiveApp extends ImmersiveApp {
     };
   }
 
+  set SpatialLogger(spatialLogger) {
+    return this._baseApp.SpatialLogger = spatialLogger;
+  }
+
   init() {
     return 0;
   }
 
   onAppStart(arg) {
-    this._baseApp.onAppStart(arg);
+    this._baseApp.onAppStart(arg, this);
   }
 
   onAppPause() {
